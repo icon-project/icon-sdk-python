@@ -69,6 +69,9 @@ class TestIcxSigner(unittest.TestCase):
         self.assertEqual(actual_sig, expected_signature)
 
 
+if __name__ == "__main__":
+    unittest.main()
+
 
 
 
