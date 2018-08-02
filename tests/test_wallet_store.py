@@ -1,3 +1,18 @@
+# -*- coding: utf-8 -*-
+# Copyright 2017-2018 theloop Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import unittest
 import os
 
@@ -7,7 +22,7 @@ from IconService.exception import KeyStoreException
 
 class TestWalletStore(unittest.TestCase):
 
-    TEST_DIR = os.path.abspath("keystore_file")
+    TEST_DIR = os.path.abspath("tests/keystore_file")
     TEST_KEYSTORE_FILE_NEW_PASSWORD = "Adas21312**"
     TEST_KEYSTORE_FILE_WRONG_PASSWORD = "Adas2**"
     TEST_NEW_PATH = os.path.join(TEST_DIR, "test_new_keystore.txt")
@@ -44,3 +59,7 @@ class TestWalletStore(unittest.TestCase):
         # Remove used file.
         if os.path.isfile(self.TEST_NEW_PATH):
             os.remove(self.TEST_NEW_PATH)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,3 +1,18 @@
+# -*- coding: utf-8 -*-
+# Copyright 2017-2018 theloop Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import unittest
 import os
 
@@ -8,15 +23,15 @@ from IconService.exception import AddressException, KeyStoreException
 
 class TestValidation(unittest.TestCase):
 
-    TEST_KEYSTORE_FILE_DIR = os.path.abspath("keystore_file/test_keystore.txt")
-    TEST_NOT_KEYSTORE_FILE_DIR = os.path.abspath("keystore_file/not_a_keystore_file.txt")
+    TEST_KEYSTORE_FILE_DIR = os.path.abspath("tests/keystore_file/test_keystore.txt")
+    TEST_NOT_KEYSTORE_FILE_DIR = os.path.abspath("tests/keystore_file/not_a_keystore_file.txt")
 
     def test_method_validate_keystore_file(self):
         """Case when validating a keystore file correctly. """
         keystore = load_keyfile(self.TEST_KEYSTORE_FILE_DIR)
         self.assertTrue(validate_keystore_file(keystore))
         keystore = load_keyfile(self.TEST_NOT_KEYSTORE_FILE_DIR)
-        self.assertFalse(validate_keystore_file(keystore))
+        self.assertRaises(KeyStoreException, validate_keystore_file, keystore)
 
     def test_method_has_keys(self):
         """Case when a dictionary data in a keystore file have all of keys correctly. """
@@ -69,3 +84,7 @@ class TestValidation(unittest.TestCase):
         keystore["address"] = "hxfd7e4560ba363f5aabd32caac7317feeee70ea57"
         keystore["coinType"] = "ic"
         self.assertRaises(KeyStoreException, validate_keystore_file_is_for_icon, keystore)
+
+
+if __name__ == "__main__":
+    unittest.main()

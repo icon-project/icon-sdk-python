@@ -1,3 +1,18 @@
+# -*- coding: utf-8 -*-
+# Copyright 2017-2018 theloop Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import hashlib
 import json
 from abc import ABCMeta, abstractmethod
@@ -109,13 +124,13 @@ class KeyWallet(Wallet):
                 json_string_keystore_data = json.dumps(key_store_contents)
                 store_keystore_file_on_the_path(file_path, json_string_keystore_data)
         except FileExistsError:
-            raise KeyStoreException("error")
+            raise KeyStoreException("File already exists.")
         except PermissionError:
-            raise KeyStoreException("error")
+            raise KeyStoreException("Not enough permission.")
         except FileNotFoundError:
-            raise KeyStoreException("")
+            raise KeyStoreException("File not found.")
         except IsADirectoryError:
-            raise KeyStoreException("The directory is invalid.")
+            raise KeyStoreException("Directory is invalid.")
 
     def get_private_key(self) -> str:
         """Gets a private key of an instance of a derived wallet class.
@@ -131,11 +146,11 @@ class KeyWallet(Wallet):
         """
         return self.address
 
-    def sign_message(self, hash: str) -> str:
+    def sign_message(self, message_hash: bytes) -> bytes:
         """Makes a plain transaction message signature.
 
-        :param hash:
-        :return signature: str
+        :param message_hash:
+        :return signature: type(bytes)
         """
         pass
 
