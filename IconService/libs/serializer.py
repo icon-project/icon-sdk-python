@@ -12,98 +12,100 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import copy
 import hashlib
 
 
-class IcxSerializer:
+translator = str.maketrans({
+    "\\": "\\\\",
+    "{": "\\{",
+    "}": "\\}",
+    "[": "\\[",
+    "]": "\\]",
+    ".": "\\."
+})
 
-    translator = str.maketrans({
-        "\\": "\\\\",
-        "{": "\\{",
-        "}": "\\}",
-        "[": "\\[",
-        "]": "\\]",
-        ".": "\\."
-    })
 
-    def __make_params_serialized(self, json_data: dict):
+def __make_params_serialized(json_data: dict):
 
-        def encode(data):
-            if isinstance(data, dict):
-                return encode_dict(data)
-            elif isinstance(data, list):
-                return encode_list(data)
-            else:
-                return escape(data)
-
-        def encode_dict(data: dict):
-            result = ".".join(_encode_dict(data))
-            return "{" + result + "}"
-
-        def _encode_dict(data: dict):
-            for key in sorted(data.keys()):
-                yield key
-                yield encode(data[key])
-
-        def encode_list(data: list):
-            result = ".".join(_encode_list(data))
-            return f"[" + result + "]"
-
-        def _encode_list(data: list):
-            for item in data:
-                yield encode(item)
-
-        def escape(data):
-            if data is None:
-                return "\\0"
-
-            data = str(data)
-            return data.translate(self.translator)
-
-        return ".".join(_encode_dict(json_data))
-
-    def __get_key_name_for_tx_hash(self, params_in_JSON_request):
-        if self.__get_tx_version(params_in_JSON_request) == hex(3):
-            key_name_for_tx_hash = "txHash"
+    def encode(data):
+        if isinstance(data, dict):
+            return encode_dict(data)
+        elif isinstance(data, list):
+            return encode_list(data)
         else:
-            key_name_for_tx_hash = "tx_hash"
-        return key_name_for_tx_hash
+            return escape(data)
 
-    def __get_tx_version(self, params_in_JSON_request):
-        if 'version' in params_in_JSON_request and params_in_JSON_request['version'] == hex(3):
-            return hex(3)
-        return hex(2)
+    def encode_dict(data: dict):
+        result = ".".join(_encode_dict(data))
+        return "{" + result + "}"
 
-    def serialize(self, params_in_JSON_request):
-        """It Serialized params of an original JSON request. It starts the method name, "icx_sendTransaction".
+    def _encode_dict(data: dict):
+        for key in sorted(data.keys()):
+            yield key
+            yield encode(data[key])
 
-        :param params_in_JSON_request:
-        :return: serialized params. Like icx_sendTransaction.<key1>.<value1>.<key2>.<value2>.
-        """
-        copy_tx = copy.deepcopy(params_in_JSON_request)
+    def encode_list(data: list):
+        result = ".".join(_encode_list(data))
+        return f"[" + result + "]"
 
-        key_name_for_tx_hash = self.__get_key_name_for_tx_hash(params_in_JSON_request)
-        if key_name_for_tx_hash in copy_tx:
-            del copy_tx[key_name_for_tx_hash]
+    def _encode_list(data: list):
+        for item in data:
+            yield encode(item)
 
-        if 'method' in copy_tx:
-            del copy_tx['method']
+    def escape(data):
+        if data is None:
+            return "\\0"
 
-        if 'signature' in copy_tx:
-            del copy_tx['signature']
+        data = str(data)
+        return data.translate(translator)
 
-        partial_serialized_params = self.__make_params_serialized(copy_tx)
-        return f"icx_sendTransaction.{partial_serialized_params}"
+    return ".".join(_encode_dict(json_data))
 
 
-def generate_tx_hash(params_in_JSON_request: dict):
+def serialize_params_to_message_hash(params: dict) -> bytes:
+    """
+    It serialized params of an original JSON request starting with `icx_sendTransaction`
+    to generate a message hash for a signature.
+
+    :param params: params in a original JSON request for transaction.
+    :return: serialized params, message hash.
+    params is like `icx_sendTransaction.<key1>.<value1>.<key2>.<value2> to bytes`.
+    """
+    copy_tx = copy.deepcopy(params)
+    key_name_for_tx_hash = __get_key_name_for_tx_hash(params)
+
+    if key_name_for_tx_hash in copy_tx:
+        del copy_tx[key_name_for_tx_hash]
+
+    if 'signature' in copy_tx:
+        del copy_tx['signature']
+
+    partial_serialized_params = __make_params_serialized(copy_tx)
+    return f"icx_sendTransaction.{partial_serialized_params}".encode()
+
+
+def generate_tx_hash(params: dict):
     """
     It generates transaction's hash with params in an original JSON request for transaction.
-    The point is serialization is applied on params field value, a dictionary.
 
-    :param params_in_JSON_request: params in a original JSON request for transaction.
+    :param params: params in a original JSON request for transaction.
     :return: the 256 bit hash digest of a message. Hexadecimal encoded.
     """
-    full_serialized_params = IcxSerializer().serialize(params_in_JSON_request)
-    return hashlib.sha3_256(full_serialized_params.encode()).hexdigest()
+    bytes_message_hash = serialize_params_to_message_hash(params)
+    return hashlib.sha3_256(bytes_message_hash).hexdigest()
+
+
+def __get_key_name_for_tx_hash(params):
+    if __get_tx_version(params) == hex(2):
+        return "tx_hash"
+    else:
+        return None
+
+
+def __get_tx_version(params):
+    if 'version' not in params:
+        return hex(2)
+    else:
+        return params['version']
