@@ -19,14 +19,13 @@ from abc import ABCMeta, abstractmethod
 from secp256k1 import PrivateKey
 from IconService.utils.validation import validate_password_of_keystore_file, validate_keystore_file
 from IconService.exception import KeyStoreException
-from IconService.libs.signer import IcxSigner
 from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json
 from multipledispatch import dispatch
 from IconService.utils import store_keystore_file_on_the_path
 
 
 class Wallet(metaclass=ABCMeta):
-    """Interface Wallet have 2 abstract methods, get_address() and sign_message(hash: str)."""
+    """An interface `Wallet` has 2 abstract methods, `get_address()` and `sign_message(hash: str)`."""
 
     @abstractmethod
     def get_address(self) -> str:
