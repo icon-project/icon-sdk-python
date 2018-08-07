@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 theloop Inc.
+# Copyright 2017-2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import os
+import functools
 
 
 def store_keystore_file_on_the_path(file_path, json_string):
@@ -27,3 +28,17 @@ def store_keystore_file_on_the_path(file_path, json_string):
 
     with open(file_path, 'wt') as f:
         f.write(json_string)
+
+
+def apply_to_return_value(callback):
+    def outer(fn):
+        @functools.wraps(fn)
+        def inner(*args, **kwargs):
+            return callback(fn(*args, **kwargs))
+
+        return inner
+    return outer
+
+
+to_dict = apply_to_return_value(dict)
+

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 theloop Inc.
+# Copyright 2017-2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -95,8 +95,6 @@ def generate_tx_hash(tx_request: dict):
     :return: the 256 bit hash digest of a message. Hexadecimal encoded.
     """
     bytes_message_hash = serialize_tx_request_to_message_hash(tx_request)
-
-    a = hashlib.sha3_256(bytes_message_hash).digest()
     return hashlib.sha3_256(bytes_message_hash).hexdigest()
 
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 theloop Inc.
+# Copyright 2017-2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import unittest
-from IconService.builder.tx_builder import IcxTransactionBuilder, CallTransactionBuilder,\
+from IconService.builder.transaction_builder import IcxTransactionBuilder, CallTransactionBuilder,\
     DeployTransactionBuilder, MessageTransactionBuilder
 
 
