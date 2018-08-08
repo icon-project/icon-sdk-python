@@ -19,6 +19,7 @@ import requests
 import json
 from IconService.utils import to_dict
 from IconService.providers.provider import Provider
+from IconService.utils import set_logger
 
 
 def get_default_endpoint():
@@ -29,9 +30,14 @@ class HTTPProvider(Provider):
 
     endpoint_uri = None
     _request_kwargs = None
-    logger = logging.getLogger("IconService.providers.HTTPProvider")
+
+    logger = logging.getLogger("HTTPProvider")
+
+    # No need to use logging, remove the line.
+    set_logger(logger, 'DEBUG')
 
     def __init__(self, endpoint_uri=None, request_kwargs=None):
+        self.logger.debug("Init HTTP Provider")
         self.request_counter = itertools.count()
         if endpoint_uri is None:
             self.endpoint_uri = get_default_endpoint()
@@ -52,35 +58,34 @@ class HTTPProvider(Provider):
     @staticmethod
     def make_post_request(endpoint_uri, data, **kwargs):
         kwargs.setdefault('timeout', 10)
-
         with requests.Session() as session:
             response = session.post(url=endpoint_uri, json=data, **kwargs)
             response.raise_for_status()
         return json.loads(response.content)
 
-    def make_request(self, method, params):
-        self.logger.debug("Make request HTTP. URI is %s, Method is %s",
-                          self.endpoint_uri, method)
+    def make_request(self, method, params=None):
         rpc_dict = {
-            "jsonrpc": "2.0",
-            "method": method,
-            "id": 1234
+            'jsonrpc': '2.0',
+            'method': method,
+            'id': 1234
         }
 
         if params:
             rpc_dict['params'] = params
 
+        self.logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s",
+                              self.endpoint_uri, method, rpc_dict)
+
         response = self.make_post_request(self.endpoint_uri, rpc_dict, **self.get_request_kwargs())
-        self.logger.debug("Get response HTTP. URI is %s, "
-                          "Method is %s, Response is %s",
+        self.logger.debug("response HTTP\nURI: %s\n"
+                          "Method: %s\nResponse:%s",
                           self.endpoint_uri, method, response)
         return response
 
     def is_connected(self):
         try:
-            self.logger.debug("Is connected")
+            self.logger.debug("Connected")
             response = self.make_request('icx_getLastBlock', [])
-            response = response
         except IOError:
             return False
         else:
