@@ -15,6 +15,7 @@
 
 import os
 import functools
+import logging
 
 
 def store_keystore_file_on_the_path(file_path, json_string):
@@ -42,3 +43,11 @@ def apply_to_return_value(callback):
 
 to_dict = apply_to_return_value(dict)
 
+
+def set_logger(logger, level):
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(level)
