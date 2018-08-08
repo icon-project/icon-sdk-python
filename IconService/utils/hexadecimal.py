@@ -13,11 +13,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from IconService.utils.type import is_str
 
-class Provider:
 
-    def make_request(self, method, params=None):
-        raise NotImplementedError("Providers must implement this method")
+def is_0x_prefixed(value):
+    if not is_str(value):
+        raise TypeError("Type of value must be str. Got: {0}".format(repr(value)))
+    return value.startswith('0x')
 
-    def is_connected(self):
-        raise NotImplementedError("Providers must implement this method")
+
+def remove_0x_prefix(value):
+    if is_0x_prefixed(value):
+        return value[2:]
+    return value
+
+
+def add_0x_prefix(value):
+    if is_0x_prefixed(value):
+        return value
+    return '0x' + value
+
