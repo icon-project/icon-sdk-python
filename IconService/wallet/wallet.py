@@ -17,11 +17,12 @@ import hashlib
 import json
 from abc import ABCMeta, abstractmethod
 from secp256k1 import PrivateKey
-from IconService.utils.validation import validate_password_of_keystore_file, validate_keystore_file
+from IconService.utils.validation import is_password_of_keystore_file, is_keystore_file
 from IconService.exception import KeyStoreException
 from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json
 from multipledispatch import dispatch
 from IconService.utils import store_keystore_file_on_the_path
+from IconService.libs.signer import sign
 
 
 class Wallet(metaclass=ABCMeta):
@@ -92,11 +93,11 @@ class KeyWallet(Wallet):
         :param password: a password including alphabet characters, numbers and special characters. stype(str)
         :return: An instance of Wallet class.
         """
-        if not validate_password_of_keystore_file(password):
+        if not is_password_of_keystore_file(password):
             raise KeyStoreException('Invalid password.')
 
         keystore = load_keyfile(file_path)
-        if validate_keystore_file(keystore):
+        if is_keystore_file(keystore):
             bytes_private_key = decode_keyfile_json(keystore, bytes(password, 'utf-8'))
             private_key_object = PrivateKey(bytes_private_key)
             wallet = KeyWallet(private_key_object)
@@ -110,7 +111,7 @@ class KeyWallet(Wallet):
         :return: An instance of Wallet class.
         """
 
-        if not validate_password_of_keystore_file(password):
+        if not is_password_of_keystore_file(password):
             raise KeyStoreException('Invalid password.')
 
         try:
@@ -119,7 +120,7 @@ class KeyWallet(Wallet):
             key_store_contents['coinType'] = 'icx'
 
             # validate the  contents of a keystore file.
-            if validate_keystore_file(key_store_contents):
+            if is_keystore_file(key_store_contents):
                 json_string_keystore_data = json.dumps(key_store_contents)
                 store_keystore_file_on_the_path(file_path, json_string_keystore_data)
         except FileExistsError:
@@ -151,7 +152,7 @@ class KeyWallet(Wallet):
         :param message_hash:
         :return signature: type(bytes)
         """
-        pass
+        return sign(message_hash)
 
 
 def get_public_key(private_key_object):

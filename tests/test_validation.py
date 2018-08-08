@@ -16,7 +16,7 @@
 import unittest
 import os
 
-from IconService.utils.validation import validate_keystore_file, has_keys, validate_keystore_file_is_for_icon
+from IconService.utils.validation import is_keystore_file, has_keys, is_keystore_file_for_icon
 from eth_keyfile import load_keyfile
 from IconService.exception import AddressException, KeyStoreException
 
@@ -29,9 +29,9 @@ class TestValidation(unittest.TestCase):
     def test_method_validate_keystore_file(self):
         """Case when validating a keystore file correctly. """
         keystore = load_keyfile(self.TEST_KEYSTORE_FILE_DIR)
-        self.assertTrue(validate_keystore_file(keystore))
+        self.assertTrue(is_keystore_file(keystore))
         keystore = load_keyfile(self.TEST_NOT_KEYSTORE_FILE_DIR)
-        self.assertRaises(KeyStoreException, validate_keystore_file, keystore)
+        self.assertRaises(KeyStoreException, is_keystore_file, keystore)
 
     def test_method_has_keys(self):
         """Case when a dictionary data in a keystore file have all of keys correctly. """
@@ -70,20 +70,20 @@ class TestValidation(unittest.TestCase):
     def test_validate_keystore_file_is_for_icon(self):
         """Case when validating keystore file if for icon or not."""
         keystore = load_keyfile(self.TEST_KEYSTORE_FILE_DIR)
-        self.assertTrue(validate_keystore_file_is_for_icon(keystore))
+        self.assertTrue(is_keystore_file_for_icon(keystore))
 
         # when an address's length is too short.
         keystore["address"] = "hx123"
-        self.assertRaises(AddressException, validate_keystore_file_is_for_icon, keystore)
+        self.assertRaises(AddressException, is_keystore_file_for_icon, keystore)
 
         # when an address doesn't start with 'hx'.
         keystore["address"] = "axfd7e4560ba363f5aabd32caac7317feeee70ea57"
-        self.assertRaises(AddressException, validate_keystore_file_is_for_icon, keystore)
+        self.assertRaises(AddressException, is_keystore_file_for_icon, keystore)
 
         # when an value of key 'coinType' is not same as 'icx'.
         keystore["address"] = "hxfd7e4560ba363f5aabd32caac7317feeee70ea57"
         keystore["coinType"] = "ic"
-        self.assertRaises(KeyStoreException, validate_keystore_file_is_for_icon, keystore)
+        self.assertRaises(KeyStoreException, is_keystore_file_for_icon, keystore)
 
 
 if __name__ == "__main__":

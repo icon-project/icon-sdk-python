@@ -17,7 +17,7 @@ import unittest
 
 from IconService.wallet.wallet import KeyWallet
 from secp256k1 import PrivateKey
-from IconService.utils.validation import validate_address
+from IconService.utils.validation import is_wallet_address
 
 
 class TestWalletLoadByPrivateKey(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestWalletLoadByPrivateKey(unittest.TestCase):
         self.assertEqual(hex_private_key, wallet1.get_private_key())
 
         # Checks a wallet's address is correct.
-        self.assertTrue(validate_address(wallet1.get_address()))
+        self.assertTrue(is_wallet_address(wallet1.get_address()))
 
         # Creates the other wallet.
         private_key_object2 = PrivateKey()
@@ -45,7 +45,7 @@ class TestWalletLoadByPrivateKey(unittest.TestCase):
         self.assertEqual(hex_private_key2, wallet2.get_private_key())
 
         # Checks a wallet's address is correct.
-        self.assertTrue(validate_address(wallet2.get_address()))
+        self.assertTrue(is_wallet_address(wallet2.get_address()))
 
         self.assertNotEqual(hex_private_key2, hex_private_key)
 

@@ -15,7 +15,7 @@
 
 import unittest
 from IconService.wallet.wallet import KeyWallet, get_public_key
-from IconService.utils.validation import validate_address
+from IconService.utils.validation import is_wallet_address
 
 
 class TestWalletCreate(unittest.TestCase):
@@ -25,8 +25,8 @@ class TestWalletCreate(unittest.TestCase):
         wallet1 = KeyWallet.create()
         wallet2 = KeyWallet.create()
         self.assertTrue(wallet1.get_address() != wallet2.get_address())
-        self.assertTrue(validate_address(wallet1.get_address()))
-        self.assertTrue(validate_address(wallet2.get_address()))
+        self.assertTrue(is_wallet_address(wallet1.get_address()))
+        self.assertTrue(is_wallet_address(wallet2.get_address()))
 
 
 if __name__ == "__main__":
