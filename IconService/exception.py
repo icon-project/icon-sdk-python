@@ -24,6 +24,8 @@ class IconServiceExceptionCode(IntEnum):
     KEY_STORE_ERROR = 1
     ADDRESS_ERROR = 2
     BALANCE_ERROR = 3
+    DATA_TYPE_ERROR = 4
+    JSON_RPC_ERROR = 5
 
     def __str__(self) -> str:
         return str(self.name).capitalize().replace('_', ' ')
@@ -65,3 +67,16 @@ class BalanceException(IonServiceBaseException):
     """Error when having an invalid balance."""
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.BALANCE_ERROR)
+
+
+class DataTypeException(IonServiceBaseException):
+    """Error when data type is invalid."""
+    def __init__(self, message: Optional[str]):
+        super().__init__(message, IconServiceExceptionCode.DATA_TYPE_ERROR)
+
+
+class JSONRPCException(IonServiceBaseException):
+    """Error when get JSON-RPC Error Response."""
+    def __init__(self, message: Optional[str]):
+        super().__init__(message, IconServiceExceptionCode.JSON_RPC_ERROR)
+
