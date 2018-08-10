@@ -20,6 +20,7 @@ import json
 from IconService.utils import to_dict
 from IconService.providers.provider import Provider
 from IconService.utils import set_logger
+from IconService.exception import JSONRPCException
 
 
 def get_default_endpoint():
@@ -60,7 +61,7 @@ class HTTPProvider(Provider):
         kwargs.setdefault('timeout', 10)
         with requests.Session() as session:
             response = session.post(url=endpoint_uri, json=data, **kwargs)
-            response.raise_for_status()
+            #response.raise_for_status()
         return json.loads(response.content)
 
     def make_request(self, method, params=None):
@@ -77,10 +78,18 @@ class HTTPProvider(Provider):
                               self.endpoint_uri, method, rpc_dict)
 
         response = self.make_post_request(self.endpoint_uri, rpc_dict, **self.get_request_kwargs())
-        self.logger.debug("response HTTP\nURI: %s\n"
-                          "Method: %s\nResponse:%s",
-                          self.endpoint_uri, method, response)
-        return response
+        self.logger.debug("response HTTP\nResponse:%s", response)
+        return self.return_customed_response(response)
+
+    @staticmethod
+    def return_customed_response(response):
+
+        try:
+            if not response["result"]:
+                raise JSONRPCException(response["result"]["error"])
+            return response["result"]
+        except KeyError:
+            raise JSONRPCException(response["error"])
 
     def is_connected(self):
         try:
