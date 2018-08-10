@@ -61,3 +61,4 @@ def is_null(obj):
 
 def is_number(obj):
     return isinstance(obj, Number)
+

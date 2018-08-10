@@ -14,9 +14,10 @@
 # limitations under the License.
 
 import re
-from IconService.exception import AddressException, KeyStoreException
-from .type import is_str
-from .hexadecimal import is_0x_prefixed, remove_0x_prefix
+from IconService.exception import AddressException, KeyStoreException, DataTypeException
+from IconService.utils.type import is_str, is_integer
+from IconService.utils.hexadecimal import is_0x_prefixed, remove_0x_prefix, is_cx_prefixed, remove_cx_prefix, \
+    is_hx_prefixed, remove_hx_prefix
 
 
 def is_password_of_keystore_file(password) -> bool:
@@ -73,14 +74,49 @@ def is_keystore_file_for_icon(keystore: dict) -> bool:
         raise KeyStoreException("The keystore file is invalid.")
 
 
-def is_wallet_address(address) -> bool:
+def is_wallet_address(value) -> bool:
+    """
+    Checks if value is T_ADDR_EOA type.
+    T_ADDR_EOA is data type which is 40-digit hexadecimal string prefixed with `hx`.
+
+    :param value: wallet address
+    """
+    return is_hx_prefixed(value) and len(remove_hx_prefix(value)) == 40
+
+
+def is_score_address(value) -> bool:
+    """
+    Checks if value is T_ADDR_SCORE type.
+    T_ADDR_SCORE is data type which is 40-digit hexadecimal string prefixed with `cx`.
+
+    :param value: SCORE address
+    """
+    return is_cx_prefixed(value) and len(remove_cx_prefix(value)) == 40
+
+
+def is_T_HASH(value):
+    """T_HASH is data type which is 64-digit hexadecimal string prefixed with `0x`."""
     try:
-        if len(address) == 42 and address.startswith('hx'):
+        if is_0x_prefixed(value) and len(remove_0x_prefix(value)) == 64:
             return True
         else:
-            raise AddressException("An address is wrong.")
+            raise DataTypeException("This hash value is unrecognized.")
     except ValueError:
-        raise AddressException("An address is wrong.")
+        raise DataTypeException("This hash value is unrecognized.")
+
+
+def is_T_BIN_DATA(value):
+    """
+    T_BIN_DATA is data type which is hexadeciamal string prefixed with `0x`
+    and length is even.
+    """
+    try:
+        if is_0x_prefixed(value) and len(remove_0x_prefix(value)) % 2 == 0:
+            return True
+        else:
+            raise DataTypeException("This value is not T_BIN_DATA data type.")
+    except ValueError:
+        raise DataTypeException("This value is not T_BIN_DATA data type.")
 
 
 def is_predefined_block_value(value) -> bool:
@@ -91,12 +127,7 @@ def is_predefined_block_value(value) -> bool:
     :param value: "latest". type(str)
     :return: type(bool)
     """
-    if is_str(value):
-        value_text = value
-    else:
-        raise TypeError("It's unrecognized block reference:{0!r}.".format(value))
-
-    return value_text == "latest"
+    return is_str(value) and value == "latest"
 
 
 def is_hex_block_hash(value) -> bool:
@@ -107,25 +138,63 @@ def is_hex_block_hash(value) -> bool:
     :param value: hash value of a block, hexadecimal digits. type(str)
     :return: type(bool)
     """
-    if not is_str(value):
-        return False
-
-    return is_0x_prefixed(value) and len(remove_0x_prefix(value)) == 64
+    return is_str(value) and is_0x_prefixed(value) and len(remove_0x_prefix(value)) == 64
 
 
-def is_hex_block_height(value) -> bool:
+def is_block_height(value: int) -> bool:
     """Checks the value - a parameter is valid.
 
     :param value: height of a block, hexadecimal digits. type(str).
     :return: type(bool)
     """
-    if not is_str(value):
-        return False
-    elif is_hex_block_hash(value):
-        return False
     try:
-        value_as_int = int(value, 16)
+        if not is_integer(value):
+            return False
     except ValueError:
         return False
-    return 0 <= value_as_int < 2 ** 256
+    return 0 <= value < 2 ** 256
 
+
+def is_block(result: dict) -> bool:
+    """Checks block information in response has right format.
+
+    :param result
+    :return: bool
+    """
+    inner_key_of_result = ["version", "prev_block_hash", "merkle_tree_root_hash", "time_stamp",
+                           "confirmed_transaction_list", "block_hash", "height", "peer_id", "signature"]
+    return has_keys(result, inner_key_of_result)
+
+
+def is_score_apis(result: dict) -> bool:
+    """Checks list of score apis in response has right format.
+
+    :param result
+    :return: bool
+    """
+    result = result[0]
+    inner_key_of_result = ["type", "name", "inputs", "outputs"]
+    inner_key_of_inputs = ["name", "type"]
+    return has_keys(result, inner_key_of_result) and has_keys(result["inputs"][0], inner_key_of_inputs)
+
+
+def is_transaction(result: dict) -> bool:
+    """Checks the result of `icx_getTransactionByHash` has right format.
+
+    :param result
+    :return: bool
+    """
+    inner_key_of_result = ["version", "from", "to", "stepLimit", "timestamp", "nid", "nonce", "txIndex",
+                           "blockHeight", "blockHash", "signature"]
+    return has_keys(result, inner_key_of_result)
+
+
+def is_transaction_result(result: dict) -> bool:
+    """Checks the result of `icx_getTransactionResult` has right format.
+
+    :param result
+    :return: bool
+    """
+    inner_key_of_result = ["status", "to", "txHash", "txIndex", "blockHeight", "blockHash",
+                           "cumulativeStepUsed", "stepUsed", "stepPrice"]
+    return has_keys(result, inner_key_of_result)
