@@ -19,6 +19,7 @@ from IconService.utils.validation import is_block_height, \
 from IconService.exception import AddressException, DataTypeException
 from IconService.providers.provider import Provider
 from IconService.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
+from IconService.builder.call_builder import Call
 
 
 class IconService:
@@ -117,6 +118,22 @@ class IconService:
         :param call:
         :return:
         """
+        if isinstance(call, Call):
+            params = {
+                "from": call.from_,
+                "to": call.to,
+                "dataType": "call",
+                "data": {
+                    "method": call.method
+                }
+            }
+
+            if isinstance(call.params, dict):
+                params["data"]["params"] = call.params
+
+            return self.__provider.make_request('icx_call', params)
+        else:
+            raise DataTypeException("Call object is unrecognized.")
 
     def send_transaction(self, signed_transaction: object):
         """It is equivalent to icx_sendTransaction.

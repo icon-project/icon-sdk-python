@@ -58,7 +58,7 @@ class CallBuilder:
         self.method = method
         return self
 
-    def params(self, params):
+    def params(self, params=None):
         self.params = params
         return self
 
