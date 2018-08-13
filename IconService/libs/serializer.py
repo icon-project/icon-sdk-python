@@ -64,16 +64,15 @@ def __make_params_serialized(json_data: dict):
     return ".".join(_encode_dict(json_data))
 
 
-def serialize_tx_request_to_message_hash(tx_request: dict) -> bytes:
+def serialize(params: dict) -> bytes:
     """
     It serialized params of an original JSON request starting with `icx_sendTransaction`
     to generate a message hash for a signature.
 
-    :param tx_request: an original JSON request for transaction.
+    :param params: params in a original JSON request for transaction.
     :return: serialized params, message hash.
-    params is like `icx_sendTransaction.<key1>.<value1>.<key2>.<value2> to bytes`.
+    params is like `icx_sendTransaction.<key1>.<value1>.<key2>.<value2>` to bytes.
     """
-    params = tx_request["params"]
     copy_tx = copy.deepcopy(params)
     key_name_for_tx_hash = __get_key_name_for_tx_hash(params)
 
@@ -87,14 +86,14 @@ def serialize_tx_request_to_message_hash(tx_request: dict) -> bytes:
     return hashlib.sha3_256(f"icx_sendTransaction.{partial_serialized_params}".encode()).digest()
 
 
-def generate_tx_hash(tx_request: dict):
+def generate_message(params: dict):
     """
     It generates transaction's hash with params in an original JSON request for transaction.
 
     :param params: params in a original JSON request for transaction.
     :return: the 256 bit hash digest of a message. Hexadecimal encoded.
     """
-    bytes_message_hash = serialize_tx_request_to_message_hash(tx_request)
+    bytes_message_hash = serialize(params)
     return hashlib.sha3_256(bytes_message_hash).hexdigest()
 
 
