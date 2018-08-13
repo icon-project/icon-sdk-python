@@ -98,7 +98,5 @@ class HTTPProvider(Provider):
         except IOError:
             return False
         else:
-            assert response['jsonrpc'] == '2.0'
-            assert 'error' not in response
             return True
 

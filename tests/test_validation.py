@@ -18,7 +18,7 @@ import os
 
 from IconService.utils.validation import is_keystore_file, has_keys, is_keystore_file_for_icon
 from eth_keyfile import load_keyfile
-from IconService.exception import AddressException, KeyStoreException
+from IconService.exception import KeyStoreException
 
 
 class TestValidation(unittest.TestCase):
@@ -74,11 +74,11 @@ class TestValidation(unittest.TestCase):
 
         # when an address's length is too short.
         keystore["address"] = "hx123"
-        self.assertRaises(AddressException, is_keystore_file_for_icon, keystore)
+        self.assertRaises(KeyStoreException, is_keystore_file_for_icon, keystore)
 
         # when an address doesn't start with 'hx'.
         keystore["address"] = "axfd7e4560ba363f5aabd32caac7317feeee70ea57"
-        self.assertRaises(AddressException, is_keystore_file_for_icon, keystore)
+        self.assertRaises(KeyStoreException, is_keystore_file_for_icon, keystore)
 
         # when an value of key 'coinType' is not same as 'icx'.
         keystore["address"] = "hxfd7e4560ba363f5aabd32caac7317feeee70ea57"
