@@ -21,7 +21,11 @@ from IconService.builder.transaction_builder import IcxTransactionBuilder, Messa
     CallTransactionBuilder, DeployTransactionBuilder
 from IconService.utils.hexadecimal import add_0x_prefix
 from IconService.utils.validation import is_icx_transaction, is_call_transaction, is_message_transaction, \
-    is_deploy_transaction
+    is_deploy_transaction, is_T_HASH
+from IconService.wallet.wallet import KeyWallet
+from IconService.Icon_service import IconService
+from IconService.providers.http_provider import HTTPProvider
+from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3, TEST_PRIVATE_KEY
 
 
 class TestSignedTransaction(unittest.TestCase):
@@ -34,8 +38,8 @@ class TestSignedTransaction(unittest.TestCase):
         cls.to = "hx5bfdb090f43a808005ffc27c25b213145e80b7cd"
         cls.value = "0xde0b6b3a7640000"
         cls.step_limit = "0x12345"
-        cls.nid = "0x3f"
-        cls.nonce = "0x1"
+        cls.nid = "0x3"
+        cls.nonce = "0x2"
         cls.content_type = "application/zip"
         cls.content = "test".encode()
         cls.msg_data = add_0x_prefix(hashlib.sha3_256("test".encode()).hexdigest())
@@ -80,5 +84,13 @@ class TestSignedTransaction(unittest.TestCase):
         tx_dict = SignedTransaction.to_dict(msg_transaction)
         self.assertTrue(is_message_transaction(tx_dict))
 
+    def test_signed_transaction_transfer(self):
+        wallet = KeyWallet.load(TEST_PRIVATE_KEY)
+        icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        icx_transaction = IcxTransactionBuilder().from_(wallet.get_address()).to(self.to).value(self.value) \
+            .step_limit(self.step_limit).nid(self.nid).nonce(self.nonce).build()
+        signed_transaction_dict = SignedTransaction(icx_transaction, wallet)
+        result = icon_service.send_transaction(signed_transaction_dict)
+        self.assertTrue(is_T_HASH(result))
 
 
