@@ -34,16 +34,16 @@ class Wallet(metaclass=ABCMeta):
 
         :return address:
         """
-        pass
+        raise NotImplementedError("Wallet must implement this method")
 
     @abstractmethod
-    def sign_message(self, hash: str) -> str:
+    def sign_message(self, message_hash: bytes) -> str:
         """Makes a plain transaction message signature.
 
-        :param hash:
-        :return signature: str
+        :param message_hash: type(bytes)
+        :return signature: type(str)
         """
-        pass
+        raise NotImplementedError("Wallet implement this method")
 
 
 class KeyWallet(Wallet):
@@ -152,7 +152,7 @@ class KeyWallet(Wallet):
         :param message_hash:
         :return signature: type(bytes)
         """
-        return sign(message_hash)
+        return sign(message_hash, self.__bytes_private_key)
 
 
 def get_public_key(private_key_object):
