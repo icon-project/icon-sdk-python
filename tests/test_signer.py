@@ -33,12 +33,12 @@ class TestIcxSigner(unittest.TestCase):
                          TEST_REQUEST_SEND_MESSAGE, TEST_REQUEST_SCORE_UPDATE, TEST_REQUEST_SCORE_ISNTALL]
 
         for request in test_requests:
-            # serialize a signature
+            # Serialize a signature
             private_key_object = PrivateKey()
             msg_hash_bytes = serialize(request["params"])
             sign_bytes = sign(msg_hash_bytes, private_key_object.private_key)
 
-            # deserialize a signature
+            # Deserialize a signature
             recoverable_sign = private_key_object.ecdsa_recoverable_deserialize(sign_bytes[0:64], sign_bytes[64])
             sign_ = private_key_object.ecdsa_recoverable_convert(recoverable_sign)
             # Verify a signature with a public key

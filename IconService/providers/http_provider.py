@@ -86,7 +86,7 @@ class HTTPProvider(Provider):
 
         try:
             if not response["result"]:
-                raise JSONRPCException(response["result"]["error"])
+                raise JSONRPCException(response["error"])
             return response["result"]
         except KeyError:
             raise JSONRPCException(response["error"])

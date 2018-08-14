@@ -35,7 +35,7 @@ class TestCallBuilder(unittest.TestCase):
         values_call_1 = ["1_FROM", "1_TO", "1_METHOD", "1_PARAMS"]
         values_call_2 = ["2_FROM", "2_TO", "2_METHOD", "2_PARAMS"]
 
-        # checks all of property is collect.
+        # Checks all of property is collect.
         for idx, property in enumerate(properties):
             self.assertEqual(getattr(call_1, property), values_call_1[idx])
             self.assertEqual(getattr(call_2, property), values_call_2[idx])

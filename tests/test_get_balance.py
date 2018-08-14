@@ -30,18 +30,18 @@ class TestGetBalance(unittest.TestCase):
         cls.to_ = result["confirmed_transaction_list"][0]["to"]
 
     def test_get_balance_from_wallet(self):
-        # case 0: get balance from wallet or score successfully.
+        # Case 0: get balance from wallet or score successfully.
         result = self.icon_service.get_balance(self.from_)
         self.assertTrue(isinstance(result, int))
         result = self.icon_service.get_balance(self.to_)
         self.assertTrue(isinstance(result, int))
 
-        # case 1: when a param is wrong.
+        # Case 1: when a param is wrong.
         self.assertRaises(AddressException, self.icon_service.get_balance, self.to_[2:])
         self.assertRaises(AddressException, self.icon_service.get_balance, self.from_[2:])
         self.assertRaises(AddressException, self.icon_service.get_balance, "123")
         self.assertRaises(DataTypeException, self.icon_service.get_balance, 123)
-        # when the address's length is short
+        # When the address's length is short
         self.assertRaises(AddressException, self.icon_service.get_balance, "cx882efc17c2f50e0d60142b9c0e746cbafb569d")
 
 
