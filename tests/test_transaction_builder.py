@@ -20,7 +20,7 @@ from IconService.builder.transaction_builder import IcxTransactionBuilder, CallT
 
 class TestTransactionBuilder(unittest.TestCase):
 
-    general_tx_properties = ["from_", "to", "value", "step_limit", "nonce"]
+    general_tx_properties = ["from_", "to", "value", "step_limit", "nid", "nonce"]
 
     def test_make_icx_transaction(self):
         """Testing for making a icx transaction successfully"""
@@ -30,6 +30,7 @@ class TestTransactionBuilder(unittest.TestCase):
             .to("TO")\
             .value("VALUE")\
             .step_limit("STEP_LIMIT")\
+            .nid("NID")\
             .nonce("NONCE")\
             .build()
 
@@ -45,6 +46,7 @@ class TestTransactionBuilder(unittest.TestCase):
             .to("TO") \
             .value("VALUE") \
             .step_limit("STEP_LIMIT") \
+            .nid("NID") \
             .nonce("NONCE") \
             .method("METHOD") \
             .params("PARAMS") \
@@ -52,6 +54,8 @@ class TestTransactionBuilder(unittest.TestCase):
 
         for idx, property in enumerate(self.general_tx_properties + call_tx_properties):
             self.assertEqual(getattr(call_tx, property), property.upper())
+
+        self.assertEquals(call_tx.data, {"method": "METHOD", "params": "PARAMS"})
 
     def test_make_deploy_transaction(self):
         """Testing for making a deploy transaction successfully"""
@@ -61,6 +65,7 @@ class TestTransactionBuilder(unittest.TestCase):
             .to("TO") \
             .value("VALUE") \
             .step_limit("STEP_LIMIT") \
+            .nid("NID") \
             .nonce("NONCE") \
             .content_type("CONTENT_TYPE") \
             .content("CONTENT") \
@@ -70,6 +75,8 @@ class TestTransactionBuilder(unittest.TestCase):
         for idx, property in enumerate(self.general_tx_properties + deploy_tx_properties):
             self.assertEqual(getattr(deploy_tx, property), property.upper())
 
+        self.assertEquals(deploy_tx.data, {"contentType": "CONTENT_TYPE", "content": "CONTENT", "params": "PARAMS"})
+
     def test_make_message_transaction(self):
         """Testing for making a message transaction successfully"""
         message_tx_properties = ["data"]
@@ -78,6 +85,7 @@ class TestTransactionBuilder(unittest.TestCase):
             .to("TO") \
             .value("VALUE") \
             .step_limit("STEP_LIMIT") \
+            .nid("NID") \
             .nonce("NONCE") \
             .data("DATA") \
             .build()
@@ -92,6 +100,7 @@ class TestTransactionBuilder(unittest.TestCase):
             .to("TO") \
             .value("VALUE") \
             .step_limit("STEP_LIMIT") \
+            .nid("NID") \
             .nonce("NONCE") \
             .data("DATA") \
             .build()

@@ -16,7 +16,7 @@
 import unittest
 import hashlib
 
-from IconService.libs.serializer import serialize_tx_request_to_message_hash
+from IconService.libs.serializer import serialize
 from IconService.libs.signer import sign
 from secp256k1 import PrivateKey
 from .example_tx_requests import TEST_REQUEST_SCORE_FUNCTION_CALL, \
@@ -35,8 +35,8 @@ class TestIcxSigner(unittest.TestCase):
         for request in test_requests:
             # serialize a signature
             private_key_object = PrivateKey()
-            msg_hash_bytes = serialize_tx_request_to_message_hash(request)
-            sign_bytes = sign(msg_hash_bytes, private_key_object)
+            msg_hash_bytes = serialize(request["params"])
+            sign_bytes = sign(msg_hash_bytes, private_key_object.private_key)
 
             # deserialize a signature
             recoverable_sign = private_key_object.ecdsa_recoverable_deserialize(sign_bytes[0:64], sign_bytes[64])

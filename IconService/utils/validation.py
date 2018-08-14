@@ -184,7 +184,7 @@ def is_transaction(result: dict) -> bool:
     :param result
     :return: bool
     """
-    inner_key_of_result = ["version", "from", "to", "stepLimit", "timestamp", "nid", "nonce", "txIndex",
+    inner_key_of_result = ["version", "from", "to", "stepLimit", "timestamp", "nid", "txIndex",
                            "blockHeight", "blockHash", "signature"]
     return has_keys(result, inner_key_of_result)
 
