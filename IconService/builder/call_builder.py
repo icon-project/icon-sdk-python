@@ -19,7 +19,7 @@ class Call:
     Class `Call` for calling a SCORE API.
     Once an instance generated, it is read-only."""
     def __init__(self, from_, to, method, params):
-        self.__from  = from_
+        self.__from = from_
         self.__to = to
         self.__method = method
         self.__params = params

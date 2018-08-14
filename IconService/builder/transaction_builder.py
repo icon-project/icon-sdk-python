@@ -19,7 +19,7 @@ import hashlib
 
 class Transaction:
     """Super class `Transaction` which is read-only."""
-    def __init__(self, from_, to, value, step_limit, nid, nonce):
+    def __init__(self, from_, to, value, step_limit, nid, nonce=None):
         self.__from = from_
         self.__to = to
         self.__value = value
@@ -86,6 +86,7 @@ class DeployTransaction(Transaction):
 
     @property
     def data(self):
+        # content type is bytes and return value is hex string prefixed with '0x'
         return {"contentType": self.content_type,
                 "content": add_0x_prefix(hashlib.sha3_256(self.content).hexdigest()),
                 "params": self.params}
@@ -93,7 +94,7 @@ class DeployTransaction(Transaction):
 
 class CallTransaction(Transaction):
     """Subclass `CallTransaction`, making a transaction object for calling a method in SCORE which is read-only."""
-    def __init__(self, from_, to, value, step_limit, nid, nonce, method, params):
+    def __init__(self, from_, to, value, step_limit, nid, nonce, method, params: dict):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce)
         self.__method = method
         self.__params = params
@@ -119,6 +120,7 @@ class CallTransaction(Transaction):
 class MessageTransaction(Transaction):
     """Subclass `MessageTransaction`, making a transaction object for sending a message which is read-only."""
     def __init__(self, from_, to, value, step_limit, nid, nonce, data: str):
+        # data's type is str and return value is hex string prefixed with '0x'
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce)
         self.__data = data
 
@@ -168,7 +170,7 @@ class DeployTransactionBuilder(IcxTransactionBuilder):
         self.content_type = content_type
         return self
 
-    def content(self, content):
+    def content(self, content: bytes):
         self.content = content
         return self
 
@@ -187,7 +189,7 @@ class CallTransactionBuilder(IcxTransactionBuilder):
         self.method = method
         return self
 
-    def params(self, params):
+    def params(self, params: dict):
         self.params = params
         return self
 
