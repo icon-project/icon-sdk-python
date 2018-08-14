@@ -16,6 +16,7 @@
 import os
 import functools
 import logging
+import time
 
 
 def store_keystore_file_on_the_path(file_path, json_string):
@@ -51,3 +52,8 @@ def set_logger(logger, level):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(level)
+
+
+def get_timestamp():
+    """Get epoch time"""
+    return int(time.time() * 10 ** 6)
