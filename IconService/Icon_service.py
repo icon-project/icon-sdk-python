@@ -20,6 +20,7 @@ from IconService.exception import AddressException, DataTypeException
 from IconService.providers.provider import Provider
 from IconService.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
 from IconService.builder.call_builder import Call
+from IconService.signed_transaction import SignedTransaction
 
 
 class IconService:
@@ -72,6 +73,7 @@ class IconService:
         if is_score_address(address) or is_wallet_address(address):
             params = {'address': address}
             result = self.__provider.make_request('icx_getBalance', params)
+            print(result)
             return int(remove_0x_prefix(result), 16)
         else:
             raise AddressException("Address is wrong.")
@@ -135,12 +137,15 @@ class IconService:
         else:
             raise DataTypeException("Call object is unrecognized.")
 
-    def send_transaction(self, signed_transaction: object):
+    def send_transaction(self, signed_transaction: SignedTransaction):
         """It is equivalent to icx_sendTransaction.
 
         :param signed_transaction:
         :return:
         """
+
+        params = signed_transaction.signed_transaction_dict
+        return self.__provider.make_request('icx_sendTransaction', params)
 
 
 
