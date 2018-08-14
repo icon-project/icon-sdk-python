@@ -198,3 +198,45 @@ def is_transaction_result(result: dict) -> bool:
     inner_key_of_result = ["status", "to", "txHash", "txIndex", "blockHeight", "blockHash",
                            "cumulativeStepUsed", "stepUsed", "stepPrice"]
     return has_keys(result, inner_key_of_result)
+
+
+def is_icx_transaction(params: dict) -> bool:
+    """Checks an instance of `Transaction` has right format."""
+    inner_key_of_params = ['version', 'from', 'to', 'stepLimit', 'timestamp', 'nid', 'signature']
+    return has_keys(params, inner_key_of_params)
+
+
+def is_deploy_transaction(params: dict) -> bool:
+    """
+    Checks an instance of `DeployTransaction` has right format.
+
+    - if value of `to` is `cx0000000000000000000000000000000000000000`,
+      params["data"]["params"] has keys as like `name`, `symbol`, `decimals`.
+    """
+    inner_key_of_params = ['dataType', 'data']
+    inner_key_of_data = ['contentType', 'content', 'params']
+    inner_key_of_inner_params = ['name', 'symbol', 'decimals']
+
+    is_valid = is_icx_transaction(params) and has_keys(params, inner_key_of_params) and \
+               has_keys(params['data'], inner_key_of_data) and params['dataType'] == 'deploy' and \
+               is_0x_prefixed(params['data']['content'])
+
+    if params["to"] == 'cx0000000000000000000000000000000000000000':
+        return is_valid and has_keys(params['data']['params'], inner_key_of_inner_params)
+    else:
+        return is_valid
+
+
+def is_call_transaction(params: dict) -> bool:
+    """Checks an instance of `CallTransaction` has right format."""
+    inner_key_of_params = ['dataType', 'data']
+    inner_key_of_data = ['method']
+    return is_icx_transaction(params) and has_keys(params, inner_key_of_params) and \
+           has_keys(params["data"], inner_key_of_data) and params["dataType"] == "call"
+
+
+def is_message_transaction(params: dict) -> bool:
+    """Checks an instance of `MessageTransaction` has right format."""
+    inner_key_of_params = ['dataType', 'data']
+    return is_icx_transaction(params) and has_keys(params, inner_key_of_params) and \
+           is_0x_prefixed(params["data"]) and params["dataType"] == "message"
