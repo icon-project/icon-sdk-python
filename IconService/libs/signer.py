@@ -14,18 +14,19 @@
 # limitations under the License.
 
 import base64
-from secp256k1 import PrivateKey, PublicKey
+from secp256k1 import PrivateKey
 
 
-def sign(msg_hash: bytes, private_key_object: PrivateKey) -> bytes:
+def sign(msg_hash: bytes, bytes_private_key: bytes) -> bytes:
     """
     Create on ECDSA-SHA256 signature in bytes using massage hash.
     It refers to a document on https://github.com/ludbb/secp256k1-py.
 
     :param msg_hash: message hash: type(bytes)
-    :param private_key_object:
+    :param bytes_private_key:
     :return signature: type(bytes)
     """
+    private_key_object = PrivateKey(bytes_private_key, raw=True)
     recoverable_sign = private_key_object.ecdsa_sign_recoverable(msg_hash, raw=True)
     sign_bytes, sign_recovery = private_key_object.ecdsa_recoverable_serialize(recoverable_sign)
     return sign_bytes + sign_recovery.to_bytes(1, 'big')
