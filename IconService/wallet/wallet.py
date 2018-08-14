@@ -22,7 +22,7 @@ from IconService.exception import KeyStoreException
 from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json
 from multipledispatch import dispatch
 from IconService.utils import store_keystore_file_on_the_path
-from IconService.libs.signer import sign
+from IconService.libs.signer import sign, sign_b64encode
 
 
 class Wallet(metaclass=ABCMeta):
@@ -152,7 +152,7 @@ class KeyWallet(Wallet):
         :param message_hash:
         :return signature: type(bytes)
         """
-        return sign(message_hash, self.__bytes_private_key)
+        return (sign_b64encode(sign(message_hash, self.__bytes_private_key))).decode()
 
 
 def get_public_key(private_key_object):
