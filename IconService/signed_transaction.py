@@ -46,7 +46,7 @@ class SignedTransaction:
             "data": transaction.data
         }
 
-        if not transaction.nonce:
+        if not isinstance(transaction.nonce, str):
             del dict_tx['nonce']
 
         if not transaction.data_type:
