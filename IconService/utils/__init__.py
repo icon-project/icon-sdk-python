@@ -17,7 +17,7 @@ import os
 import functools
 import logging
 import time
-
+from IconService.utils.hexadecimal import add_0x_prefix
 
 def store_keystore_file_on_the_path(file_path, json_string):
     """Stores a created keystore string data which is JSON format on the file path.
@@ -56,4 +56,4 @@ def set_logger(logger, level):
 
 def get_timestamp():
     """Get epoch time"""
-    return int(time.time() * 10 ** 6)
+    return add_0x_prefix(hex(int(time.time() * 10 ** 6)))
