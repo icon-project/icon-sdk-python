@@ -16,7 +16,7 @@
 import unittest
 import hashlib
 
-from IconService.libs.serializer import serialize_tx_request_to_message_hash
+from IconService.libs.serializer import serialize
 from .example_tx_requests import TEST_REQUEST_TRANSFER_ICX, TEST_REQUEST_SCORE_FUNCTION_CALL
 
 
@@ -29,7 +29,7 @@ class TestSerializer(unittest.TestCase):
                                     "nonce.0x1.stepLimit.0x12345.timestamp.0x563a6cf330136.to.hx5bfdb090f43a808005" \
                                     "ffc27c25b213145e80b7cd.value.0xde0b6b3a7640000.version.0x3"
         self.assertEqual(hashlib.sha3_256(correct_serialized_params.encode()).digest(),
-                         serialize_tx_request_to_message_hash(tx_request))
+                         serialize(tx_request["params"]))
 
     def test_for_serialize_case_for_calling(self):
         """Test when serializer serializes perfectly in this case when dataType is call."""
@@ -39,7 +39,7 @@ class TestSerializer(unittest.TestCase):
                                     "94dac2558708ece11.nid.0x3f.nonce.0x1.stepLimit.0x12345.timestamp.0x563a6cf33" \
                                     "0136.to.cxb0776ee37f5b45bfaea8cff1d8232fbb6122ec32.version.0x3"
         self.assertEqual(hashlib.sha3_256(correct_serialized_params.encode()).digest(),
-                         serialize_tx_request_to_message_hash(tx_request))
+                         serialize(tx_request["params"]))
 
 
 if __name__ == "__main__":
