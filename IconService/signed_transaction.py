@@ -24,11 +24,13 @@ class SignedTransaction:
     def __init__(self, transaction, wallet: Wallet):
         self.__transaction = transaction
         self.__wallet = wallet
+        self.__signed_transaction_dict = self.to_dict(transaction)
+        message_hash_bytes = serialize(self.__signed_transaction_dict)
+        self.__signed_transaction_dict["signature"] = wallet.sign_message(message_hash_bytes)
 
-        message_hash_bytes = serialize(self.to_dict(transaction))
-        signature = wallet.sign_message(message_hash_bytes)
-        transaction["signature"] = signature
-        return transaction
+    @property
+    def signed_transaction_dict(self):
+        return self.__signed_transaction_dict
 
     @staticmethod
     def to_dict(transaction: Transaction):
