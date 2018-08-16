@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import base64
 from secp256k1 import PrivateKey
+from base64 import b64encode
 
 
 def sign(msg_hash: bytes, bytes_private_key: bytes) -> bytes:
@@ -38,4 +38,4 @@ def sign_b64encode(sign_bytes: bytes) -> str:
     :param sign_bytes:
     :return:
     """
-    return base64.b64encode(sign_bytes)
+    return b64encode(sign_bytes)

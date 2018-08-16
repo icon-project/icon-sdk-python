@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
+from unittest import TestCase, main
 from IconService.Icon_service import IconService
 from IconService.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 
 
-class TestGetTotalSupply(unittest.TestCase):
+class TestGetTotalSupply(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -32,4 +32,6 @@ class TestGetTotalSupply(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()
+
+

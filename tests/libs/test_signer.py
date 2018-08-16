@@ -13,18 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-import hashlib
-
+from hashlib import sha3_256
+from unittest import TestCase, main
+from secp256k1 import PrivateKey
 from IconService.libs.serializer import serialize
 from IconService.libs.signer import sign
-from secp256k1 import PrivateKey
 from tests.example_tx_requests import TEST_REQUEST_SCORE_FUNCTION_CALL, \
     TEST_REQUEST_SCORE_ISNTALL, TEST_REQUEST_SCORE_UPDATE, TEST_REQUEST_SEND_MESSAGE, \
     TEST_REQUEST_TRANSFER_ICX
 
 
-class TestIcxSigner(unittest.TestCase):
+class TestIcxSigner(TestCase):
 
     def test_verify_recoverable_sign(self):
         """Verifies recovering a signature."""
@@ -45,7 +44,7 @@ class TestIcxSigner(unittest.TestCase):
             self.assertTrue(private_key_object.pubkey.ecdsa_verify(msg_hash_bytes, sign_, raw=True))
 
             # Verify a signature when an message is invalid
-            invalid_msg_hash = hashlib.sha3_256(f'invalid message'.encode()).digest()
+            invalid_msg_hash = sha3_256(f'invalid message'.encode()).digest()
             self.assertFalse(private_key_object.pubkey.ecdsa_verify(invalid_msg_hash, sign_, raw=True))
 
             # Verify a signature when a private key is invalid
@@ -54,7 +53,7 @@ class TestIcxSigner(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()
 
 
 

@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
+from unittest import TestCase, main
 from IconService.builder.call_builder import CallBuilder
 
 
-class TestCallBuilder(unittest.TestCase):
+class TestCallBuilder(TestCase):
 
     def test_make_call_builder(self):
         """Testing for making a couple of call builders successfully"""
@@ -55,3 +55,6 @@ class TestCallBuilder(unittest.TestCase):
 
         self.assertRaises(AttributeError, test_set_call_builder)
 
+
+if __name__ == "__main__":
+    main()

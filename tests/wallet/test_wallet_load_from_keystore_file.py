@@ -13,18 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-import os
-
+from os import path
+from unittest import TestCase, main
 from IconService.wallet.wallet import KeyWallet
 from IconService.exception import KeyStoreException
 
 
-class TestWalletLoadFromKeystoreFile(unittest.TestCase):
+class TestWalletLoadFromKeystoreFile(TestCase):
 
-    TEST_KEYSTORE_FILE_DIR = os.path.abspath("tests/keystore_file/test_keystore.txt")
+    TEST_KEYSTORE_FILE_DIR = path.abspath("tests/keystore_file/test_keystore.txt")
     TEST_KEYSTORE_FILE_PASSWORD = "Adas21312**"
-    TEST_DIR = os.path.abspath("keystore_file")
+    TEST_DIR = path.abspath("keystore_file")
 
     def test_wallet_load_from_keystore_file(self):
         """A wallet loads from a keystore file correctly."""
@@ -37,7 +36,7 @@ class TestWalletLoadFromKeystoreFile(unittest.TestCase):
 
     def test_wallet_load_from_invalid_directory(self):
         """Case when loading a wallet from a invalid directory not existing."""
-        keystore_file_path = os.path.join(self.TEST_DIR, "unknown_folder", "test_keystore.txt")
+        keystore_file_path = path.join(self.TEST_DIR, "unknown_folder", "test_keystore.txt")
 
         try:
             wallet = KeyWallet.load(keystore_file_path, self.TEST_KEYSTORE_FILE_PASSWORD)
@@ -51,4 +50,4 @@ class TestWalletLoadFromKeystoreFile(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

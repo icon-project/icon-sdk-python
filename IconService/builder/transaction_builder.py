@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from hashlib import sha3_256
 from IconService.utils.hexadecimal import add_0x_prefix
-import hashlib
 
 
 class Transaction:
@@ -88,7 +88,7 @@ class DeployTransaction(Transaction):
     def data(self):
         # content type is bytes and return value is hex string prefixed with '0x'
         return {"contentType": self.content_type,
-                "content": add_0x_prefix(hashlib.sha3_256(self.content).hexdigest()),
+                "content": add_0x_prefix(sha3_256(self.content).hexdigest()),
                 "params": self.params}
 
 
@@ -130,7 +130,7 @@ class MessageTransaction(Transaction):
 
     @property
     def data(self):
-        return add_0x_prefix(hashlib.sha3_256(self.__data.encode()).hexdigest())
+        return add_0x_prefix(sha3_256(self.__data.encode()).hexdigest())
 
 
 class IcxTransactionBuilder:

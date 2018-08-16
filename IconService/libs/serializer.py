@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
-import hashlib
+from hashlib import sha3_256
+from copy import deepcopy
 
 
 translator = str.maketrans({
@@ -73,7 +73,7 @@ def serialize(params: dict) -> bytes:
     :return: serialized params, message hash.
     params is like `icx_sendTransaction.<key1>.<value1>.<key2>.<value2>` to bytes.
     """
-    copy_tx = copy.deepcopy(params)
+    copy_tx = deepcopy(params)
     key_name_for_tx_hash = __get_key_name_for_tx_hash(params)
 
     if key_name_for_tx_hash in copy_tx:
@@ -83,7 +83,7 @@ def serialize(params: dict) -> bytes:
         del copy_tx['signature']
 
     partial_serialized_params = __make_params_serialized(copy_tx)
-    return hashlib.sha3_256(f"icx_sendTransaction.{partial_serialized_params}".encode()).digest()
+    return sha3_256(f"icx_sendTransaction.{partial_serialized_params}".encode()).digest()
 
 
 def generate_message(params: dict):
@@ -94,7 +94,7 @@ def generate_message(params: dict):
     :return: the 256 bit hash digest of a message. Hexadecimal encoded.
     """
     bytes_message_hash = serialize(params)
-    return hashlib.sha3_256(bytes_message_hash).hexdigest()
+    return sha3_256(bytes_message_hash).hexdigest()
 
 
 def __get_key_name_for_tx_hash(params):

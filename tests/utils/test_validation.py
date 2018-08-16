@@ -13,18 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-import os
-
+from os import path
+from unittest import TestCase, main
 from IconService.utils.validation import is_keystore_file, has_keys, is_keystore_file_for_icon
 from eth_keyfile import load_keyfile
 from IconService.exception import KeyStoreException
 
 
-class TestValidation(unittest.TestCase):
+class TestValidation(TestCase):
 
-    TEST_KEYSTORE_FILE_DIR = os.path.abspath("tests/keystore_file/test_keystore.txt")
-    TEST_NOT_KEYSTORE_FILE_DIR = os.path.abspath("tests/keystore_file/not_a_keystore_file.txt")
+    TEST_KEYSTORE_FILE_DIR = path.abspath("tests/keystore_file/test_keystore.txt")
+    TEST_NOT_KEYSTORE_FILE_DIR = path.abspath("tests/keystore_file/not_a_keystore_file.txt")
 
     def test_method_validate_keystore_file(self):
         """Case when validating a keystore file correctly. """
@@ -87,4 +86,4 @@ class TestValidation(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

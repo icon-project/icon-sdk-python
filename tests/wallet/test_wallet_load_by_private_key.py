@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-
+from unittest import TestCase, main
 from IconService.wallet.wallet import KeyWallet
 from secp256k1 import PrivateKey
 from IconService.utils.validation import is_wallet_address
 
 
-class TestWalletLoadByPrivateKey(unittest.TestCase):
+class TestWalletLoadByPrivateKey(TestCase):
 
     def test_wallet_load_by_private_key(self):
         """A wallet loads by a private key correctly."""
@@ -62,4 +61,4 @@ class TestWalletLoadByPrivateKey(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

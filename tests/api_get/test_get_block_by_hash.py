@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
+from unittest import TestCase, main
 from IconService.Icon_service import IconService
 from IconService.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
@@ -22,7 +22,7 @@ from IconService.exception import DataTypeException, JSONRPCException
 from IconService.utils.validation import is_block
 
 
-class TestGetBlockByHash(unittest.TestCase):
+class TestGetBlockByHash(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -55,4 +55,4 @@ class TestGetBlockByHash(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

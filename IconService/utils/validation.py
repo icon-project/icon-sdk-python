@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
+from re import match
 from IconService.exception import AddressException, KeyStoreException, DataTypeException
 from IconService.utils.type import is_str, is_integer
 from IconService.utils.hexadecimal import is_0x_prefixed, remove_0x_prefix, is_cx_prefixed, remove_cx_prefix, \
@@ -28,7 +28,7 @@ def is_password_of_keystore_file(password) -> bool:
         True: When format of the password is valid.
         False: When format of the password is invalid.
     """
-    return bool(re.match(r'^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+{}:<>?]).{8,}$', password))
+    return bool(match(r'^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+{}:<>?]).{8,}$', password))
 
 
 def is_keystore_file(keystore: dict) -> bool:

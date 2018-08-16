@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-from IconService.wallet.wallet import KeyWallet, get_public_key
+from unittest import TestCase, main
+from IconService.wallet.wallet import KeyWallet
 from IconService.utils.validation import is_wallet_address
 
 
-class TestWalletCreate(unittest.TestCase):
+class TestWalletCreate(TestCase):
 
     def test_wallet_create_successfully(self):
         """Case both of each wallets are created successfully without a private key."""
@@ -30,4 +30,4 @@ class TestWalletCreate(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

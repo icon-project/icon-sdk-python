@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
+from unittest import TestCase, main
 from IconService.Icon_service import IconService
 from IconService.wallet.wallet import KeyWallet
 from IconService.providers.http_provider import HTTPProvider
@@ -21,7 +21,7 @@ from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 from IconService.builder.call_builder import CallBuilder
 
 
-class TestCall(unittest.TestCase):
+class TestCall(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -40,3 +40,5 @@ class TestCall(unittest.TestCase):
         self.assertTrue(result)
 
 
+if __name__ == "__main__":
+    main()

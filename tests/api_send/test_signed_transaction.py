@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-import hashlib
-
+from hashlib import sha3_256
+from unittest import TestCase, main
 from IconService.signed_transaction import SignedTransaction
 from IconService.builder.transaction_builder import IcxTransactionBuilder, MessageTransactionBuilder, \
     CallTransactionBuilder, DeployTransactionBuilder
@@ -28,7 +27,7 @@ from IconService.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3, TEST_PRIVATE_KEY
 
 
-class TestSignedTransaction(unittest.TestCase):
+class TestSignedTransaction(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -42,7 +41,7 @@ class TestSignedTransaction(unittest.TestCase):
         cls.nonce = "0x2"
         cls.content_type = "application/zip"
         cls.content = "test".encode()
-        cls.msg_data = add_0x_prefix(hashlib.sha3_256("test".encode()).hexdigest())
+        cls.msg_data = add_0x_prefix(sha3_256("test".encode()).hexdigest())
         cls.params = {
             "name": "ABCToken",
             "symbol": "abc",
@@ -92,5 +91,9 @@ class TestSignedTransaction(unittest.TestCase):
         signed_transaction_dict = SignedTransaction(icx_transaction, wallet)
         result = icon_service.send_transaction(signed_transaction_dict)
         self.assertTrue(is_T_HASH(result))
+
+
+if __name__ == "__main__":
+    main()
 
 

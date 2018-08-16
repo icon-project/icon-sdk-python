@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-import hashlib
-
+from hashlib import sha3_256
+from unittest import TestCase, main
 from IconService.libs.serializer import serialize
 from tests.example_tx_requests import TEST_REQUEST_TRANSFER_ICX, TEST_REQUEST_SCORE_FUNCTION_CALL
 
 
-class TestSerializer(unittest.TestCase):
+class TestSerializer(TestCase):
 
     def test_for_serialize_case_for_sending_normal_tx(self):
         """Test when serializer serializes perfectly in this case when is normal send transaction."""
@@ -28,7 +27,7 @@ class TestSerializer(unittest.TestCase):
         correct_serialized_params = "icx_sendTransaction.from.hxbe258ceb872e08851f1f59694dac2558708ece11.nid.0x3f." \
                                     "nonce.0x1.stepLimit.0x12345.timestamp.0x563a6cf330136.to.hx5bfdb090f43a808005" \
                                     "ffc27c25b213145e80b7cd.value.0xde0b6b3a7640000.version.0x3"
-        self.assertEqual(hashlib.sha3_256(correct_serialized_params.encode()).digest(),
+        self.assertEqual(sha3_256(correct_serialized_params.encode()).digest(),
                          serialize(tx_request["params"]))
 
     def test_for_serialize_case_for_calling(self):
@@ -38,9 +37,9 @@ class TestSerializer(unittest.TestCase):
                                     "fb2c8151257032ecd8b.value.0x1}}.dataType.call.from.hxbe258ceb872e08851f1f596" \
                                     "94dac2558708ece11.nid.0x3f.nonce.0x1.stepLimit.0x12345.timestamp.0x563a6cf33" \
                                     "0136.to.cxb0776ee37f5b45bfaea8cff1d8232fbb6122ec32.version.0x3"
-        self.assertEqual(hashlib.sha3_256(correct_serialized_params.encode()).digest(),
+        self.assertEqual(sha3_256(correct_serialized_params.encode()).digest(),
                          serialize(tx_request["params"]))
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

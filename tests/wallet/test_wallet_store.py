@@ -13,20 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-import os
-
+from os import path, remove
+from unittest import TestCase, main
 from IconService.wallet.wallet import KeyWallet
 from IconService.exception import KeyStoreException
 
 
-class TestWalletStore(unittest.TestCase):
+class TestWalletStore(TestCase):
 
-    TEST_DIR = os.path.abspath("tests/keystore_file")
+    TEST_DIR = path.abspath("tests/keystore_file")
     TEST_KEYSTORE_FILE_NEW_PASSWORD = "Adas21312**"
     TEST_KEYSTORE_FILE_WRONG_PASSWORD = "Adas2**"
-    TEST_NEW_PATH = os.path.join(TEST_DIR, "test_new_keystore.txt")
-    TEST_WRONG_PATH = os.path.join(TEST_DIR, "unknown_folder", "test_keystore.txt")
+    TEST_NEW_PATH = path.join(TEST_DIR, "test_new_keystore.txt")
+    TEST_WRONG_PATH = path.join(TEST_DIR, "unknown_folder", "test_keystore.txt")
 
     def test_wallet_store_successfully(self):
         """Creates a wallet and validate the wallet."""
@@ -57,9 +56,9 @@ class TestWalletStore(unittest.TestCase):
 
     def tearDown(self):
         # Remove used file.
-        if os.path.isfile(self.TEST_NEW_PATH):
-            os.remove(self.TEST_NEW_PATH)
+        if path.isfile(self.TEST_NEW_PATH):
+            remove(self.TEST_NEW_PATH)
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

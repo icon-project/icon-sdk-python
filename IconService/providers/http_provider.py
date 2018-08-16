@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-import itertools
-import requests
 import json
+import requests
+from logging import getLogger
+from itertools import count
 from IconService.utils import to_dict
 from IconService.providers.provider import Provider
 from IconService.utils import set_logger
@@ -32,14 +32,14 @@ class HTTPProvider(Provider):
     endpoint_uri = None
     _request_kwargs = None
 
-    logger = logging.getLogger("HTTPProvider")
+    logger = getLogger("HTTPProvider")
 
     # No need to use logging, remove the line.
     set_logger(logger, 'DEBUG')
 
     def __init__(self, endpoint_uri=None, request_kwargs=None):
         self.logger.debug("Init HTTP Provider")
-        self.request_counter = itertools.count()
+        self.request_counter = count()
         if endpoint_uri is None:
             self.endpoint_uri = get_default_endpoint()
         else:

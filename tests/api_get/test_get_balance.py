@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
+from unittest import TestCase, main
 from IconService.Icon_service import IconService
 from IconService.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 from IconService.exception import DataTypeException, AddressException
 
 
-class TestGetBalance(unittest.TestCase):
+class TestGetBalance(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -30,20 +30,20 @@ class TestGetBalance(unittest.TestCase):
         cls.to_ = result["confirmed_transaction_list"][0]["to"]
 
     def test_get_balance_from_wallet(self):
-        # Case 0: get balance from wallet or score successfully.
+        # case 0: get balance from wallet or score successfully.
         result = self.icon_service.get_balance(self.from_)
         self.assertTrue(isinstance(result, int))
         result = self.icon_service.get_balance(self.to_)
         self.assertTrue(isinstance(result, int))
 
-        # Case 1: when a param is wrong.
+        # case 1: when a param is wrong.
         self.assertRaises(AddressException, self.icon_service.get_balance, self.to_[2:])
         self.assertRaises(AddressException, self.icon_service.get_balance, self.from_[2:])
         self.assertRaises(AddressException, self.icon_service.get_balance, "123")
         self.assertRaises(DataTypeException, self.icon_service.get_balance, 123)
-        # When the address's length is short
+        # when the address's length is short
         self.assertRaises(AddressException, self.icon_service.get_balance, "cx882efc17c2f50e0d60142b9c0e746cbafb569d")
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()
