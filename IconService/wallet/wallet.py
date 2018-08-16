@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import hashlib
 import json
+from hashlib import sha3_256
 from abc import ABCMeta, abstractmethod
 from secp256k1 import PrivateKey
 from IconService.utils.validation import is_password_of_keystore_file, is_keystore_file
@@ -60,7 +60,7 @@ class KeyWallet(Wallet):
     #
     # @property
     # def address(self) -> bytes:
-    #     return hashlib.sha3_256(self.public_key[1:]).digest()[-20:]
+    #     return sha3_256(self.public_key[1:]).digest()[-20:]
 
     @staticmethod
     def create():
@@ -160,4 +160,4 @@ def get_public_key(private_key_object):
 
 
 def get_address(bytes_public_key):
-    return f'hx{hashlib.sha3_256(bytes_public_key[1:]).digest()[-20:].hex()}'
+    return f'hx{sha3_256(bytes_public_key[1:]).digest()[-20:].hex()}'
