@@ -15,7 +15,7 @@
 
 from IconService.wallet.wallet import Wallet
 from IconService.libs.serializer import serialize
-from IconService.builder.transaction_builder import Transaction
+from IconService.builder.transaction_builder import Transaction, MessageTransaction
 from IconService.utils import get_timestamp
 
 
@@ -34,11 +34,11 @@ class SignedTransaction:
 
     @staticmethod
     def to_dict(transaction: Transaction):
-
         dict_tx = {
             "version": "0x3",
             "from": transaction.from_,
             "to": transaction.to,
+            "value": transaction.value,
             "stepLimit": transaction.step_limit,
             "timestamp": str(get_timestamp()),
             "nid": transaction.nid,
@@ -48,8 +48,11 @@ class SignedTransaction:
             "data": transaction.data
         }
 
-        if not isinstance(transaction.nonce, str):
+        if not transaction.nonce:
             del dict_tx['nonce']
+
+        if not transaction.value:
+            del dict_tx['value']
 
         if not transaction.data_type:
             del dict_tx['dataType']
