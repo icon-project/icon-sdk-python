@@ -135,75 +135,103 @@ class MessageTransaction(Transaction):
 
 class IcxTransactionBuilder:
     """Builder for `Transaction` object"""
+
+    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None):
+        self._from_ = from_
+        self._to = to
+        self._value = value
+        self._step_limit = step_limit
+        self._nid = nid
+        self._nonce = nonce
+
     def from_(self, from_):
-        self.from_ = from_
+        self._from_ = from_
         return self
 
     def to(self, to):
-        self.to = to
+        self._to = to
         return self
 
     def value(self, value):
-        self.value = value
+        self._value = value
         return self
 
     def step_limit(self, step_limit):
-        self.step_limit = step_limit
+        self._step_limit = step_limit
         return self
 
     def nid(self, nid):
-        self.nid = nid
+        self._nid = nid
         return self
 
     def nonce(self, nonce):
-        self.nonce = nonce
+        self._nonce = nonce
         return self
 
     def build(self) -> Transaction:
-        return Transaction(self.from_, self.to, self.value, self.step_limit, self.nid, self.nonce)
+        return Transaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce)
 
 
 class DeployTransactionBuilder(IcxTransactionBuilder):
     """Builder for `DeployTransaction` object"""
 
+    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
+                 content_type=None, content=None, params=None):
+        IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
+        self._content_type = content_type
+        self._content = content
+        self._params = params
+
     def content_type(self, content_type):
-        self.content_type = content_type
+        self._content_type = content_type
         return self
 
     def content(self, content: bytes):
-        self.content = content
+        self._content = content
         return self
 
     def params(self, params):
-        self.params = params
+        self._params = params
         return self
 
     def build(self) -> DeployTransaction:
-        return DeployTransaction(self.from_, self.to, None, self.step_limit, self.nid, self.nonce,
-                                 self.content_type, self.content, self.params)
+        return DeployTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce,
+                                 self._content_type, self._content, self._params)
 
 
 class CallTransactionBuilder(IcxTransactionBuilder):
     """Builder for `CallTransaction` object"""
+
+    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
+                 method=None, params=None):
+        IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
+        self._method = method
+        self._params = params
+
     def method(self, method):
-        self.method = method
+        self._method = method
         return self
 
     def params(self, params: dict):
-        self.params = params
+        self._params = params
         return self
 
     def build(self) -> CallTransaction:
-        return CallTransaction(self.from_, self.to, None, self.step_limit, self.nid, self.nonce,
-                               self.method, self.params)
+        return CallTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce,
+                               self._method, self._params)
 
 
 class MessageTransactionBuilder(IcxTransactionBuilder):
     """Builder for `MessageTransaction` object"""
+    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
+                 data=None):
+        IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
+        self._data = data
+
     def data(self, data):
-        self.data = data
+        self._data = data
         return self
 
     def build(self) -> MessageTransaction:
-        return MessageTransaction(self.from_, self.to, None, self.step_limit, self.nid, self.nonce,
-                                  self.data)
+        return MessageTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce,
+                                  self._data)
