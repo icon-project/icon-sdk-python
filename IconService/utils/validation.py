@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from re import match
-from IconService.exception import AddressException, KeyStoreException, DataTypeException
+from IconService.exception import KeyStoreException, DataTypeException
 from IconService.utils.type import is_str, is_integer
 from IconService.utils.hexadecimal import is_0x_prefixed, remove_0x_prefix, is_cx_prefixed, remove_cx_prefix, \
     is_hx_prefixed, remove_hx_prefix
@@ -200,10 +200,26 @@ def is_transaction_result(result: dict) -> bool:
     return has_keys(result, inner_key_of_result)
 
 
-def is_icx_transaction(params: dict) -> bool:
-    """Checks an instance of `Transaction` has right format."""
+def is_basic_transaction(params: dict) -> bool:
+    """
+    Checks an instance of `Transaction` has right format.
+    Every types of `Transaction` like icx transaction, deploy transaction, call transaction and message transaction
+    is checked by this method.
+    """
     inner_key_of_params = ['version', 'from', 'to', 'stepLimit', 'timestamp', 'nid', 'signature']
-    return has_keys(params, inner_key_of_params)
+
+    return has_keys(params, inner_key_of_params) \
+           and is_wallet_address(params['from']) \
+           and (is_wallet_address(params['to']) or is_score_address(params['to'])) \
+           and is_0x_prefixed(params['stepLimit']) \
+           and is_0x_prefixed(params['timestamp']) and params['signature'] is not None
+
+
+def is_icx_transaction(params: dict) -> bool:
+    """Checks an instance of `Transaction` for transfer icx has right format."""
+    return is_basic_transaction(params) \
+           and 'value' in params \
+           and is_0x_prefixed(params['value'])
 
 
 def is_deploy_transaction(params: dict) -> bool:
@@ -217,12 +233,17 @@ def is_deploy_transaction(params: dict) -> bool:
     inner_key_of_data = ['contentType', 'content', 'params']
     inner_key_of_inner_params = ['name', 'symbol', 'decimals']
 
-    is_valid = is_icx_transaction(params) and has_keys(params, inner_key_of_params) and \
-               has_keys(params['data'], inner_key_of_data) and params['dataType'] == 'deploy' and \
-               is_0x_prefixed(params['data']['content'])
+    is_valid = is_basic_transaction(params) \
+               and has_keys(params, inner_key_of_params) \
+               and has_keys(params['data'], inner_key_of_data) \
+               and params['dataType'] == 'deploy' \
+               and is_0x_prefixed(params['data']['content']) \
+               and 'value' not in params
 
+    # Install SCORE
     if params["to"] == 'cx0000000000000000000000000000000000000000':
         return is_valid and has_keys(params['data']['params'], inner_key_of_inner_params)
+    # Update SCORE
     else:
         return is_valid
 
@@ -231,12 +252,18 @@ def is_call_transaction(params: dict) -> bool:
     """Checks an instance of `CallTransaction` has right format."""
     inner_key_of_params = ['dataType', 'data']
     inner_key_of_data = ['method']
-    return is_icx_transaction(params) and has_keys(params, inner_key_of_params) and \
-           has_keys(params["data"], inner_key_of_data) and params["dataType"] == "call"
+    return is_basic_transaction(params) \
+           and has_keys(params, inner_key_of_params) \
+           and has_keys(params["data"], inner_key_of_data) \
+           and params["dataType"] == "call" \
+           and 'value' not in params
 
 
 def is_message_transaction(params: dict) -> bool:
     """Checks an instance of `MessageTransaction` has right format."""
     inner_key_of_params = ['dataType', 'data']
-    return is_icx_transaction(params) and has_keys(params, inner_key_of_params) and \
-           is_0x_prefixed(params["data"]) and params["dataType"] == "message"
+    return is_basic_transaction(params) \
+           and has_keys(params, inner_key_of_params) \
+           and is_0x_prefixed(params["data"]) \
+           and params["dataType"] == "message" \
+           and 'value' not in params
