@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,9 +27,13 @@ class TestGetTransactionResult(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
-        result = cls.icon_service.get_block("latest")
+        result = cls.icon_service.get_block(1)
         cls.tx_hash = result["confirmed_transaction_list"][0]["txHash"]
         cls.tx_hash_invalid = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"
+
+    def test_validate_transaction(self):
+        result = self.icon_service.get_transaction_result(self.tx_hash)
+        self.assertTrue(is_transaction_result(result))
 
     def test_get_transaction_result(self):
         # case 0: when tx_hash is valid
@@ -44,10 +48,6 @@ class TestGetTransactionResult(TestCase):
         self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, self.tx_hash[:15])
         # case 4: when tx_hash is invalid - not exist
         self.assertRaises(JSONRPCException, self.icon_service.get_transaction_result, self.tx_hash_invalid)
-
-    def test_validate_transaction(self):
-        result = self.icon_service.get_transaction_result(self.tx_hash)
-        self.assertTrue(is_transaction_result(result))
 
 
 if __name__ == "__main__":
