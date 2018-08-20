@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hashlib import sha3_256
 from IconService.utils.hexadecimal import add_0x_prefix
 
 
@@ -86,10 +85,13 @@ class DeployTransaction(Transaction):
 
     @property
     def data(self):
-        # content type is bytes and return value is hex string prefixed with '0x'
-        return {"contentType": self.content_type,
-                "content": add_0x_prefix(sha3_256(self.content).hexdigest()),
-                "params": self.params}
+        # Content's data type is bytes and return value is hex string prefixed with '0x'.
+        data = {"contentType": self.__content_type,
+                "content": add_0x_prefix(self.__content.hex())}
+        # Params is an optional property which is parameters of methods, on_install() and on_update().
+        if self.__params:
+            data["params"]: self.__params
+        return data
 
 
 class CallTransaction(Transaction):
@@ -113,8 +115,11 @@ class CallTransaction(Transaction):
 
     @property
     def data(self):
-        return {"method": self.method,
-                "params": self.params}
+        data = {"method": self.__method}
+        # params is optional property
+        if self.__params:
+            data["params"] = self.__params
+        return data
 
 
 class MessageTransaction(Transaction):
@@ -130,7 +135,7 @@ class MessageTransaction(Transaction):
 
     @property
     def data(self):
-        return add_0x_prefix(sha3_256(self.__data.encode()).hexdigest())
+        return add_0x_prefix(self.__data.encode().hex())
 
 
 class IcxTransactionBuilder:
@@ -176,7 +181,7 @@ class DeployTransactionBuilder(IcxTransactionBuilder):
     """Builder for `DeployTransaction` object"""
 
     def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
-                 content_type=None, content=None, params=None):
+                 content_type=None, content: bytes=None, params=None):
         IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
         self._content_type = content_type
         self._content = content
@@ -186,7 +191,7 @@ class DeployTransactionBuilder(IcxTransactionBuilder):
         self._content_type = content_type
         return self
 
-    def content(self, content: bytes):
+    def content(self, content):
         self._content = content
         return self
 
@@ -203,7 +208,7 @@ class CallTransactionBuilder(IcxTransactionBuilder):
     """Builder for `CallTransaction` object"""
 
     def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
-                 method=None, params=None):
+                 method=None, params: dict =None):
         IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
         self._method = method
         self._params = params
@@ -212,7 +217,7 @@ class CallTransactionBuilder(IcxTransactionBuilder):
         self._method = method
         return self
 
-    def params(self, params: dict):
+    def params(self, params):
         self._params = params
         return self
 
