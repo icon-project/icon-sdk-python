@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@ class TestCall(TestCase):
         cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
 
     def test_call(self):
-        test_call = CallBuilder().from_(self.address).to(self.to).method("getMaxStepLimit").params("").build()
+        test_call = CallBuilder().from_(self.address).to(self.to).method("getStepCosts").params("").build()
         result = self.icon_service.call(test_call)
         self.assertTrue(result)
 
-        test_call = CallBuilder().from_(self.address).to(self.to).method("getMaxStepLimit").build()
+        test_call = CallBuilder().from_(self.address).to(self.to).method("getStepCosts").build()
         result = self.icon_service.call(test_call)
         self.assertTrue(result)
 
