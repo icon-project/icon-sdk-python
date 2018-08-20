@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ def __make_params_serialized(json_data: dict):
 
 def serialize(params: dict) -> bytes:
     """
-    It serialized params of an original JSON request starting with `icx_sendTransaction`
+    Serialized params of an original JSON request starting with `icx_sendTransaction`
     to generate a message hash for a signature.
 
     :param params: params in a original JSON request for transaction.
@@ -88,7 +88,7 @@ def serialize(params: dict) -> bytes:
 
 def generate_message(params: dict):
     """
-    It generates transaction's hash with params in an original JSON request for transaction.
+    Generates transaction's hash with params in an original JSON request for transaction.
 
     :param params: params in a original JSON request for transaction.
     :return: the 256 bit hash digest of a message. Hexadecimal encoded.
