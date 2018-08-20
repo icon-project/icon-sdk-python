@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,14 +46,14 @@ class TestSignedTransaction(TestSendSuper):
         # Update SCORE
         deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).content_type(self.setting["content_type"])\
-            .content(self.setting["content"]).params(self.setting["params_update"]).build()
+            .content(self.setting["content_update"]).build()
         tx_dict = SignedTransaction.to_dict(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
 
         # Install SCORE
         deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to_install"])\
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).nonce(self.setting["nonce"])\
-            .content_type(self.setting["content_type"]).content(self.setting["content"])\
+            .content_type(self.setting["content_type"]).content(self.setting["content_install"])\
             .params(self.setting["params_install"]).build()
         tx_dict = SignedTransaction.to_dict(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
