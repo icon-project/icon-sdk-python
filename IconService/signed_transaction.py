@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from hashlib import sha3_256
 from IconService.wallet.wallet import Wallet
 from IconService.libs.serializer import serialize
-from IconService.builder.transaction_builder import Transaction, MessageTransaction
+from IconService.libs.signer import sign_b64encode
+from IconService.builder.transaction_builder import Transaction
 from IconService.utils import get_timestamp
 
 
@@ -25,8 +27,9 @@ class SignedTransaction:
         self.__transaction = transaction
         self.__wallet = wallet
         self.__signed_transaction_dict = self.to_dict(transaction)
-        message_hash_bytes = serialize(self.__signed_transaction_dict)
-        self.__signed_transaction_dict["signature"] = wallet.sign_message(message_hash_bytes)
+        message_hash_bytes = sha3_256(serialize(self.__signed_transaction_dict)).digest()
+        signature_bytes = wallet.sign_message(message_hash_bytes)
+        self.__signed_transaction_dict["signature"] = sign_b64encode(signature_bytes).decode()
 
     @property
     def signed_transaction_dict(self):

@@ -143,7 +143,7 @@ class KeyWallet(Wallet):
         :param message_hash:
         :return signature: type(bytes)
         """
-        return (sign_b64encode(sign(message_hash, self.__bytes_private_key))).decode()
+        return sign(message_hash, self.__bytes_private_key)
 
 
 def get_public_key(private_key_object):

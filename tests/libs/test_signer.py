@@ -34,7 +34,7 @@ class TestIcxSigner(TestCase):
         for request in test_requests:
             # Serialize a signature
             private_key_object = PrivateKey()
-            msg_hash_bytes = serialize(request["params"])
+            msg_hash_bytes = sha3_256(serialize(request["params"])).digest()
             sign_bytes = sign(msg_hash_bytes, private_key_object.private_key)
 
             # Deserialize a signature
