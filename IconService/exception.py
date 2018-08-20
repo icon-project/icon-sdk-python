@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ class IconServiceExceptionCode(IntEnum):
     BALANCE_ERROR = 3
     DATA_TYPE_ERROR = 4
     JSON_RPC_ERROR = 5
+    ZIP_MEMORY = 6
 
     def __str__(self) -> str:
         return str(self.name).capitalize().replace('_', ' ')
@@ -79,4 +80,10 @@ class JSONRPCException(IonServiceBaseException):
     """Error when get JSON-RPC Error Response."""
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.JSON_RPC_ERROR)
+
+
+class ZipException(IonServiceBaseException):
+    """"Error while write zip in memory"""
+    def __init__(self, message: Optional[str]):
+        super().__init__(message, IconServiceExceptionCode.ZIP_MEMORY)
 
