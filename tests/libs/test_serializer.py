@@ -27,8 +27,7 @@ class TestSerializer(TestCase):
         correct_serialized_params = "icx_sendTransaction.from.hxbe258ceb872e08851f1f59694dac2558708ece11.nid.0x3f." \
                                     "nonce.0x1.stepLimit.0x12345.timestamp.0x563a6cf330136.to.hx5bfdb090f43a808005" \
                                     "ffc27c25b213145e80b7cd.value.0xde0b6b3a7640000.version.0x3"
-        self.assertEqual(sha3_256(correct_serialized_params.encode()).digest(),
-                         serialize(tx_request["params"]))
+        self.assertEqual(correct_serialized_params.encode(), serialize(tx_request["params"]))
 
     def test_for_serialize_case_for_calling(self):
         """Test when serializer serializes perfectly in this case when dataType is call."""
@@ -37,8 +36,7 @@ class TestSerializer(TestCase):
                                     "fb2c8151257032ecd8b.value.0x1}}.dataType.call.from.hxbe258ceb872e08851f1f596" \
                                     "94dac2558708ece11.nid.0x3f.nonce.0x1.stepLimit.0x12345.timestamp.0x563a6cf33" \
                                     "0136.to.cxb0776ee37f5b45bfaea8cff1d8232fbb6122ec32.version.0x3"
-        self.assertEqual(sha3_256(correct_serialized_params.encode()).digest(),
-                         serialize(tx_request["params"]))
+        self.assertEqual(correct_serialized_params.encode(), serialize(tx_request["params"]))
 
 
 if __name__ == "__main__":

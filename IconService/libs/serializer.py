@@ -70,7 +70,7 @@ def serialize(params: dict) -> bytes:
     to generate a message hash for a signature.
 
     :param params: params in a original JSON request for transaction.
-    :return: serialized params, message hash.
+    :return: serialized params.
     params is like `icx_sendTransaction.<key1>.<value1>.<key2>.<value2>` to bytes.
     """
     copy_tx = deepcopy(params)
@@ -83,7 +83,7 @@ def serialize(params: dict) -> bytes:
         del copy_tx['signature']
 
     partial_serialized_params = __make_params_serialized(copy_tx)
-    return sha3_256(f"icx_sendTransaction.{partial_serialized_params}".encode()).digest()
+    return f"icx_sendTransaction.{partial_serialized_params}".encode()
 
 
 def generate_message(params: dict):
