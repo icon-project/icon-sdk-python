@@ -54,14 +54,6 @@ class KeyWallet(Wallet):
         self.bytes_public_key = get_public_key(private_key_object)
         self.address = get_address(self.bytes_public_key)
 
-    # @property
-    # def public_key(self) -> bytes:
-    #     return self._private_key_object.pubkey.serialize(compressed=False)
-    #
-    # @property
-    # def address(self) -> bytes:
-    #     return sha3_256(self.public_key[1:]).digest()[-20:]
-
     @staticmethod
     def create():
         """Creates an instance of Wallet without a specific private key.
@@ -108,7 +100,6 @@ class KeyWallet(Wallet):
 
         :param file_path: type(str)
         :param password: type(str)
-        :return: An instance of Wallet class.
         """
 
         if not is_password_of_keystore_file(password):

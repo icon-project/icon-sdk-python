@@ -40,8 +40,6 @@ class TestSendSuper(TestCase):
         install_content_bytes = gen_deploy_data_content(score_path)
         score_path = path.join(current_dir_path, 'sample_token2')
         update_content_bytes = gen_deploy_data_content(score_path)
-        print(install_content_bytes)
-        print(update_content_bytes)
 
         cls.setting = {
             "from": cls.wallet.get_address(),
