@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -223,29 +223,16 @@ def is_icx_transaction(params: dict) -> bool:
 
 
 def is_deploy_transaction(params: dict) -> bool:
-    """
-    Checks an instance of `DeployTransaction` has right format.
-
-    - if value of `to` is `cx0000000000000000000000000000000000000000`,
-      params["data"]["params"] has keys as like `name`, `symbol`, `decimals`.
-    """
+    """Checks an instance of `DeployTransaction` has right format."""
     inner_key_of_params = ['dataType', 'data']
-    inner_key_of_data = ['contentType', 'content', 'params']
-    inner_key_of_inner_params = ['name', 'symbol', 'decimals']
+    inner_key_of_data = ['contentType', 'content']
 
-    is_valid = is_basic_transaction(params) \
-               and has_keys(params, inner_key_of_params) \
-               and has_keys(params['data'], inner_key_of_data) \
-               and params['dataType'] == 'deploy' \
-               and is_0x_prefixed(params['data']['content']) \
-               and 'value' not in params
-
-    # Install SCORE
-    if params["to"] == 'cx0000000000000000000000000000000000000000':
-        return is_valid and has_keys(params['data']['params'], inner_key_of_inner_params)
-    # Update SCORE
-    else:
-        return is_valid
+    return is_basic_transaction(params) \
+           and has_keys(params, inner_key_of_params) \
+           and has_keys(params['data'], inner_key_of_data) \
+           and params['dataType'] == 'deploy' \
+           and is_0x_prefixed(params['data']['content']) \
+           and 'value' not in params
 
 
 def is_call_transaction(params: dict) -> bool:
