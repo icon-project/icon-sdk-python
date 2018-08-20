@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,3 +58,5 @@ def set_logger(logger, level):
 def get_timestamp():
     """Get epoch time"""
     return add_0x_prefix(hex(int(time() * 10 ** 6)))
+
+

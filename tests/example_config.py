@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TEST_HTTP_ENDPOINT_URI_V3 = "http://52.79.233.89:9000/api/v3"
+#TEST_HTTP_ENDPOINT_URI_V3 = "http://52.79.233.89:9000/api/v3"
+TEST_HTTP_ENDPOINT_URI_V3 = "http://localhost:9000/api/v3"
 
 TEST_PRIVATE_KEY = "2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79"
 
