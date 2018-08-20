@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from os import path
 from unittest import TestCase, main
 from IconService.wallet.wallet import KeyWallet
 from IconService.Icon_service import IconService
 from IconService.providers.http_provider import HTTPProvider
+from IconService.libs.in_memory_zip import gen_deploy_data_content
 from tests.example_config import TEST_PRIVATE_KEY, TEST_HTTP_ENDPOINT_URI_V3
 
 
@@ -33,10 +35,19 @@ class TestSendSuper(TestCase):
         """
         cls.wallet = KeyWallet.load(TEST_PRIVATE_KEY)
         cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        current_dir_path = path.abspath(path.dirname(__file__))
+        score_path = path.join(current_dir_path, 'sample_token')
+        install_content_bytes = gen_deploy_data_content(score_path)
+        score_path = path.join(current_dir_path, 'sample_token2')
+        update_content_bytes = gen_deploy_data_content(score_path)
+        print(install_content_bytes)
+        print(update_content_bytes)
+
         cls.setting = {
             "from": cls.wallet.get_address(),
             "to": "hx5bfdb090f43a808005ffc27c25b213145e80b7cd",
-            "step_limit": "0x12345",
+            "to_governance": "cx0000000000000000000000000000000000000001",
+            "step_limit": "0x400000",
             "nid": "0x3",
             "nonce": "0x2",
             # It is used to send icx(transfer) only.
@@ -52,16 +63,11 @@ class TestSendSuper(TestCase):
             "to_install": "cx0000000000000000000000000000000000000000",
             "content_type": "application/zip",
             # Data type of content should be bytes.
-            "content": "test".encode(),
+            "content_install": install_content_bytes,
+            "content_update": update_content_bytes,
             # It is used to deploy only.(install)
             "params_install": {
-                "name": "ABCToken",
-                "symbol": "abc",
-                "decimals": "0x12"
-            },
-            # It is used to deploy only.(update)
-            "params_update": {
-                "amount": "0x1234"
+                "init_supply": 1000
             },
             # It is used to send message only.
             "data": "test"
