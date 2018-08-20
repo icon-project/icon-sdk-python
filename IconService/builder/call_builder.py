@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 ICON Foundation
+# Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,23 +46,29 @@ class CallBuilder:
     Builder for a `Call` object.
     Once setting it, a value of any property can't be changed forever.
     """
+    def __init__(self, from_=None, to=None, method=None, params=None):
+        self._from_ = from_
+        self._to = to
+        self._method = method
+        self._params = params
+
     def from_(self, from_):
-        self.from_ = from_
+        self._from_ = from_
         return self
 
     def to(self, to):
-        self.to = to
+        self._to = to
         return self
 
     def method(self, method):
-        self.method = method
+        self._method = method
         return self
 
-    def params(self, params=None):
-        self.params = params
+    def params(self, params):
+        self._params = params
         return self
 
     def build(self):
-        return Call(self.from_, self.to, self.method, self.params)
+        return Call(self._from_, self._to, self._method, self._params)
 
 
