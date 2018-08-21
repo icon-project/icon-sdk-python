@@ -73,7 +73,6 @@ class IconService:
         if is_score_address(address) or is_wallet_address(address):
             params = {'address': address}
             result = self.__provider.make_request('icx_getBalance', params)
-            print(result)
             return int(remove_0x_prefix(result), 16)
         else:
             raise AddressException("Address is wrong.")
