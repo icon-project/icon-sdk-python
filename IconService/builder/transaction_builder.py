@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from IconService.utils.hexadecimal import add_0x_prefix
+from IconService.utils.hexadecimal import add_0x_prefix, convert_int_to_hex_str
 
 
 class Transaction:
@@ -36,19 +36,19 @@ class Transaction:
 
     @property
     def value(self):
-        return self.__value
+        return convert_int_to_hex_str(self.__value) if self.__value else self.__value
 
     @property
     def step_limit(self):
-        return self.__step_limit
+        return convert_int_to_hex_str(self.__step_limit) if self.__step_limit else self.__step_limit
 
     @property
     def nid(self):
-        return self.__nid
+        return convert_int_to_hex_str(self.__nid) if self.__nid else self.__nid
 
     @property
     def nonce(self):
-        return self.__nonce
+        return convert_int_to_hex_str(self.__nonce) if self.__nonce else self.__nonce
 
     @property
     def data_type(self):
@@ -61,7 +61,7 @@ class Transaction:
 
 class DeployTransaction(Transaction):
     """Subclass `DeployTransaction`, making a transaction object for deploying SCORE which is read-only."""
-    def __init__(self, from_, to, value, step_limit, nid, nonce, content_type, content: bytes, params):
+    def __init__(self, from_, to, value, step_limit, nid, nonce, content_type, content: bytes, params: dict):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce)
         self.__content_type = content_type
         self.__content = content
@@ -74,10 +74,6 @@ class DeployTransaction(Transaction):
     @property
     def content(self):
         return self.__content
-
-    @property
-    def params(self):
-        return self.__params
 
     @property
     def data_type(self):
@@ -104,10 +100,6 @@ class CallTransaction(Transaction):
     @property
     def method(self):
         return self.__method
-
-    @property
-    def params(self):
-        return self.__params
 
     @property
     def data_type(self):
