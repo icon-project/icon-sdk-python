@@ -45,11 +45,11 @@ class TestSendSuper(TestCase):
             "from": cls.wallet.get_address(),
             "to": "hx5bfdb090f43a808005ffc27c25b213145e80b7cd",
             "to_governance": "cx0000000000000000000000000000000000000001",
-            "step_limit": "0x400000",
-            "nid": "0x3",
-            "nonce": "0x2",
+            "step_limit": 40000000,
+            "nid": 3,
+            "nonce": 2,
             # It is used to send icx(transfer) only.
-            "value": "0xde0b6b3a7640000",
+            "value": 1000000000000000000,
             # It is used to send call only.
             "method": "transfer",
             "params_call": {
