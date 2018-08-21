@@ -37,6 +37,13 @@ class SignedTransaction:
 
     @staticmethod
     def to_dict(transaction: Transaction):
+        """
+        Converts an instance of the transaction into a dictionary sorted
+
+        The reason why after making a dictionary of the transaction,
+        it is checked to have properties is order all of the properties.
+        """
+
         dict_tx = {
             "version": "0x3",
             "from": transaction.from_,
