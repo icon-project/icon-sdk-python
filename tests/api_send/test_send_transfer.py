@@ -17,7 +17,7 @@ from tests.api_send.test_send_super import TestSendSuper
 from IconService.builder.transaction_builder import IcxTransactionBuilder
 from IconService.signed_transaction import SignedTransaction
 from IconService.utils.validation import is_icx_transaction, is_T_HASH
-from IconService.exception import JSONRPCException
+from IconService.exception import JSONRPCException, DataTypeException
 
 
 class TestSendTransfer(TestSendSuper):
@@ -45,21 +45,21 @@ class TestSendTransfer(TestSendSuper):
         result = self.icon_service.send_transaction(signed_transaction_dict)
         self.assertTrue(is_T_HASH(result))
 
-        # When value is wrong not prefixed with '0x'
-        wrong_value = "34330000000"
+        # When value is wrong prefixed with '0x'
+        wrong_value = "0x34330000000"
         icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(wrong_value).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"]).build()
-        signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+        self.assertRaises(DataTypeException, SignedTransaction, icx_transaction, self.wallet)
 
-        # When value is wrong which type is int
+        # When value is valid which type is int
         wrong_value = 34330000000
         icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(wrong_value).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"]).build()
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+        result = self.icon_service.send_transaction(signed_transaction_dict)
+        self.assertTrue(is_T_HASH(result))
 
         # When address is wrong
         wrong_address = "hx5bfdb090f43a808005ffc27c25b213145e8"
