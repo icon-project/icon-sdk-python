@@ -17,6 +17,9 @@ from os import path
 from unittest import TestCase, main
 from IconService.wallet.wallet import KeyWallet
 from IconService.exception import KeyStoreException
+from IconService.Icon_service import IconService
+from IconService.providers.http_provider import HTTPProvider
+from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 
 
 class TestWalletLoadFromKeystoreFile(TestCase):
@@ -44,9 +47,22 @@ class TestWalletLoadFromKeystoreFile(TestCase):
             self.assertTrue(True)
 
     def test_wallet_load_with_invalid_password(self):
-        """Case When loading a wallet with a invalid password."""
+        """Case when loading a wallet with a invalid password."""
         password = "1234wrongpassword"
         self.assertRaises(KeyStoreException, KeyWallet.load, self.TEST_KEYSTORE_FILE_DIR, password)
+
+    def test_wallet_load_and_call_api(self):
+        """Case when loading a wallet and call an api."""
+        # Loads a wallet.
+        wallet = KeyWallet.load(self.TEST_KEYSTORE_FILE_DIR, self.TEST_KEYSTORE_FILE_PASSWORD)
+
+        # Checks a wallet's address is correct.
+        self.assertEqual(wallet.get_address(), "hxfd7e4560ba363f5aabd32caac7317feeee70ea57")
+
+        # Calls an api.
+        icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        balance = icon_service.get_balance(wallet.get_address())
+        self.assertEqual(balance, 0)
 
 
 if __name__ == "__main__":
