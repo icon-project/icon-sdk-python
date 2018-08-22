@@ -1,6 +1,6 @@
  
 
-# Introduction 
+# ICON SDK for Python
 
 ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples.
 
@@ -25,7 +25,8 @@ $ pip install icon-sdk-python
 After that, you need to create an IconService instance and set a provider. 
 
 - The **IconService** class contains the following API methods. It comes with the HttpProvider, the built-in provider, which is for connecting to HTTP and HTTPS based JSON-RPC servers. 
-- The **provider** is how IconService connects to Loopchain. 
+
+- The **provider** is how IconService connects to Loopchain.
 
 - The **HTTPProvider** takes the full URI where the server can be found. For local development this would be something like http://localhost:9000.
 
@@ -84,6 +85,8 @@ result = icon_service.call(call)
 
 ```
 
+
+
 ### get_block(value)
 
 * Funtion A 
@@ -124,7 +127,7 @@ block = icon_service.get_block("0x000...000")
 block = icon_service.get_block("latest")  
 ```
 
-### 
+
 
 ### get_balance(address: str)
 
@@ -147,7 +150,7 @@ The current balance of the account in loop which is an integer
 balance = icon_service.get_balance("hx000...1")
 ```
 
-### 
+
 
 ### get_score_api()
 
@@ -183,7 +186,7 @@ Fields :
 score_apis = icon_service.get_score_api("cx000...1")
 ```
 
-### 
+
 
 ### get_total_supply()
 
@@ -206,7 +209,7 @@ The total supply of ICX in loop which is an integer
 total_supply = icon_service.get_total_supply()
 ```
 
-### 
+
 
 ### get_transaction(tx_hash: str)
 
@@ -224,7 +227,7 @@ Information about a transaction
 
 Field : 
 
-- version : The verion of protocol ("0x3" for V3)
+- version : The version of protocol ("0x3" for V3)
 - from : The wallet address making a transaction 
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - value :  The amount of ICX to be sent
@@ -296,11 +299,11 @@ Delegates to **icx_call** RPC method
 
 #### Parameters
 
-Call object made by CallBuilder
+Call object made by **CallBuilder**
 
 Fields : 
 
-*  from : The wallet address to execute a call which is a read-only external SCORE API method
+* from : The wallet address to execute a call which is a read-only external SCORE API method
 
 * to : The SCORE address 
 
@@ -326,7 +329,7 @@ call = CallBuilder().from_(wallet.get_address())		\
 result = icon_service.call(call)
 ```
 
-### 
+
 
 ## Loading a wallet and storing the keystore
 
@@ -384,7 +387,7 @@ An instance of Wallet class
 wallet = KeyWallet.create()
 ``````
 
-### 
+
 
 ### load(hex_private_key: str) 
 
@@ -405,7 +408,7 @@ An instance of Wallet class
 wallet = KeyWallet.load("0x0000")
 ```
 
-### 
+
 
 ### load(file_path, password) 
 
@@ -413,7 +416,7 @@ Loads a wallet from a key store file with a password and generates an instance o
 
 #### Parameters
 
-* File_path : The file path for the key store file of the wallet
+- File_path : The file path for the key store file of the wallet
 
 - password : Password for the wallet. Password must include alphabet character, number, and special character
 
@@ -428,7 +431,7 @@ An instance of Wallet class
 wallet = KeyWallet.load("./key.keystore", "password")
 ```
 
-### 
+
 
 ### store(file_path, password)
 
@@ -437,6 +440,7 @@ Stores data of an instance of a derived wallet class on the file path with your 
 #### Parameters
 
 - File_path : File path for the keystore file of the wallet
+
 - password :  Password for the wallet. Password must include alphabet character, number, and special character
 
 #### Returns
@@ -471,7 +475,7 @@ String of wallet address begins from ‘hx’.
 wallet.get_address()
 ```
 
-### 
+
 
 ### get_private_key() 
 
@@ -492,7 +496,7 @@ A private_key in hexadecimal
 wallet.get_private_key()
 ```
 
-### 
+
 
 ### sign_message(message_hash: bytes)
 
@@ -657,7 +661,7 @@ raw_transaction = DeployTransactionBuilder()		\
 	.build()
 ```
 
-### 
+
 
 ### CallTransactionBuilder
 
@@ -693,7 +697,7 @@ raw_transaction = CallTransactionBuilder()			\
 	.build()
 ```
 
-### 
+
 
 ### MessageTransactionBuilder
 
@@ -729,8 +733,6 @@ raw_transaction = MessageTransactionBuilder()		\
 
 
 
-
-
 ### SignedTransaction(transaction: Transaction, wallet: Wallet)
 
 Returns the signed transaction object having a signature
@@ -756,7 +758,9 @@ signed_transaction = SignedTransaction(raw_transaction, wallet)
 
 ### send_transaction(signed_transaction)
 
-Sends the transaction 
+Sends the transaction
+
+Delegates to **icx_sendTransaction** RPC method
 
 #### Parameters
 
