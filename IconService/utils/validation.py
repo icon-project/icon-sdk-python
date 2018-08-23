@@ -16,8 +16,14 @@
 from re import match
 from IconService.exception import KeyStoreException, DataTypeException
 from IconService.utils.type import is_str, is_integer
-from IconService.utils.hexadecimal import is_0x_prefixed, remove_0x_prefix, is_cx_prefixed, remove_cx_prefix, \
-    is_hx_prefixed, remove_hx_prefix
+from IconService.utils.hexadecimal import (
+    is_0x_prefixed,
+    remove_0x_prefix,
+    is_cx_prefixed,
+    remove_cx_prefix,
+    is_hx_prefixed,
+    remove_hx_prefix
+)
 
 
 def is_password_of_keystore_file(password) -> bool:

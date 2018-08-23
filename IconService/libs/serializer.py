@@ -71,7 +71,7 @@ def serialize(params: dict) -> bytes:
 
     :param params: params in a original JSON request for transaction.
     :return: serialized params.
-    params is like `icx_sendTransaction.<key1>.<value1>.<key2>.<value2>` to bytes.
+    For example, data like `icx_sendTransaction.<key1>.<value1>.<key2>.<value2>` is converted to bytes.
     """
     copy_tx = deepcopy(params)
     key_name_for_tx_hash = __get_key_name_for_tx_hash(params)
@@ -88,9 +88,9 @@ def serialize(params: dict) -> bytes:
 
 def generate_message(params: dict):
     """
-    Generates transaction's hash with params in an original JSON request for transaction.
+    Generates transaction's message hash from params in request for transaction.
 
-    :param params: params in a original JSON request for transaction.
+    :param params: params in request for transaction.
     :return: the 256 bit hash digest of a message. Hexadecimal encoded.
     """
     bytes_message_hash = serialize(params)

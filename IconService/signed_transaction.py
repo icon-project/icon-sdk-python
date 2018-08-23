@@ -24,8 +24,11 @@ from IconService.utils import get_timestamp
 class SignedTransaction:
 
     def __init__(self, transaction, wallet: Wallet):
-        self.__transaction = transaction
-        self.__wallet = wallet
+        """Converts raw transaction into the signed transaction object having a signature.
+
+        :param transaction: A transaction object not having a signature field yet
+        :param wallet: A wallet object
+        """
         self.__signed_transaction_dict = self.to_dict(transaction)
         message_hash_bytes = sha3_256(serialize(self.__signed_transaction_dict)).digest()
         signature_bytes = wallet.sign_message(message_hash_bytes)
@@ -40,8 +43,8 @@ class SignedTransaction:
         """
         Converts an instance of the transaction into a dictionary sorted
 
-        The reason why after making a dictionary of the transaction,
-        it is checked to have properties is order all of the properties.
+        The reason why after making a dictionary of the transaction, it is checked to have properties
+        is to order all of the properties.
         """
 
         dict_tx = {

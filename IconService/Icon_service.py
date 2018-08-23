@@ -13,9 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from IconService.utils.validation import is_block_height, \
-    is_hex_block_hash, is_predefined_block_value, is_score_address, is_wallet_address, \
+from IconService.utils.validation import (
+    is_block_height,
+    is_hex_block_hash,
+    is_predefined_block_value,
+    is_score_address,
+    is_wallet_address,
     is_T_HASH
+)
 from IconService.exception import AddressException, DataTypeException
 from IconService.providers.provider import Provider
 from IconService.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
@@ -24,18 +29,34 @@ from IconService.signed_transaction import SignedTransaction
 
 
 class IconService:
+    """
+    The IconService class contains the following API methods.
+    It comes with the HttpProvider, the built-in provider,
+    which is for connecting to HTTP and HTTPS based JSON-RPC servers.
+    """
 
     def __init__(self, provider: Provider):
         self.__provider = provider
 
     def get_block(self, value: str):
         """
-        If param is height, it is equivalent to icx_getBlockByHeight.
-        Or block hash, it is equivalent to icx_getBlockByHash.
-        Or string value same as `latest`, it is equivalent to icx_getLastBlock.
+        If param is height,
+            1. Returns block information by block height
+            2. Delegates to icx_getBlockByHeight RPC method
 
-        :param value: height or hash or `latest`. type(str)
-        :return result: block information.
+        Or block hash,
+            1. Returns block information by block hash
+            2. Delegates to icx_getBlockByHash RPC method
+
+        Or string value same as `latest`,
+            1. Returns the last block information
+            2. Delegates to icx_getLastBlock RPC method
+
+        :param value:
+            Integer of a block height
+            or hash of a block prefixed with '0x'
+            or `latest`
+        :return result: Block data
         """
         # by height
         if is_block_height(value):
@@ -54,20 +75,22 @@ class IconService:
         return result
 
     def get_total_supply(self):
-        """It is equivalent to icx_getTotalSupply.
+        """
+        Returns total ICX coin supply that has been issued
+        Delegates to icx_getTotalSupply RPC method
 
-        :return:
+        :return: Total number of ICX coins issued
         """
         result = self.__provider.make_request('icx_getTotalSupply')
         return int(remove_0x_prefix(result), 16)
 
     def get_balance(self, address: str):
         """
-        It is equivalent to icx_getBalance.
-        It is available to both SCORE address and wallet address.
+        Returns the ICX balance of the given EOA or SCORE.
+        Delegates to icx_getBalance RPC method.
 
-        :param address: SCORE address or wallet address. type(str)
-        :return response:
+        :param address: An address of EOA or SCORE. type(str)
+        :return: Number of ICX coins
         """
 
         if is_score_address(address) or is_wallet_address(address):
@@ -78,10 +101,12 @@ class IconService:
             raise AddressException("Address is wrong.")
 
     def get_score_api(self, address: str):
-        """It is equivalent to icx_getScoreApi.
+        """
+        Returns SCORE's external API list.
+        Delegates to icx_getScoreApi RPC method.
 
-        :param address: SCORE address
-        :return response:
+        :param address: A SCORE address to be examined
+        :return: A list of API methods of the SCORE and its information
         """
         if is_score_address(address):
             params = {'address': address}
@@ -90,10 +115,12 @@ class IconService:
             raise AddressException("SCORE Address is wrong.")
 
     def get_transaction_result(self, tx_hash: str):
-        """It is equivalent to icx_getTransactionResult.
+        """
+        Returns the transaction result requested by transaction hash.
+        Delegates to icx_getTransactionResult RPC method.
 
-        :param tx_hash: transaction hash prefixed with `0x`. type(str)
-        :return response:
+        :param tx_hash: Hash of a transaction prefixed with '0x'
+        :return A transaction result object
         """
         if is_T_HASH(tx_hash):
             params = {'txHash': tx_hash}
@@ -102,10 +129,12 @@ class IconService:
             raise DataTypeException("This hash value is unrecognized.")
 
     def get_transaction(self, tx_hash: str):
-        """It is equivalent to icx_getTransactionByHash.
+        """
+        Returns the transaction information requested by transaction hash.
+        Delegates to icx_getTransactionByHash RPC method.
 
-        :param tx_hash:
-        :return:
+        :param tx_hash: Transaction hash prefixed with '0x'
+        :return: Information about a transaction
         """
         if is_T_HASH(tx_hash):
             params = {'txHash': tx_hash}
@@ -114,10 +143,12 @@ class IconService:
             raise DataTypeException("This hash value is unrecognized.")
 
     def call(self, call: object):
-        """It is equivalent to icx_call.
+        """
+        Calls SCORE's external function which is read-only without creating a transaction on Loopchain.
+        Delegates to icx_call RPC method.
 
-        :param call:
-        :return:
+        :param call: Call object made by CallBuilder
+        :return: Values returned by the executed SCORE function
         """
         if isinstance(call, Call):
             params = {
@@ -137,12 +168,13 @@ class IconService:
             raise DataTypeException("Call object is unrecognized.")
 
     def send_transaction(self, signed_transaction: SignedTransaction):
-        """It is equivalent to icx_sendTransaction.
-
-        :param signed_transaction:
-        :return:
         """
+        Sends the transaction.
+        Delegates to icx_sendTransaction RPC method.
 
+        :param signed_transaction: The signed transaction object having a signature field finally
+        :return: Transaction hash prefixed with '0x'
+        """
         params = signed_transaction.signed_transaction_dict
         return self.__provider.make_request('icx_sendTransaction', params)
 

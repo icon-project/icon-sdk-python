@@ -22,7 +22,7 @@ from IconService.exception import ZipException
 def gen_deploy_data_content(_path: str) -> bytes:
     """Generate zip data(hex string) of SCORE.
 
-    :param _path: The path of the directory to be zipped.
+    :param _path: Path of the directory to be zipped.
     """
     if path.isdir(_path) is False:
         raise ValueError(f"Invalid path {_path}")
@@ -36,7 +36,7 @@ def gen_deploy_data_content(_path: str) -> bytes:
 
 
 class InMemoryZip:
-    """Class for Make zip data in memory using BytesIO."""
+    """Class for making zip data in memory using BytesIO."""
 
     def __init__(self):
         self._in_memory = BytesIO()
@@ -51,9 +51,9 @@ class InMemoryZip:
         return self._in_memory.read()
 
     def zip_in_memory(self, _path):
-        """Make zip data(bytes) in memory.
+        """Makes zip data(bytes) in memory.
 
-        :param _path: The path of the directory to be zipped.
+        :param _path: Path of the directory to be zipped.
         """
         try:
             with ZipFile(self._in_memory, 'a', ZIP_DEFLATED, False) as zf:

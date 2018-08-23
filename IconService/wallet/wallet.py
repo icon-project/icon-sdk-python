@@ -22,7 +22,7 @@ from IconService.exception import KeyStoreException
 from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json
 from multipledispatch import dispatch
 from IconService.utils import store_keystore_file_on_the_path
-from IconService.libs.signer import sign, sign_b64encode
+from IconService.libs.signer import sign
 
 
 class Wallet(metaclass=ABCMeta):
@@ -32,7 +32,7 @@ class Wallet(metaclass=ABCMeta):
     def get_address(self) -> str:
         """Gets a wallet address of wallet which starts with 'hx'.
 
-        :return address:
+        :return address: A wallet address
         """
         raise NotImplementedError("Wallet must implement this method")
 
@@ -56,7 +56,7 @@ class KeyWallet(Wallet):
 
     @staticmethod
     def create():
-        """Creates an instance of Wallet without a specific private key.
+        """Generates an instance of Wallet without a specific private key.
 
         :return: An instance of Wallet class.
         """
@@ -67,7 +67,7 @@ class KeyWallet(Wallet):
     @staticmethod
     @dispatch(str)
     def load(hex_private_key: str):
-        """Creates an instance of Wallet with a specific private key.
+        """Loads a wallet from a private key and generates an instance of Wallet.
 
         :param hex_private_key: in hexadecimal. type(str)
         :return: An instance of Wallet class.
@@ -79,10 +79,12 @@ class KeyWallet(Wallet):
     @staticmethod
     @dispatch(str, str)
     def load(file_path, password):
-        """Loads data in the keystore file on the file path with your password.
+        """Loads a wallet from a key store file with your password and generates an instance of Wallet.
 
-        :param file_path: type(str)
-        :param password: a password including alphabet characters, numbers and special characters. stype(str)
+        :param file_path: File path of the key store file. type(str)
+        :param password:
+            Password for the key store file.
+            It must include alphabet character, number, and special character.
         :return: An instance of Wallet class.
         """
         if not is_password_of_keystore_file(password):
@@ -98,8 +100,10 @@ class KeyWallet(Wallet):
     def store(self, file_path, password):
         """Stores data of an instance of a derived wallet class on the file path with your password.
 
-        :param file_path: type(str)
-        :param password: type(str)
+        :param file_path: File path of the key store file. type(str)
+        :param password:
+            Password for the key store file. Password must include alphabet character, number, and special character.
+            type(str)
         """
 
         if not is_password_of_keystore_file(password):
@@ -124,23 +128,23 @@ class KeyWallet(Wallet):
             raise KeyStoreException("Directory is invalid.")
 
     def get_private_key(self) -> str:
-        """Gets a private key of an instance of a derived wallet class.
+        """Returns the private key of the wallet.
 
         :return a private_key in hexadecimal.
         """
         return self.__bytes_private_key.hex()
 
     def get_address(self) -> str:
-        """Gets a wallet address of wallet which starts with 'hx'.
+        """Returns an EOA address.
 
-        :return address:
+        :return address: An EOA address
         """
         return self.address
 
     def sign_message(self, message_hash: bytes) -> bytes:
-        """Makes a plain transaction message signature.
+        """Returns on ECDSA-SHA256 signature in bytes using massage hash.
 
-        :param message_hash:
+        :param message_hash: Message hash in bytes
         :return signature: type(bytes)
         """
         return sign(message_hash, self.__bytes_private_key)

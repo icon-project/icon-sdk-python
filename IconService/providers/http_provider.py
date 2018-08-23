@@ -28,6 +28,10 @@ def get_default_endpoint():
 
 
 class HTTPProvider(Provider):
+    """
+    The HTTPProvider takes the full URI where the server can be found.
+    For local development this would be something like http://localhost:9000.
+    """
 
     endpoint_uri = None
     _request_kwargs = None

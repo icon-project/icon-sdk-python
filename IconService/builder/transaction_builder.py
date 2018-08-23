@@ -108,7 +108,7 @@ class CallTransaction(Transaction):
     @property
     def data(self):
         data = {"method": self.__method}
-        # params is optional property
+        # params is an optional property
         if self.__params:
             data["params"] = self.__params
         return data

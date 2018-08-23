@@ -19,7 +19,7 @@ from base64 import b64encode
 
 def sign(msg_hash: bytes, bytes_private_key: bytes) -> bytes:
     """
-    Create on ECDSA-SHA256 signature in bytes using massage hash.
+    Creates on the ECDSA-SHA256 signature in bytes from message hash.
     It refers to a document on https://github.com/ludbb/secp256k1-py.
 
     :param msg_hash: message hash: type(bytes)
@@ -35,7 +35,7 @@ def sign(msg_hash: bytes, bytes_private_key: bytes) -> bytes:
 def sign_b64encode(sign_bytes: bytes) -> str:
     """Return a base64 encoding signature.
 
-    :param sign_bytes:
-    :return:
+    :param sign_bytes: signature made from a method `sign`
+    :return: signature encoded to Base64
     """
     return b64encode(sign_bytes)

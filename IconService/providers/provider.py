@@ -15,7 +15,7 @@
 
 
 class Provider:
-
+    """The provider is how IconService connects to Loopchain."""
     def make_request(self, method, params=None):
         raise NotImplementedError("Providers must implement this method")
 
