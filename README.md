@@ -1,22 +1,121 @@
-  
+
 
 # ICON SDK for Python
 
 ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples.
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [ICON SDK for Python](#icon-sdk-for-python)
+	- [Quick start](#quick-start)
+		- [Prerequisite](#prerequisite)
+		- [Version](#version)
+		- [Adding ICON SDK for Python](#adding-icon-sdk-for-python)
+		- [Creating an IconService instance and Setting a provider](#creating-an-iconservice-instance-and-setting-a-provider)
+	- [Querying API methods](#querying-api-methods)
+		- [Examples](#examples)
+		- [get_block(value)](#getblockvalue)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [get_balance(address: str)](#getbalanceaddress-str)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [get_score_api(address: str)](#getscoreapiaddress-str)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [get_total_supply()](#gettotalsupply)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [get_transaction(tx_hash: str)](#gettransactiontxhash-str)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [get_transaction_result(tx_hash: str)](#gettransactionresulttxhash-str)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [call(call)](#callcall)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+	- [Loading a wallet and storing the keystore](#loading-a-wallet-and-storing-the-keystore)
+		- [Examples](#examples)
+	- [API methods of KeyWallet](#api-methods-of-keywallet)
+		- [create()](#create)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [load(hex_private_key: str)](#loadhexprivatekey-str)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [load(file_path, password)](#loadfilepath-password)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [store(file_path, password)](#storefilepath-password)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [get_address()](#getaddress)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [get_private_key()](#getprivatekey)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [sign_message(message_hash: bytes)](#signmessagemessagehash-bytes)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+	- [Creating an instance of transaction](#creating-an-instance-of-transaction)
+		- [Generating a transaction](#generating-a-transaction)
+		- [Signing a transaction](#signing-a-transaction)
+		- [Sending a transaction](#sending-a-transaction)
+		- [Examples](#examples)
+		- [IcxTransactionBuilder](#icxtransactionbuilder)
+			- [set methods](#set-methods)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [DeployTransactionBuilder](#deploytransactionbuilder)
+			- [methods](#methods)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [CallTransactionBuilder](#calltransactionbuilder)
+			- [methods](#methods)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [MessageTransactionBuilder](#messagetransactionbuilder)
+			- [methods](#methods)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [SignedTransaction(transaction: Transaction, wallet: Wallet)](#signedtransactiontransaction-transaction-wallet-wallet)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+		- [send_transaction(signed_transaction)](#sendtransactionsignedtransaction)
+			- [Parameters](#parameters)
+			- [Returns](#returns)
+			- [Example](#example)
+
+<!-- /TOC -->
 
 
-
-## Quick start 
+## Quick start
 
 ### Prerequisite
 
-Python 3.6.x 
+Python 3.6.x
 
 ### Version
 
 0.0.1 beta
 
-### Adding ICON SDK for Python 
+### Adding ICON SDK for Python
 
 First you need to get ICON SDK for Python into your project. This can be installed using pip as follows:
 
@@ -24,11 +123,11 @@ First you need to get ICON SDK for Python into your project. This can be install
 $ pip install icon-sdk-python
 ``````
 
-### Creating an IconService instance and Setting a provider 
+### Creating an IconService instance and Setting a provider
 
-After that, you need to create an IconService instance and set a provider. 
+After that, you need to create an IconService instance and set a provider.
 
-- The **IconService** class contains the following API methods. It comes with the HttpProvider, the built-in provider, which is for connecting to HTTP and HTTPS based JSON-RPC servers. 
+- The **IconService** class contains the following API methods. It comes with the HttpProvider, the built-in provider, which is for connecting to HTTP and HTTPS based JSON-RPC servers.
 
 - The **provider** is how IconService connects to Loopchain.
 
@@ -62,7 +161,7 @@ block = icon_service.get_block("0x000...000")
 
 # Returns the last block information
 block = icon_service.get_block("latest")    	
-    
+
 # Returns the balance of the account of given address
 balance = icon_service.get_balance("hx000...1")
 
@@ -78,7 +177,7 @@ tx = icon_service.get_transaction("0x000...000")
 # Returns the result of a transaction by transaction hash
 tx_result = icon_service.get_transaction_result("0x000...000");
 
-# Generates a call instance using the CallBuilder 
+# Generates a call instance using the CallBuilder
 call = CallBuilder().from_(wallet.get_address())		\
 					.to("cx000...1")					\
 					.method("balance_of")				\
@@ -93,11 +192,11 @@ result = icon_service.call(call)
 
 ### get_block(value)
 
-* Function A 
+* Function A
   -  Returns block information by block height
   - Delegates to **icx_getBlockByHeight** RPC method
 
-* Function B 
+* Function B
   * Returns block information by block hash
   * Delegates to **icx_getBlockByHash** RPC method
 
@@ -107,10 +206,10 @@ result = icon_service.call(call)
 
 #### Parameters
 
-* Function A 
+* Function A
   * value : Integer of a block height
 * Function B
-  * value : Hash of a block prefixed with '0x' 
+  * value : Hash of a block prefixed with '0x'
 * Function C
   - value : 'latest'
 
@@ -141,7 +240,7 @@ Delegates to **icx_getBalance** RPC method
 
 #### Parameters
 
-address : An address of EOA or SCORE prefixed with 'hx' 
+address : An address of EOA or SCORE prefixed with 'hx'
 
 #### Returns
 
@@ -223,13 +322,13 @@ Delegates to **icx_getTransactionByHash** RPC method
 
 #### Parameters
 
-tx_hash : Transaction hash prefixed with '0x' 
+tx_hash : Transaction hash prefixed with '0x'
 
 #### Returns
 
-Information about a transaction 
+Information about a transaction
 
-Field : 
+Field :
 
 - version : Protocol version ("0x3" for V3)
 - from : An EOA address that created the transaction
@@ -264,13 +363,13 @@ Delegates to **icx_getTransactionResult** RPC method
 
 #### Parameters
 
-tx_hash : Hash of a transaction prefixed with '0x' 
+tx_hash : Hash of a transaction prefixed with '0x'
 
 #### Returns
 
-A transaction result object 
+A transaction result object
 
-Field : 
+Field :
 
 * status : 1 on success, 0 on failure
 * to : Recipient address of the transaction
@@ -279,7 +378,7 @@ Field :
 * txIndex: Transaction index in the block
 * blockHeight : Block height including the transaction
 * blockHash: Block Hash including the transaction
-* cumulativeStepUsed: Sum of stepUsed by this transaction and all preceeding transactions in the same block
+* cumulativeStepUsed: Sum of stepUsed by this transaction and all preceding transactions in the same block
 * stepUsed: The amount of step used by this transaction
 * stepPrice: The step price used by this transaction
 * scoreAddress : A SCORE address if the transaction created a new SCORE. (optional)
@@ -305,7 +404,7 @@ Delegates to **icx_call** RPC method
 
 Call object made by **CallBuilder**
 
-Fields : 
+Fields :
 
 * from : Message sender's address
 
@@ -323,7 +422,7 @@ Values returned by the executed SCORE function
 #### Example
 
 ```python
-# Creates a call instance using the CallBuilder 
+# Creates a call instance using the CallBuilder
 call = CallBuilder().from_(wallet.get_address())		\
 					.to("cx000...1")					\
 					.method("balance_of")				\
@@ -339,7 +438,7 @@ result = icon_service.call(call)
 
 To send transactions, first, you should make an instance of your wallet.  
 
-You can make an instance of the wallet using a private key or from a key store file. 
+You can make an instance of the wallet using a private key or from a key store file.
 
 ### Examples
 
@@ -353,10 +452,10 @@ wallet = KeyWallet.create()
 wallet = KeyWallet.load("0x0000")
 
 # Loads a wallet from a key store file
-wallet = KeyWallet.load("./key.keystore", "password")
+wallet = KeyWallet.load("./keystore", "password")
 
-# Stores a keystore file on the file path
-wallet.store("./new.keystore", "password") # throw exception if having an error.
+# Stores a key store file on the file path
+wallet.store("./keystore", "password") # throw exception if having an error.
 
 # Returns an Address
 wallet.get_address()
@@ -393,7 +492,7 @@ wallet = KeyWallet.create()
 
 
 
-### load(hex_private_key: str) 
+### load(hex_private_key: str)
 
 Loads a wallet from a private key and generates an instance of Wallet
 
@@ -414,13 +513,13 @@ wallet = KeyWallet.load("0x0000")
 
 
 
-### load(file_path, password) 
+### load(file_path, password)
 
 Loads a wallet from a key store file with your password and generates an instance of Wallet
 
 #### Parameters
 
-- File_path : File path of the key store file 
+- File_path : File path of the key store file
 
 - password : Password for the key store file. Password must include alphabet character, number, and special character
 
@@ -432,7 +531,7 @@ An instance of Wallet class
 
 ```python
 # Loads a wallet from a key store file
-wallet = KeyWallet.load("./key.keystore", "password")
+wallet = KeyWallet.load("./keystore", "password")
 ```
 
 
@@ -454,15 +553,15 @@ None
 #### Example
 
 ```python
-# Stores a keystore file on the file path
-wallet.store("./new.keystore", "password") # throw exception if having an error.
+# Stores a key store file on the file path
+wallet.store("./keystore", "password") # throw exception if having an error.
 ```
 
 
 
 ### get_address()
 
-Returns  an EOA address 
+Returns  an EOA address
 
 #### Parameters
 
@@ -475,13 +574,13 @@ None
 #### Example
 
 ```python
-# Returns an EOA address 
+# Returns an EOA address
 wallet.get_address()
 ```
 
 
 
-### get_private_key() 
+### get_private_key()
 
 Returns the private key of the wallet
 
@@ -529,11 +628,11 @@ signature = wallet.sign_message(b'D8\xe9...\xfc')
 
 After then, you should create an instance of the transaction using different types of **transaction builders** as follows.  
 
-### Signing a transaction 
+### Signing a transaction
 
 Before sending a transaction, the transaction should be signed by using **SignedTransaction** class. The SignedTransaction class is used to sign the transaction by returning an instance of the signed transaction as follows. The instance of the signed transaction has the property of a signature.  
 
-### Sending a transaction 
+### Sending a transaction
 
 Finally, you can send a transaction with the signed transaction object as follows.
 
@@ -558,7 +657,7 @@ raw_transaction = IcxTransactionBuilder()			\
     .nonce(100)										\
     .build()
 
-# Generates an instance of transation for deploying SCORE.
+# Generates an instance of transaction for deploying SCORE.
 raw_transaction = DeployTransactionBuilder()		\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
@@ -570,7 +669,7 @@ raw_transaction = DeployTransactionBuilder()		\
     .params(params)									\
     .build()
 
-# Generates an instance of transation for calling method in SCORE.
+# Generates an instance of transaction for calling method in SCORE.
 raw_transaction = CallTransactionBuilder()			\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
@@ -580,8 +679,8 @@ raw_transaction = CallTransactionBuilder()			\
     .method("balance_of")							\
     .params(params)									\
 	.build()
-    
-# Generates an instance of transation for sending a message.
+
+# Generates an instance of transaction for sending a message.
 raw_transaction = MessageTransactionBuilder()		\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
@@ -606,7 +705,7 @@ Builder for a **Transaction** object
 
 #### set methods
 
-* from_ : the wallet address making a transaction 
+* from_ : the wallet address making a transaction
 * to : The wallet address to receive coin or SCORE address  to receive a transaction
 * value : The amount of ICX to be sent
 * step_limit : The maximum step value for processing a transaction
@@ -640,7 +739,7 @@ Builder for **DeployTransaction** object
 
 #### methods
 
-- from_ : The wallet address making a transaction 
+- from_ : The wallet address making a transaction
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - step_limit : The maximum step value for processing a transaction
 - nid : Network ID
@@ -657,7 +756,7 @@ A deploy transaction object
 #### Example
 
 ```python
-# Generates an instance of transation for deploying SCORE.
+# Generates an instance of transaction for deploying SCORE.
 raw_transaction = DeployTransactionBuilder()		\
 	.from_(wallet.getAddress())						\
 	.to("cx00...02")								\
@@ -678,7 +777,7 @@ Builder for **CallTransaction** object
 
 #### methods
 
-- from_ : The wallet address making a transaction 
+- from_ : The wallet address making a transaction
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - step_limit : The maximum step value for processing a transaction
 - nid : Network ID
@@ -694,7 +793,7 @@ A call transaction object
 #### Example
 
 ```python
-# Generates an instance of transation for calling method in SCORE.
+# Generates an instance of transaction for calling method in SCORE.
 raw_transaction = CallTransactionBuilder()			\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
@@ -714,11 +813,11 @@ Builder for **MessageTransaction** object
 
 #### methods
 
-- from_ : The wallet address making a transaction 
+- from_ : The wallet address making a transaction
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - stepLimit : The maximum step value for processing a transaction
 - nid : Network ID
-- nonce :  An arbitrary number used to prevent transaction hash collision 
+- nonce :  An arbitrary number used to prevent transaction hash collision
 - data : Data by the dataType
 - build : Returns a message transaction object  
 
@@ -729,7 +828,7 @@ A message transaction object
 #### Example
 
 ```python
-# Generates an instance of transation for sending a message.
+# Generates an instance of transaction for sending a message.
 raw_transaction = MessageTransactionBuilder()		\
 	.from_(wallet.getAddress())						\
 	.to("cx00...02")								\
@@ -749,7 +848,7 @@ Returns the signed transaction object having a signature
 #### Parameters
 
 * transaction : A transaction object not having a signature field yet
-* wallet : A wallet object 
+* wallet : A wallet object
 
 #### Returns
 
@@ -785,4 +884,3 @@ Transaction hash prefixed with '0x'
 # Sends the transaction
 tx_hash = icon_service.send_transaction(signed_transaction)
 ```
-
