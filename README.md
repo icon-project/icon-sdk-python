@@ -1,108 +1,114 @@
 
 
+
+
 # ICON SDK for Python
 
 ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples.
+
+
+
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [ICON SDK for Python](#icon-sdk-for-python)
-	- [Quick start](#quick-start)
-		- [Prerequisite](#prerequisite)
-		- [Version](#version)
-		- [Adding ICON SDK for Python](#adding-icon-sdk-for-python)
-		- [Creating an IconService instance and Setting a provider](#creating-an-iconservice-instance-and-setting-a-provider)
-	- [Querying API methods](#querying-api-methods)
-		- [Examples](#examples)
-		- [get_block(value)](#getblockvalue)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [get_balance(address: str)](#getbalanceaddress-str)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [get_score_api(address: str)](#getscoreapiaddress-str)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [get_total_supply()](#gettotalsupply)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [get_transaction(tx_hash: str)](#gettransactiontxhash-str)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [get_transaction_result(tx_hash: str)](#gettransactionresulttxhash-str)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [call(call)](#callcall)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-	- [Loading a wallet and storing the keystore](#loading-a-wallet-and-storing-the-keystore)
-		- [Examples](#examples)
-	- [API methods of KeyWallet](#api-methods-of-keywallet)
-		- [create()](#create)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [load(hex_private_key: str)](#loadhexprivatekey-str)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [load(file_path, password)](#loadfilepath-password)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [store(file_path, password)](#storefilepath-password)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [get_address()](#getaddress)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [get_private_key()](#getprivatekey)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [sign_message(message_hash: bytes)](#signmessagemessagehash-bytes)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-	- [Creating an instance of transaction](#creating-an-instance-of-transaction)
-		- [Generating a transaction](#generating-a-transaction)
-		- [Signing a transaction](#signing-a-transaction)
-		- [Sending a transaction](#sending-a-transaction)
-		- [Examples](#examples)
-		- [IcxTransactionBuilder](#icxtransactionbuilder)
-			- [set methods](#set-methods)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [DeployTransactionBuilder](#deploytransactionbuilder)
-			- [methods](#methods)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [CallTransactionBuilder](#calltransactionbuilder)
-			- [methods](#methods)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [MessageTransactionBuilder](#messagetransactionbuilder)
-			- [methods](#methods)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [SignedTransaction(transaction: Transaction, wallet: Wallet)](#signedtransactiontransaction-transaction-wallet-wallet)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
-		- [send_transaction(signed_transaction)](#sendtransactionsignedtransaction)
-			- [Parameters](#parameters)
-			- [Returns](#returns)
-			- [Example](#example)
+  - [Quick start](#quick-start)
+    - [Prerequisite](#prerequisite)
+    - [Version](#version)
+    - [Adding ICON SDK for Python](#adding-icon-sdk-for-python)
+    - [Creating an IconService instance and Setting a provider](#creating-an-iconservice-instance-and-setting-a-provider)
+  - [Querying API methods](#querying-api-methods)
+    - [Examples](#examples)
+    - [get_block](#get_block)
+      - [Parameters](#parameters)
+      - [Returns](#returns)
+      - [Example](#example)
+    - [get_balance](#get_balance)
+      - [Parameters](#parameters-1)
+      - [Returns](#returns-1)
+      - [Example](#example-1)
+    - [get_score_api](#get_score_api)
+      - [Parameters](#parameters-2)
+      - [Returns](#returns-2)
+      - [Example](#example-2)
+    - [get_total_supply](#get_total_supply)
+      - [Parameters](#parameters-3)
+      - [Returns](#returns-3)
+      - [Example](#example-3)
+    - [get_transaction](#get_transaction)
+      - [Parameters](#parameters-4)
+      - [Returns](#returns-4)
+      - [Example](#example-4)
+    - [get_transaction_result](#get_transaction_result)
+      - [Parameters](#parameters-5)
+      - [Returns](#returns-5)
+      - [Example](#example-5)
+    - [call](#call)
+      - [Parameters](#parameters-6)
+      - [Returns](#returns-6)
+      - [Example](#example-6)
+  - [Loading a wallet and storing the keystore](#loading-a-wallet-and-storing-the-keystore)
+    - [Examples](#examples-1)
+  - [API methods of KeyWallet](#api-methods-of-keywallet)
+    - [create](#create)
+      - [Parameters](#parameters-7)
+      - [Returns](#returns-7)
+      - [Example](#example-7)
+    - [load](#load)
+      - [Parameters](#parameters-8)
+      - [Returns](#returns-8)
+      - [Example](#example-8)
+    - [load](#load-1)
+      - [Parameters](#parameters-9)
+      - [Returns](#returns-9)
+      - [Example](#example-9)
+    - [store](#store)
+      - [Parameters](#parameters-10)
+      - [Returns](#returns-10)
+      - [Example](#example-10)
+    - [get_address](#getaddress)
+      - [Parameters](#parameters-11)
+      - [Returns](#returns-11)
+      - [Example](#example-11)
+    - [get_private_key](#getprivatekey)
+      - [Parameters](#parameters-12)
+      - [Returns](#returns-12)
+      - [Example](#example-12)
+    - [sign_message](#signmessage)
+      - [Parameters](#parameters-13)
+      - [Returns](#returns-13)
+      - [Example](#example-13)
+  - [Signing and Sending transaction](#signing-an-instance-of-transaction)
+    - [Generating a transaction](#generating-a-transaction)
+    - [Signing a transaction](#signing-a-transaction)
+    - [Sending a transaction](#sending-a-transaction)
+    - [Examples](#examples-2)
+    - [IcxTransactionBuilder](#icxtransactionbuilder)
+      - [set methods](#set-methods)
+      - [Returns](#returns-14)
+      - [Example](#example-14)
+    - [DeployTransactionBuilder](#deploytransactionbuilder)
+      - [methods](#methods)
+      - [Returns](#returns-15)
+      - [Example](#example-15)
+    - [CallTransactionBuilder](#calltransactionbuilder)
+      - [methods](#methods-1)
+      - [Returns](#returns-16)
+      - [Example](#example-16)
+    - [MessageTransactionBuilder](#messagetransactionbuilder)
+      - [methods](#methods-2)
+      - [Returns](#returns-17)
+      - [Example](#example-17)
+    - [SignedTransaction](#signedtransaction)
+      - [Parameters](#parameters-14)
+      - [Returns](#returns-18)
+      - [Example](#example-18)
+    - [send_transaction](#sendtransaction)
+      - [Parameters](#parameters-15)
+      - [Returns](#returns-19)
+      - [Example](#example-19)
 
 <!-- /TOC -->
+
 
 
 ## Quick start
@@ -190,11 +196,15 @@ result = icon_service.call(call)
 
 
 
-### get_block(value)
+### get_block
+
+``````python
+get_block(value)
+``````
 
 * Function A
   -  Returns block information by block height
-  - Delegates to **icx_getBlockByHeight** RPC method
+  -  Delegates to **icx_getBlockByHeight** RPC method
 
 * Function B
   * Returns block information by block hash
@@ -232,7 +242,11 @@ block = icon_service.get_block("latest")
 
 
 
-### get_balance(address: str)
+### get_balance
+
+```python
+get_balance(address: str)
+```
 
 Returns the ICX balance of the given EOA or SCORE
 
@@ -255,7 +269,11 @@ balance = icon_service.get_balance("hx000...1")
 
 
 
-### get_score_api(address: str)
+### get_score_api
+
+```python
+get_score_api(address: str)
+```
 
 Returns SCORE's external API list
 
@@ -291,7 +309,11 @@ score_apis = icon_service.get_score_api("cx000...1")
 
 
 
-### get_total_supply()
+### get_total_supply
+
+```python
+get_total_supply()
+```
 
 Returns total ICX coin supply that has been issued
 
@@ -314,7 +336,11 @@ total_supply = icon_service.get_total_supply()
 
 
 
-### get_transaction(tx_hash: str)
+### get_transaction
+
+```python
+get_transaction(tx_hash: str)
+```
 
 Returns the transaction information requested by transaction hash
 
@@ -355,7 +381,11 @@ tx = icon_service.get_transaction("0x000...000")
 
 
 
-### get_transaction_result(tx_hash: str)
+### get_transaction_result
+
+```python
+get_transaction_result(tx_hash: str)
+```
 
 Returns the transaction result requested by transaction hash
 
@@ -394,7 +424,11 @@ tx_result = icon_service.get_transaction_result("0x000...000");
 
 
 
-### call(call)
+### call
+
+```python
+call(call: Call)
+```
 
 Calls SCORE's external function which is read-only without creating a transaction on Loopchain
 
@@ -471,7 +505,11 @@ signature = wallet.sign_message(b'D8\xe9...\xfc')
 
 ## API methods of KeyWallet
 
-### create()
+### create
+
+```python
+create()
+```
 
 Generates an instance of Wallet without a specific private key
 
@@ -492,7 +530,13 @@ wallet = KeyWallet.create()
 
 
 
-### load(hex_private_key: str)
+### load
+
+```python
+load(hex_private_key: str)
+```
+
+
 
 Loads a wallet from a private key and generates an instance of Wallet
 
@@ -513,7 +557,11 @@ wallet = KeyWallet.load("0x0000")
 
 
 
-### load(file_path, password)
+### load
+
+```python
+load(file_path, password)
+```
 
 Loads a wallet from a key store file with your password and generates an instance of Wallet
 
@@ -536,7 +584,11 @@ wallet = KeyWallet.load("./keystore", "password")
 
 
 
-### store(file_path, password)
+### store
+
+```python
+store(file_path, password)
+```
 
 Stores data of an instance of a derived wallet class on the file path with your password
 
@@ -559,7 +611,11 @@ wallet.store("./keystore", "password") # throw exception if having an error.
 
 
 
-### get_address()
+### get_address
+
+```python
+get_address()
+```
 
 Returns  an EOA address
 
@@ -580,7 +636,11 @@ wallet.get_address()
 
 
 
-### get_private_key()
+### get_private_key
+
+```python
+get_private_key()
+```
 
 Returns the private key of the wallet
 
@@ -601,7 +661,11 @@ wallet.get_private_key()
 
 
 
-### sign_message(message_hash: bytes)
+### sign_message
+
+```python
+sign_message(message_hash: bytes)
+```
 
 Returns on ECDSA-SHA256 signature in bytes using massage hash
 
@@ -622,7 +686,7 @@ signature = wallet.sign_message(b'D8\xe9...\xfc')
 
 
 
-## Creating an instance of transaction
+## Signing and Sending transaction
 
 ### Generating a transaction
 
@@ -841,7 +905,11 @@ raw_transaction = MessageTransactionBuilder()		\
 
 
 
-### SignedTransaction(transaction: Transaction, wallet: Wallet)
+### SignedTransaction
+
+```python
+SignedTransaction(transaction: Transaction, wallet: Wallet)
+```
 
 Returns the signed transaction object having a signature
 
@@ -863,8 +931,11 @@ signed_transaction = SignedTransaction(raw_transaction, wallet)
 
 
 
+### send_transaction
 
-### send_transaction(signed_transaction)
+```python
+send_transaction(signed_transaction: SignedTransaction)
+```
 
 Sends the transaction
 
