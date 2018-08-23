@@ -254,7 +254,7 @@ Delegates to **icx_getBalance** RPC method
 
 #### Parameters
 
-address : An address of EOA or SCORE prefixed with 'hx'
+address : An address of EOA or SCORE
 
 #### Returns
 
