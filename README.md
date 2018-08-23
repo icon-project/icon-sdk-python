@@ -93,25 +93,25 @@ result = icon_service.call(call)
 
 ### get_block(value)
 
-* Funtion A 
+* Function A 
   -  Returns block information by block height
   - Delegates to **icx_getBlockByHeight** RPC method
 
-* Funtion B 
+* Function B 
   * Returns block information by block hash
   * Delegates to **icx_getBlockByHash** RPC method
 
-* Funtion C
+* Function C
   * Returns the last block information
   * Delegates to **icx_getLastBlock** RPC method
 
 #### Parameters
 
-* Funtion A 
+* Function A 
   * value : Integer of a block height
 * Function B
   * value : Hash of a block prefixed with '0x' 
-* Funtion C
+* Function C
   - value : 'latest'
 
 #### Returns
@@ -234,9 +234,9 @@ Field :
 - version : Protocol version ("0x3" for V3)
 - from : An EOA address that created the transaction
 - to : An EOA address to receive coins, or SCORE address to execute the transaction
-- value : Amount of ICX coins in loop to transfer. When ommitted, assumes 0. (1 icx = 1 ^ 18 loop)
+- value : Amount of ICX coins in loop to transfer. When omitted, assumes 0. (1 icx = 1 ^ 18 loop)
 - stepLimit :  Maximum step allowance that can be used by the transaction
-- timestamp : Transaction creation time. timestamp is in microsecond
+- timestamp : Transaction creation time. timestamp is in the microsecond
 - nid : Network ID
 - nonce : An arbitrary number used to prevent transaction hash collision
 - txHash : Transaction hash
@@ -443,7 +443,7 @@ Stores data of an instance of a derived wallet class on the file path with your 
 
 #### Parameters
 
-- File_path : File path of the keystore file
+- File_path : File path of the key store file
 
 - password :  Password for the key store file. Password must include alphabet character, number, and special character
 
@@ -602,7 +602,7 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 
 ### IcxTransactionBuilder
 
-Builder for **Transaction** object
+Builder for a **Transaction** object
 
 #### set methods
 
@@ -616,7 +616,7 @@ Builder for **Transaction** object
 
 #### Returns
 
-An transaction object  
+A transaction object  
 
 #### Example
 
