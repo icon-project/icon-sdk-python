@@ -14,28 +14,19 @@
 # limitations under the License.
 
 from secp256k1 import PrivateKey
-from base64 import b64encode
 
 
-def sign(msg_hash: bytes, bytes_private_key: bytes) -> bytes:
+def sign(data: bytes, private_key: bytes) -> bytes:
     """
-    Creates on the ECDSA-SHA256 signature in bytes from message hash.
+    Generates on the ECDSA-SHA256 signature in bytes from data.
     It refers to a document on https://github.com/ludbb/secp256k1-py.
 
-    :param msg_hash: message hash: type(bytes)
-    :param bytes_private_key:
-    :return signature: type(bytes)
+    :param data: data to be signed
+    :param private_key: private key
+    :return signature: signature made from input data
     """
-    private_key_object = PrivateKey(bytes_private_key, raw=True)
-    recoverable_sign = private_key_object.ecdsa_sign_recoverable(msg_hash, raw=True)
+    private_key_object = PrivateKey(private_key, raw=True)
+    recoverable_sign = private_key_object.ecdsa_sign_recoverable(data, raw=True)
     sign_bytes, sign_recovery = private_key_object.ecdsa_recoverable_serialize(recoverable_sign)
     return sign_bytes + sign_recovery.to_bytes(1, 'big')
 
-
-def sign_b64encode(sign_bytes: bytes) -> str:
-    """Return a base64 encoding signature.
-
-    :param sign_bytes: signature made from a method `sign`
-    :return: signature encoded to Base64
-    """
-    return b64encode(sign_bytes)
