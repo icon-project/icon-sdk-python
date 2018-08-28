@@ -35,10 +35,6 @@ def is_str(value):
     return isinstance(value, str_types)
 
 
-# def is_string(value):
-#     return isinstance(value, string_types)
-
-
 def is_boolean(value):
     return isinstance(value, bool)
 
