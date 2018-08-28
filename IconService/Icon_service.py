@@ -38,7 +38,7 @@ class IconService:
     def __init__(self, provider: Provider):
         self.__provider = provider
 
-    def get_block(self, value: str):
+    def get_block(self, value):
         """
         If param is height,
             1. Returns block information by block height
