@@ -37,11 +37,11 @@ class Wallet(metaclass=ABCMeta):
         raise NotImplementedError("Wallet must implement this method")
 
     @abstractmethod
-    def sign_message(self, message_hash: bytes) -> str:
-        """Makes a plain transaction message signature.
+    def sign(self, data: bytes) -> str:
+        """Generates signature from input data which is transaction data
 
-        :param message_hash: type(bytes)
-        :return signature: type(str)
+        :param data: data to be signed
+        :return signature: signature made from input
         """
         raise NotImplementedError("Wallet implement this method")
 
@@ -110,7 +110,11 @@ class KeyWallet(Wallet):
             raise KeyStoreException('Invalid password.')
 
         try:
-            key_store_contents = create_keyfile_json(self.__bytes_private_key, bytes(password, 'utf-8'), iterations=262144)
+            key_store_contents = create_keyfile_json(
+                self.__bytes_private_key,
+                bytes(password, 'utf-8'),
+                iterations=16384
+            )
             key_store_contents['address'] = self.get_address()
             key_store_contents['coinType'] = 'icx'
 
@@ -141,13 +145,13 @@ class KeyWallet(Wallet):
         """
         return self.address
 
-    def sign_message(self, message_hash: bytes) -> bytes:
-        """Returns on ECDSA-SHA256 signature in bytes using massage hash.
+    def sign(self, data: bytes) -> bytes:
+        """Generates signature from input data which is transaction data
 
-        :param message_hash: Message hash in bytes
-        :return signature: type(bytes)
+        :param data: data to be signed
+        :return signature: signature made from input
         """
-        return sign(message_hash, self.__bytes_private_key)
+        return sign(data, self.__bytes_private_key)
 
 
 def get_public_key(private_key_object):
