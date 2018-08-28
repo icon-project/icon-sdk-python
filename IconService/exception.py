@@ -26,13 +26,13 @@ class IconServiceExceptionCode(IntEnum):
     BALANCE_ERROR = 3
     DATA_TYPE_ERROR = 4
     JSON_RPC_ERROR = 5
-    ZIP_MEMORY = 6
+    ZIP_MEMORY_ERROR = 6
 
     def __str__(self) -> str:
         return str(self.name).capitalize().replace('_', ' ')
 
 
-class IonServiceBaseException(BaseException):
+class IconServiceBaseException(BaseException):
 
     def __init__(self, message: Optional[str], code: IconServiceExceptionCode = IconServiceExceptionCode.OK):
         if message is None:
@@ -52,38 +52,38 @@ class IonServiceBaseException(BaseException):
         return f'{self.message} ({str(self.code)})'
 
 
-class KeyStoreException(IonServiceBaseException):
+class KeyStoreException(IconServiceBaseException):
     """"Error when making or loading a keystore file."""
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.KEY_STORE_ERROR)
 
 
-class AddressException(IonServiceBaseException):
+class AddressException(IconServiceBaseException):
     """Error when having an invalid address."""
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.ADDRESS_ERROR)
 
 
-class BalanceException(IonServiceBaseException):
+class BalanceException(IconServiceBaseException):
     """Error when having an invalid balance."""
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.BALANCE_ERROR)
 
 
-class DataTypeException(IonServiceBaseException):
+class DataTypeException(IconServiceBaseException):
     """Error when data type is invalid."""
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.DATA_TYPE_ERROR)
 
 
-class JSONRPCException(IonServiceBaseException):
+class JSONRPCException(IconServiceBaseException):
     """Error when get JSON-RPC Error Response."""
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.JSON_RPC_ERROR)
 
 
-class ZipException(IonServiceBaseException):
+class ZipException(IconServiceBaseException):
     """"Error while write zip in memory"""
     def __init__(self, message: Optional[str]):
-        super().__init__(message, IconServiceExceptionCode.ZIP_MEMORY)
+        super().__init__(message, IconServiceExceptionCode.ZIP_MEMORY_ERROR)
 
