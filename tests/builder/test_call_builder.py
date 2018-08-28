@@ -22,18 +22,18 @@ class TestCallBuilder(TestCase):
     def test_make_call_builder(self):
         """Testing for making a couple of call builders successfully"""
 
-        call_1 = CallBuilder()       \
-            .from_("1_FROM")         \
-            .to("1_TO")              \
-            .method("1_METHOD")      \
-            .params("1_PARAMS")      \
+        call_1 = CallBuilder()          \
+            .from_("1_FROM")            \
+            .to("1_TO")                 \
+            .method("1_METHOD")         \
+            .params({"test": 123})      \
             .build()
 
-        call_2 = CallBuilder().from_("2_FROM").to("2_TO").method("2_METHOD").params("2_PARAMS").build()
+        call_2 = CallBuilder().from_("2_FROM").to("2_TO").method("2_METHOD").params({"test": 123}).build()
 
         properties = ["from_", "to", "method", "params"]
-        values_call_1 = ["1_FROM", "1_TO", "1_METHOD", "1_PARAMS"]
-        values_call_2 = ["2_FROM", "2_TO", "2_METHOD", "2_PARAMS"]
+        values_call_1 = ["1_FROM", "1_TO", "1_METHOD", {'test': '0x7b'}]
+        values_call_2 = ["2_FROM", "2_TO", "2_METHOD", {'test': '0x7b'}]
 
         # Checks all of property is collect.
         for idx, property in enumerate(properties):
