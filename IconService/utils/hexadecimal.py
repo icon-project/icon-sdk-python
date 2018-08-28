@@ -22,7 +22,7 @@ It is used for
 - an address of SCORE starting with 'cx'
 """
 
-from IconService.utils.type import is_str, is_integer
+from IconService.utils.type import is_str, is_integer, is_bytes
 from IconService.exception import DataTypeException
 
 
@@ -88,5 +88,15 @@ def convert_int_to_hex_str(value: int):
             return add_0x_prefix(hex(value))
         else:
             raise DataTypeException("Data's type should be integer.")
+    except KeyError:
+        raise DataTypeException("Data type is wrong.")
+
+
+def convert_bytes_to_hex_str(value: bytes):
+    try:
+        if is_bytes(value):
+            return add_0x_prefix(value.hex())
+        else:
+            raise DataTypeException("Data's type should be bytes.")
     except KeyError:
         raise DataTypeException("Data type is wrong.")
