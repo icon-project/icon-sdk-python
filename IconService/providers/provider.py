@@ -13,11 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from abc import ABCMeta, abstractmethod
 
-class Provider:
+
+class Provider(metaclass=ABCMeta):
     """The provider is how IconService connects to Loopchain."""
+    @abstractmethod
     def make_request(self, method, params=None):
         raise NotImplementedError("Providers must implement this method")
 
+    @abstractmethod
     def is_connected(self):
         raise NotImplementedError("Providers must implement this method")
