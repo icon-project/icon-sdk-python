@@ -23,10 +23,6 @@ from IconService.utils import set_logger
 from IconService.exception import JSONRPCException
 
 
-def get_default_endpoint():
-    return "https://testwallet.icon.foundation/api/v2"
-
-
 class HTTPProvider(Provider):
     """
     The HTTPProvider takes the full URI where the server can be found.
@@ -45,7 +41,7 @@ class HTTPProvider(Provider):
         self.logger.debug("Init HTTP Provider")
         self.request_counter = count()
         if endpoint_uri is None:
-            self.endpoint_uri = get_default_endpoint()
+            raise JSONRPCException("Not found endpoint uri.")
         else:
             self.endpoint_uri = endpoint_uri
         self._request_kwargs = request_kwargs or {}
@@ -64,8 +60,7 @@ class HTTPProvider(Provider):
     def make_post_request(endpoint_uri, data, **kwargs):
         kwargs.setdefault('timeout', 10)
         with requests.Session() as session:
-            response = session.post(url=endpoint_uri, json=data, **kwargs)
-            #response.raise_for_status()
+            response = session.post(url=endpoint_uri, data=json.dumps(data), **kwargs)
         return json.loads(response.content)
 
     def make_request(self, method, params=None):
@@ -87,10 +82,7 @@ class HTTPProvider(Provider):
 
     @staticmethod
     def return_customed_response(response):
-
         try:
-            if not response["result"]:
-                raise JSONRPCException(response["error"])
             return response["result"]
         except KeyError:
             raise JSONRPCException(response["error"])
