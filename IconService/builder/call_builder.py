@@ -18,7 +18,7 @@ class Call:
     """
     Class `Call` for calling a SCORE API.
     Once an instance generated, it is read-only."""
-    def __init__(self, from_, to, method, params):
+    def __init__(self, from_: str, to: str, method: str, params: dict):
         self.__from = from_
         self.__to = to
         self.__method = method
@@ -46,7 +46,7 @@ class CallBuilder:
     Builder for a `Call` object.
     Once setting it, a value of any property can't be changed forever.
     """
-    def __init__(self, from_=None, to=None, method=None, params=None):
+    def __init__(self, from_: str=None, to: str=None, method: str=None, params: dict=None) -> Call:
         self._from_ = from_
         self._to = to
         self._method = method
