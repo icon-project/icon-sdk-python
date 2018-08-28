@@ -14,64 +14,91 @@
 # limitations under the License.
 
 from hashlib import sha3_256
+from base64 import b64encode
 from IconService.wallet.wallet import Wallet
 from IconService.libs.serializer import serialize
-from IconService.libs.signer import sign_b64encode
 from IconService.builder.transaction_builder import Transaction
-from IconService.utils import get_timestamp
+from IconService.utils import get_timestamp, to_dict
+from IconService.utils.hexadecimal import add_0x_prefix, convert_int_to_hex_str, convert_bytes_to_hex_str
 
 
 class SignedTransaction:
 
-    def __init__(self, transaction, wallet: Wallet):
+    def __init__(self, transaction: Transaction, wallet: Wallet):
         """Converts raw transaction into the signed transaction object having a signature.
 
         :param transaction: A transaction object not having a signature field yet
         :param wallet: A wallet object
         """
-        self.__signed_transaction_dict = self.to_dict(transaction)
-        message_hash_bytes = sha3_256(serialize(self.__signed_transaction_dict)).digest()
-        signature_bytes = wallet.sign_message(message_hash_bytes)
-        self.__signed_transaction_dict["signature"] = sign_b64encode(signature_bytes).decode()
+        self.__signed_transaction_dict = self.to_dict(transaction, wallet)
+        message_hash = sha3_256(serialize(self.__signed_transaction_dict)).digest()
+        signature = wallet.sign(message_hash)
+        self.__signed_transaction_dict["signature"] = b64encode(signature).decode()
 
     @property
     def signed_transaction_dict(self):
         return self.__signed_transaction_dict
 
     @staticmethod
-    def to_dict(transaction: Transaction):
-        """
-        Converts an instance of the transaction into a dictionary sorted
-
-        The reason why after making a dictionary of the transaction, it is checked to have properties
-        is to order all of the properties.
-        """
-
+    def to_dict(transaction, wallet: Wallet=None):
+        """Converts an instance of the transaction into a dictionary"""
         dict_tx = {
-            "version": "0x3",
-            "from": transaction.from_,
-            "to": transaction.to,
-            "value": transaction.value,
-            "stepLimit": transaction.step_limit,
-            "timestamp": str(get_timestamp()),
-            "nid": transaction.nid,
-            "nonce": transaction.nonce,
-            "signature": "",
-            "dataType": transaction.data_type,
-            "data": transaction.data
+            "version": convert_int_to_hex_str(transaction.version) if transaction.version else "0x3",
+            "from": transaction.from_ if transaction.from_ else wallet.get_address(),
+            "stepLimit": convert_int_to_hex_str(transaction.step_limit),
+            "timestamp": convert_int_to_hex_str(transaction.timestamp) if transaction.timestamp else get_timestamp(),
+            # Network ID ("0x1" for Main net, "0x2" for Test net, etc)
+            "nid": convert_int_to_hex_str(transaction.nid) if transaction.nid else "0x1"
         }
 
-        if not transaction.nonce:
-            del dict_tx['nonce']
+        if transaction.to is not None:
+            dict_tx["to"] = transaction.to
 
-        if not transaction.value:
-            del dict_tx['value']
+        # value can be 0
+        if transaction.value is not None:
+            dict_tx["value"] = convert_int_to_hex_str(transaction.value)
 
-        if not transaction.data_type:
-            del dict_tx['dataType']
+        if transaction.nonce is not None:
+            dict_tx["nonce"] = convert_int_to_hex_str(transaction.nonce)
 
-        if not transaction.data:
-            del dict_tx['data']
+        if transaction.data_type is not None:
+            dict_tx["dataType"] = transaction.data_type
 
+        if transaction.data_type in ('deploy', 'call', 'message'):
+            dict_tx["data"] = generate_data_value(transaction)
         return dict_tx
 
+
+def convert_params_value_to_hex_str(params: dict):
+    """Converts params' values into hex str prefixed with '0x'."""
+    for key, value in params.items():
+        if isinstance(value, int):
+            params[key] = convert_int_to_hex_str(value)
+        elif isinstance(value, bytes):
+            params[key] = convert_bytes_to_hex_str(value)
+
+
+def generate_data_value(transaction):
+    """
+    Generates data value in transaction from the other data like content_type, content, method or params
+    by data types such as deploy, call, message.
+    """
+    if transaction.data_type == "deploy":
+        # Content's data type is bytes and return value is hex string prefixed with '0x'.
+        data = {
+            "contentType": transaction.content_type,
+            "content": add_0x_prefix(transaction.content.hex())
+        }
+        # Params is an optional property.
+        if transaction.params:
+            convert_params_value_to_hex_str(transaction.params)
+            data["params"] = transaction.params
+    elif transaction.data_type == "call":
+        data = {"method": transaction.method}
+        # Params is an optional property.
+        if transaction.params:
+            convert_params_value_to_hex_str(transaction.params)
+            data["params"] = transaction.params
+    else:  # When data type is message
+        data = add_0x_prefix(transaction.data.encode().hex())
+    return data
