@@ -212,13 +212,13 @@ def is_basic_transaction(params: dict) -> bool:
     Every types of `Transaction` like icx transaction, deploy transaction, call transaction and message transaction
     is checked by this method.
     """
-    inner_key_of_params = ['version', 'from', 'to', 'stepLimit', 'timestamp', 'nid', 'signature']
+    inner_key_of_params = ['version', 'from', 'to', 'stepLimit', 'timestamp', 'nid']
 
     return has_keys(params, inner_key_of_params) \
            and is_wallet_address(params['from']) \
            and (is_wallet_address(params['to']) or is_score_address(params['to'])) \
            and is_0x_prefixed(params['stepLimit']) \
-           and is_0x_prefixed(params['timestamp']) and params['signature'] is not None
+           and is_0x_prefixed(params['timestamp']) is not None
 
 
 def is_icx_transaction(params: dict) -> bool:
