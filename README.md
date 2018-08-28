@@ -12,7 +12,8 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
 
 - [ICON SDK for Python](#icon-sdk-for-python)
   - [Quick start](#quick-start)
-    - [Prerequisite](#prerequisite)
+    - [Requirements](#requirements)
+    - [Reference](#reference)
     - [Version](#version)
     - [Adding ICON SDK for Python](#adding-icon-sdk-for-python)
     - [Creating an IconService instance and Setting a provider](#creating-an-iconservice-instance-and-setting-a-provider)
@@ -109,13 +110,18 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
 
 <!-- /TOC -->
 
-
-
 ## Quick start
 
-### Prerequisite
+### Requirements
 
-Python 3.6.x
+ICON RPC Server development and execution requires following environments.
+
+- Python
+    - Version: python 3.6+
+    - IDE: Pycharm is recommended.
+
+### Reference
+- [ICON JSON-RPC API v3](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md)
 
 ### Version
 
@@ -362,7 +368,7 @@ Field :
 - value : Amount of ICX coins in loop to transfer. When omitted, assumes 0. (1 icx = 1 ^ 18 loop)
 - stepLimit :  Maximum step allowance that can be used by the transaction
 - timestamp : Transaction creation time. timestamp is in the microsecond
-- nid : Network ID
+- nid : Network ID ("0x1" for Main net, "0x2" for Test net, etc)
 - nonce : An arbitrary number used to prevent transaction hash collision
 - txHash : Transaction hash
 - txIndex : Transaction index in a block. Null when it is pending.
@@ -704,7 +710,7 @@ Finally, you can send a transaction with the signed transaction object as follow
 
 ```python
 from IconService.builder.transaction_builder import (
-	IcxTransactionBuilder,
+	TransactionBuilder,
     DeployTransactionBuilder,
     CallTransactionBuilder,
     MessageTransactionBuilder
@@ -712,7 +718,7 @@ from IconService.builder.transaction_builder import (
 from IconService.signed_transaction import SignedTransaction
 
 # Generates an instance of transaction for sending icx.
-raw_transaction = IcxTransactionBuilder()			\
+transaction = TransactionBuilder()			\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .value(150000000)								\
@@ -722,7 +728,7 @@ raw_transaction = IcxTransactionBuilder()			\
     .build()
 
 # Generates an instance of transaction for deploying SCORE.
-raw_transaction = DeployTransactionBuilder()		\
+transaction = DeployTransactionBuilder()		\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .step_limit(1000000)							\
@@ -734,7 +740,7 @@ raw_transaction = DeployTransactionBuilder()		\
     .build()
 
 # Generates an instance of transaction for calling method in SCORE.
-raw_transaction = CallTransactionBuilder()			\
+transaction = CallTransactionBuilder()			\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .step_limit(1000000)							\
@@ -745,7 +751,7 @@ raw_transaction = CallTransactionBuilder()			\
 	.build()
 
 # Generates an instance of transaction for sending a message.
-raw_transaction = MessageTransactionBuilder()		\
+transaction = MessageTransactionBuilder()		\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .step_limit(1000000)							\
@@ -755,7 +761,7 @@ raw_transaction = MessageTransactionBuilder()		\
     .build()
 
 # Returns the signed transaction object having a signature
-signed_transaction = SignedTransaction(raw_transaction, wallet)
+signed_transaction = SignedTransaction(transaction, wallet)
 
 # Sends the transaction
 tx_hash = icon_service.send_transaction(signed_transaction)
@@ -763,7 +769,7 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 
 
 
-### IcxTransactionBuilder
+### TransactionBuilder
 
 Builder for a **Transaction** object
 
@@ -773,7 +779,7 @@ Builder for a **Transaction** object
 * to : The wallet address to receive coin or SCORE address  to receive a transaction
 * value : The amount of ICX to be sent
 * step_limit : The maximum step value for processing a transaction
-* nid : Network ID
+* nid : Network ID (1 for Main net, 2 for Test net, etc)
 * nonce :  An arbitrary number used to prevent transaction hash collision
 * build : Returns an ICX transaction object  
 
@@ -785,7 +791,7 @@ A transaction object
 
 ```python
 # Generates an instance of transaction for sending icx.
-raw_transaction = IcxTransactionBuilder()			\
+transaction = TransactionBuilder()			\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .value(150000000)								\
@@ -806,7 +812,7 @@ Builder for **DeployTransaction** object
 - from_ : The wallet address making a transaction
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - step_limit : The maximum step value for processing a transaction
-- nid : Network ID
+- nid : Network ID (1 for Main net, 2 for Test net, etc)
 - nonce :   An arbitrary number used to prevent transaction hash collision
 - content_type : Content's mime-type
 - content : Binary data of the SCORE
@@ -821,7 +827,7 @@ A deploy transaction object
 
 ```python
 # Generates an instance of transaction for deploying SCORE.
-raw_transaction = DeployTransactionBuilder()		\
+transaction = DeployTransactionBuilder()		\
 	.from_(wallet.getAddress())						\
 	.to("cx00...02")								\
 	.step_limit(1000000)							\
@@ -844,7 +850,7 @@ Builder for **CallTransaction** object
 - from_ : The wallet address making a transaction
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - step_limit : The maximum step value for processing a transaction
-- nid : Network ID
+- nid : Network ID (1 for Main net, 2 for Test net, etc)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - method : Methods in the SCORE
 - params : Parameters passed on the SCORE methods (optional)
@@ -858,7 +864,7 @@ A call transaction object
 
 ```python
 # Generates an instance of transaction for calling method in SCORE.
-raw_transaction = CallTransactionBuilder()			\
+transaction = CallTransactionBuilder()			\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .step_limit(1000000)							\
@@ -880,7 +886,7 @@ Builder for **MessageTransaction** object
 - from_ : The wallet address making a transaction
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - stepLimit : The maximum step value for processing a transaction
-- nid : Network ID
+- nid : Network ID (1 for Main net, 2 for Test net, etc)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - data : Data by the dataType
 - build : Returns a message transaction object  
@@ -893,7 +899,7 @@ A message transaction object
 
 ```python
 # Generates an instance of transaction for sending a message.
-raw_transaction = MessageTransactionBuilder()		\
+transaction = MessageTransactionBuilder()		\
 	.from_(wallet.getAddress())						\
 	.to("cx00...02")								\
 	.step_limit(1000000)							\
@@ -926,7 +932,7 @@ The signed transaction object having a signature field finally
 
 ```python
 # Returns the signed transaction object having a signature
-signed_transaction = SignedTransaction(raw_transaction, wallet)
+signed_transaction = SignedTransaction(transaction, wallet)
 ```
 
 
