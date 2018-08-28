@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from IconService.utils.hexadecimal import convert_params_value_to_hex_str
+
 
 class Call:
     """
@@ -38,7 +40,7 @@ class Call:
 
     @property
     def params(self):
-        return self.__params
+        return convert_params_value_to_hex_str(self.__params) if self.__params else None
 
 
 class CallBuilder:

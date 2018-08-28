@@ -100,3 +100,14 @@ def convert_bytes_to_hex_str(value: bytes):
             raise DataTypeException("Data's type should be bytes.")
     except KeyError:
         raise DataTypeException("Data type is wrong.")
+
+
+def convert_params_value_to_hex_str(params: dict):
+    """Converts params' values into hex str prefixed with '0x'."""
+    new_params = params
+    for key, value in params.items():
+        if isinstance(value, int):
+            new_params[key] = convert_int_to_hex_str(value)
+        elif isinstance(value, bytes):
+            new_params[key] = convert_bytes_to_hex_str(value)
+    return new_params

@@ -18,8 +18,8 @@ from base64 import b64encode
 from IconService.wallet.wallet import Wallet
 from IconService.libs.serializer import serialize
 from IconService.builder.transaction_builder import Transaction
-from IconService.utils import get_timestamp, to_dict
-from IconService.utils.hexadecimal import add_0x_prefix, convert_int_to_hex_str, convert_bytes_to_hex_str
+from IconService.utils import get_timestamp
+from IconService.utils.hexadecimal import add_0x_prefix, convert_int_to_hex_str, convert_params_value_to_hex_str
 
 
 class SignedTransaction:
@@ -69,15 +69,6 @@ class SignedTransaction:
         return dict_tx
 
 
-def convert_params_value_to_hex_str(params: dict):
-    """Converts params' values into hex str prefixed with '0x'."""
-    for key, value in params.items():
-        if isinstance(value, int):
-            params[key] = convert_int_to_hex_str(value)
-        elif isinstance(value, bytes):
-            params[key] = convert_bytes_to_hex_str(value)
-
-
 def generate_data_value(transaction):
     """
     Generates data value in transaction from the other data like content_type, content, method or params
@@ -91,14 +82,12 @@ def generate_data_value(transaction):
         }
         # Params is an optional property.
         if transaction.params:
-            convert_params_value_to_hex_str(transaction.params)
-            data["params"] = transaction.params
+            data["params"] = convert_params_value_to_hex_str(transaction.params)
     elif transaction.data_type == "call":
         data = {"method": transaction.method}
         # Params is an optional property.
         if transaction.params:
-            convert_params_value_to_hex_str(transaction.params)
-            data["params"] = transaction.params
+            data["params"] = convert_params_value_to_hex_str(transaction.params)
     else:  # When data type is message
         data = add_0x_prefix(transaction.data.encode().hex())
     return data
