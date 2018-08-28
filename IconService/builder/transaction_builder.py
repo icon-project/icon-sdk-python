@@ -13,18 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from IconService.utils.hexadecimal import add_0x_prefix, convert_int_to_hex_str
-
 
 class Transaction:
     """Super class `Transaction` which is read-only."""
-    def __init__(self, from_, to, value, step_limit, nid, nonce=None):
+
+    def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
+                 timestamp: int):
         self.__from = from_
         self.__to = to
         self.__value = value
         self.__step_limit = step_limit
         self.__nid = nid
         self.__nonce = nonce
+        self.__version = version
+        self.__timestamp = timestamp
+
 
     @property
     def from_(self):
@@ -36,19 +39,27 @@ class Transaction:
 
     @property
     def value(self):
-        return convert_int_to_hex_str(self.__value) if self.__value else self.__value
+        return self.__value
 
     @property
     def step_limit(self):
-        return convert_int_to_hex_str(self.__step_limit) if self.__step_limit else self.__step_limit
+        return self.__step_limit
 
     @property
     def nid(self):
-        return convert_int_to_hex_str(self.__nid) if self.__nid else self.__nid
+        return self.__nid
 
     @property
     def nonce(self):
-        return convert_int_to_hex_str(self.__nonce) if self.__nonce else self.__nonce
+        return self.__nonce
+
+    @property
+    def version(self):
+        return self.__version
+
+    @property
+    def timestamp(self):
+        return self.__timestamp
 
     @property
     def data_type(self):
@@ -61,8 +72,9 @@ class Transaction:
 
 class DeployTransaction(Transaction):
     """Subclass `DeployTransaction`, making a transaction object for deploying SCORE which is read-only."""
-    def __init__(self, from_, to, value, step_limit, nid, nonce, content_type, content: bytes, params: dict):
-        Transaction.__init__(self, from_, to, value, step_limit, nid, nonce)
+    def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
+                 timestamp: int, content_type: str, content: bytes, params: dict):
+        Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self.__content_type = content_type
         self.__content = content
         self.__params = params
@@ -80,20 +92,15 @@ class DeployTransaction(Transaction):
         return "deploy"
 
     @property
-    def data(self):
-        # Content's data type is bytes and return value is hex string prefixed with '0x'.
-        data = {"contentType": self.__content_type,
-                "content": add_0x_prefix(self.__content.hex())}
-        # Params is an optional property which is parameters of methods, on_install() and on_update().
-        if self.__params:
-            data["params"]: self.__params
-        return data
+    def params(self):
+        return self.__params
 
 
 class CallTransaction(Transaction):
     """Subclass `CallTransaction`, making a transaction object for calling a method in SCORE which is read-only."""
-    def __init__(self, from_, to, value, step_limit, nid, nonce, method, params: dict):
-        Transaction.__init__(self, from_, to, value, step_limit, nid, nonce)
+    def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int,
+                 version: int, timestamp: int, method: str, params: dict):
+        Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self.__method = method
         self.__params = params
 
@@ -106,19 +113,15 @@ class CallTransaction(Transaction):
         return "call"
 
     @property
-    def data(self):
-        data = {"method": self.__method}
-        # params is an optional property
-        if self.__params:
-            data["params"] = self.__params
-        return data
+    def params(self):
+        return self.__params
 
 
 class MessageTransaction(Transaction):
     """Subclass `MessageTransaction`, making a transaction object for sending a message which is read-only."""
-    def __init__(self, from_, to, value, step_limit, nid, nonce, data: str):
-        # data's type is str and return value is hex string prefixed with '0x'
-        Transaction.__init__(self, from_, to, value, step_limit, nid, nonce)
+    def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
+                 timestamp: int, data: str):
+        Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self.__data = data
 
     @property
@@ -127,19 +130,22 @@ class MessageTransaction(Transaction):
 
     @property
     def data(self):
-        return add_0x_prefix(self.__data.encode().hex())
+        return self.__data
 
 
-class IcxTransactionBuilder:
+class TransactionBuilder:
     """Builder for `Transaction` object"""
 
-    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None):
+    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
+                 nonce: int=None, version: int=None, timestamp: int=None):
         self._from_ = from_
         self._to = to
         self._value = value
         self._step_limit = step_limit
         self._nid = nid
         self._nonce = nonce
+        self._version = version
+        self._timestamp = timestamp
 
     def from_(self, from_):
         self._from_ = from_
@@ -165,16 +171,26 @@ class IcxTransactionBuilder:
         self._nonce = nonce
         return self
 
+    def version(self, version):
+        self._version = version
+        return self
+
+    def timestamp(self, timestamp):
+        self._timestamp = timestamp
+        return self
+
     def build(self) -> Transaction:
-        return Transaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce)
+        return Transaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce, self._version,
+                           self._timestamp)
 
 
-class DeployTransactionBuilder(IcxTransactionBuilder):
+class DeployTransactionBuilder(TransactionBuilder):
     """Builder for `DeployTransaction` object"""
 
-    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
-                 content_type=None, content: bytes=None, params=None):
-        IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
+    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
+                 nonce: int=None, version: int=None, timestamp: int=None, content_type: str=None, content: bytes=None,
+                 params: dict=None):
+        TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._content_type = content_type
         self._content = content
         self._params = params
@@ -192,16 +208,16 @@ class DeployTransactionBuilder(IcxTransactionBuilder):
         return self
 
     def build(self) -> DeployTransaction:
-        return DeployTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce,
-                                 self._content_type, self._content, self._params)
+        return DeployTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce, self._version,
+                                 self._timestamp, self._content_type, self._content, self._params)
 
 
-class CallTransactionBuilder(IcxTransactionBuilder):
+class CallTransactionBuilder(TransactionBuilder):
     """Builder for `CallTransaction` object"""
 
-    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
-                 method=None, params: dict =None):
-        IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
+    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
+                 nonce: int=None, version: int=None, timestamp: int=None, method: str=None, params: dict =None):
+        TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._method = method
         self._params = params
 
@@ -214,15 +230,15 @@ class CallTransactionBuilder(IcxTransactionBuilder):
         return self
 
     def build(self) -> CallTransaction:
-        return CallTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce,
-                               self._method, self._params)
+        return CallTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce, self._version,
+                               self._timestamp, self._method, self._params)
 
 
-class MessageTransactionBuilder(IcxTransactionBuilder):
+class MessageTransactionBuilder(TransactionBuilder):
     """Builder for `MessageTransaction` object"""
-    def __init__(self, from_=None, to=None, value=None, step_limit=None, nid=None, nonce=None,
-                 data=None):
-        IcxTransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce)
+    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
+                 nonce: int=None, version: int=None, timestamp: int=None, data: str=None):
+        TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._data = data
 
     def data(self, data):
@@ -230,5 +246,5 @@ class MessageTransactionBuilder(IcxTransactionBuilder):
         return self
 
     def build(self) -> MessageTransaction:
-        return MessageTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce,
-                                  self._data)
+        return MessageTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce, self._version,
+                                  self._timestamp, self._data)
