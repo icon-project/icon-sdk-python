@@ -41,6 +41,7 @@ class TestSendDeploy(TestSendSuper):
         9. Calls a invoking method `transfer` of the updated SCORE
         """
         # Test install SCORE : Checks if making an instance of deploy transaction correctly
+        param = {"init_supply": 10000}
         deploy_transaction = DeployTransactionBuilder()\
             .from_(self.setting["from"])\
             .to(self.setting["to_install"]) \
@@ -48,8 +49,8 @@ class TestSendDeploy(TestSendSuper):
             .nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"])\
             .content_type(self.setting["content_type"]) \
-            .content(self.setting["content_install"])\
-            .params(self.setting["params_install"])\
+            .content(self.setting["content_install"]) \
+            .params(param) \
             .build()
         tx_dict = SignedTransaction.to_dict(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
@@ -61,13 +62,15 @@ class TestSendDeploy(TestSendSuper):
 
         # Test install SCORE : Sends a call transaction calling a method `acceptScore` to make the SCORE active
         params = {"txHash": result_install}
-        call_transaction = CallTransactionBuilder().from_(self.setting["from"])\
+        call_transaction = CallTransactionBuilder()\
+            .from_(self.setting["from"])\
             .to(self.setting["to_governance"]) \
             .step_limit(self.setting["step_limit"])\
-            .nid(self.setting["nid"])\
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
             .method("acceptScore")\
-            .params(
-            params).build()
+            .params(params)\
+            .build()
         tx_dict = SignedTransaction.to_dict(call_transaction)
         self.assertTrue(is_call_transaction(tx_dict))
 
@@ -78,11 +81,14 @@ class TestSendDeploy(TestSendSuper):
         # Test update SCORE : Checks if making an instance of deploy transaction correctly
         sleep(1)
         installed_score_address = self.icon_service.get_transaction_result(result_install)["scoreAddress"]
-        deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(installed_score_address) \
-            .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]).content_type(self.setting["content_type"]) \
+        deploy_transaction = DeployTransactionBuilder()\
+            .from_(self.setting["from"])\
+            .to(installed_score_address) \
+            .step_limit(self.setting["step_limit"])\
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"])\
+            .content_type(self.setting["content_type"]) \
             .content(self.setting["content_update"]) \
-            .params(self.setting["params_install"])\
             .build()
         tx_dict = SignedTransaction.to_dict(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
@@ -143,7 +149,7 @@ class TestSendDeploy(TestSendSuper):
         deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to_install"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .content_type(self.setting["content_type"]).content(self.setting["content_install"]) \
-            .params(self.setting["params_install"]).build()
+            .build()
         signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
         result = self.icon_service.send_transaction(signed_transaction_dict)
         self.assertTrue(is_T_HASH(result))
@@ -151,14 +157,14 @@ class TestSendDeploy(TestSendSuper):
         # Test install SCORE : When not having a required property, nid
         deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to_install"]) \
             .step_limit(self.setting["step_limit"]).content_type(self.setting["content_type"])\
-            .content(self.setting["content_install"]).params(self.setting["params_install"]).build()
+            .content(self.setting["content_install"]).build()
         signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
 
         # Test install SCORE : When not having a required property - contentType
         deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to_install"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .content(self.setting["content_install"]).params(self.setting["params_install"]).build()
+            .content(self.setting["content_install"]).build()
         signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
 
@@ -167,7 +173,7 @@ class TestSendDeploy(TestSendSuper):
         deploy_transaction = DeployTransactionBuilder().from_(wrong_address).to(self.setting["to_install"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .content_type(self.setting["content_type"]).content(self.setting["content_install"]) \
-            .params(self.setting["params_install"]).build()
+            .build()
         signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
 
@@ -176,7 +182,7 @@ class TestSendDeploy(TestSendSuper):
         deploy_transaction = DeployTransactionBuilder().from_(wrong_address).to(self.setting["to_install"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .content_type(self.setting["content_type"]).content(self.setting["content_install"]) \
-            .params(self.setting["params_install"]).build()
+            .build()
         signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
 

@@ -26,9 +26,13 @@ class TestSendMessage(TestSendSuper):
     def test_send_message(self):
 
         # Checks if making an instance of message transaction correctly
-        message_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
-            .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]).data(self.setting["data"]).build()
+        message_transaction = MessageTransactionBuilder()\
+            .from_(self.setting["from"])\
+            .to(self.setting["to"]) \
+            .step_limit(self.setting["step_limit"])\
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"])\
+            .data(self.setting["data"]).build()
         tx_dict = SignedTransaction.to_dict(message_transaction)
         self.assertTrue(is_message_transaction(tx_dict))
 

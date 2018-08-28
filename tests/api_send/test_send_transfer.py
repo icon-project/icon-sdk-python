@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from tests.api_send.test_send_super import TestSendSuper
-from IconService.builder.transaction_builder import IcxTransactionBuilder
+from IconService.builder.transaction_builder import TransactionBuilder
 from IconService.signed_transaction import SignedTransaction
 from IconService.utils.validation import is_icx_transaction, is_T_HASH
 from IconService.exception import JSONRPCException, DataTypeException
@@ -25,7 +25,7 @@ class TestSendTransfer(TestSendSuper):
     def test_transfer(self):
 
         # When having an optional property, nonce
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"]).build()
         tx_dict = SignedTransaction.to_dict(icx_transaction)
@@ -36,7 +36,7 @@ class TestSendTransfer(TestSendSuper):
         self.assertTrue(is_T_HASH(result))
 
         # When not having an optional property, nonce
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).build()
         tx_dict = SignedTransaction.to_dict(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
@@ -47,14 +47,14 @@ class TestSendTransfer(TestSendSuper):
 
         # When value is wrong prefixed with '0x'
         wrong_value = "0x34330000000"
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(wrong_value).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"]).build()
         self.assertRaises(DataTypeException, SignedTransaction, icx_transaction, self.wallet)
 
         # When value is valid which type is int
         wrong_value = 34330000000
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(wrong_value).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"]).build()
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
@@ -63,14 +63,14 @@ class TestSendTransfer(TestSendSuper):
 
         # When address is wrong
         wrong_address = "hx5bfdb090f43a808005ffc27c25b213145e8"
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(wrong_address) \
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(wrong_address) \
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"]).build()
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
 
         # When not having a required property, nid
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]) \
             .nonce(self.setting["nonce"]).build()
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
@@ -78,7 +78,7 @@ class TestSendTransfer(TestSendSuper):
 
         # When a sending address is wrong - not the wallet's address
         wrong_address = "hx5bfdb090f43a808005ffc27c25b213145e80b7cd"
-        icx_transaction = IcxTransactionBuilder().from_(wrong_address).to(self.setting["to"]) \
+        icx_transaction = TransactionBuilder().from_(wrong_address).to(self.setting["to"]) \
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"]).build()
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)

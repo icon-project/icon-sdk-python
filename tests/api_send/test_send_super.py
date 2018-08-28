@@ -51,9 +51,9 @@ class TestSendSuper(TestCase):
             "from": cls.wallet.get_address(),
             "to": "hx5bfdb090f43a808005ffc27c25b213145e80b7cd",
             "to_governance": "cx0000000000000000000000000000000000000001",
-            "step_limit": 40000000,
+            "step_limit": 4000000000,
             "nid": 3,
-            "nonce": 2,
+            "nonce": 3,
             # It is used to send icx(transfer) only.
             "value": 1000000000000000000,
             # It is used to send call only.
@@ -71,7 +71,7 @@ class TestSendSuper(TestCase):
             "content_update": update_content_bytes,
             # It is used to deploy only.(install)
             "params_install": {
-                "init_supply": 1000
+                "init_supply": 10000
             },
             # It is used to send message only.
             "data": "test"

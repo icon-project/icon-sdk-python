@@ -15,7 +15,7 @@
 
 from unittest import main
 from IconService.signed_transaction import SignedTransaction
-from IconService.builder.transaction_builder import IcxTransactionBuilder, MessageTransactionBuilder, \
+from IconService.builder.transaction_builder import TransactionBuilder, MessageTransactionBuilder, \
     CallTransactionBuilder, DeployTransactionBuilder
 from IconService.utils.validation import is_icx_transaction, is_call_transaction, is_message_transaction, \
     is_deploy_transaction, is_T_HASH
@@ -27,18 +27,18 @@ class TestSignedTransaction(TestSendSuper):
     def test_to_dict(self):
         # Transfer
         # When having an optional property, nonce
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"])\
             .nonce(self.setting["nonce"]).build()
         tx_dict = SignedTransaction.to_dict(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
         # When not having an optional property, nonce
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).build()
         tx_dict = SignedTransaction.to_dict(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
         # When not having an required property, value
-        icx_transaction = IcxTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
+        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).build()
         tx_dict = SignedTransaction.to_dict(icx_transaction)
         self.assertFalse(is_icx_transaction(tx_dict))
@@ -73,7 +73,7 @@ class TestSignedTransaction(TestSendSuper):
 
     def test_signed_transaction_transfer(self):
 
-        icx_transaction = IcxTransactionBuilder().from_(self.wallet.get_address()).to(self.setting["to"])\
+        icx_transaction = TransactionBuilder().from_(self.wallet.get_address()).to(self.setting["to"])\
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"])\
             .nonce(self.setting["nonce"]).build()
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
