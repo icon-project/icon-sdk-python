@@ -40,7 +40,7 @@ class TestGetBalance(TestCase):
         self.assertRaises(AddressException, self.icon_service.get_balance, self.to_[2:])
         self.assertRaises(AddressException, self.icon_service.get_balance, self.from_[2:])
         self.assertRaises(AddressException, self.icon_service.get_balance, "123")
-        self.assertRaises(DataTypeException, self.icon_service.get_balance, 123)
+        self.assertRaises(AddressException, self.icon_service.get_balance, 123)
         # when the address's length is short
         self.assertRaises(AddressException, self.icon_service.get_balance, "cx882efc17c2f50e0d60142b9c0e746cbafb569d")
 

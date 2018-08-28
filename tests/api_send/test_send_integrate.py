@@ -51,6 +51,7 @@ class TestSendDeploy(TestSendSuper):
             .content_type(self.setting["content_type"]) \
             .content(self.setting["content_install"]) \
             .params(param) \
+            .version(3)     \
             .build()
         tx_dict = SignedTransaction.to_dict(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))

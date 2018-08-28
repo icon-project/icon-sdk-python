@@ -18,7 +18,7 @@ from hashlib import sha3_256
 from abc import ABCMeta, abstractmethod
 from secp256k1 import PrivateKey
 from IconService.utils.validation import is_password_of_keystore_file, is_keystore_file
-from IconService.exception import KeyStoreException
+from IconService.exception import KeyStoreException, DataTypeException
 from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json
 from multipledispatch import dispatch
 from IconService.utils import store_keystore_file_on_the_path
@@ -65,16 +65,19 @@ class KeyWallet(Wallet):
         return wallet
 
     @staticmethod
-    @dispatch(str)
-    def load(hex_private_key: str):
+    @dispatch(bytes)
+    def load(private_key: bytes):
         """Loads a wallet from a private key and generates an instance of Wallet.
 
-        :param hex_private_key: in hexadecimal. type(str)
+        :param private_key: private key in bytes
         :return: An instance of Wallet class.
         """
-        private_key_object = PrivateKey(bytes.fromhex(hex_private_key))
-        wallet = KeyWallet(private_key_object)
-        return wallet
+        try:
+            private_key_object = PrivateKey(private_key)
+            wallet = KeyWallet(private_key_object)
+            return wallet
+        except TypeError:
+            raise DataTypeException("Private key is invalid.")
 
     @staticmethod
     @dispatch(str, str)
