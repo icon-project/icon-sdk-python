@@ -74,7 +74,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
       - [Parameters](#parameters-12)
       - [Returns](#returns-12)
       - [Example](#example-12)
-    - [sign_message](#sign_message)
+    - [sign](#sign)
       - [Parameters](#parameters-13)
       - [Returns](#returns-13)
       - [Example](#example-13)
@@ -114,7 +114,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
 
 ### Requirements
 
-ICON RPC Server development and execution requires following environments.
+ICON SDK for Python development and execution requires following environments.
 
 - Python
     - Version: python 3.6+
@@ -193,7 +193,7 @@ tx_result = icon_service.get_transaction_result("0x000...000");
 call = CallBuilder().from_(wallet.get_address())		\
 					.to("cx000...1")					\
 					.method("balance_of")				\
-					.params(params)						\
+					.params({"address":"hx000...1"})	\
             		.build()
 # Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction on Loopchain
 result = icon_service.call(call)
@@ -447,12 +447,9 @@ Call object made by **CallBuilder**
 Fields :
 
 * from : Message sender's address
-
 * to : A SCORE address that will handle the message
-
 * method : name of an external function
-
-* params : Parameters to be passed to the function (optional)
+* params : Parameters to be passed to the function (optional). A data type of params should be **dict**.
 
 
 #### Returns
@@ -462,11 +459,11 @@ Values returned by the executed SCORE function
 #### Example
 
 ```python
-# Creates a call instance using the CallBuilder
+# Generates a call instance using the CallBuilder
 call = CallBuilder().from_(wallet.get_address())		\
 					.to("cx000...1")					\
 					.method("balance_of")				\
-					.params(params)						\
+					.params({"address":"hx000...1"})	\
             		.build()
 # Calls SCORE's external function which is read-only without creating a transaction on Loopchain
 result = icon_service.call(call)
@@ -478,7 +475,7 @@ result = icon_service.call(call)
 
 To send transactions, first, you should make an instance of your wallet.  
 
-You can make an instance of the wallet using a private key or from a key store file.
+You can make an instance of the wallet using bytes of the private key or from a key store file.
 
 ### Examples
 
@@ -488,8 +485,8 @@ from IconService.wallet.wallet import KeyWallet
 # Generates a wallet
 wallet = KeyWallet.create()
 
-# Loads a wallet from a private key
-wallet = KeyWallet.load("0x0000")
+# Loads a wallet from bytes of the private key
+wallet = KeyWallet.load(b'-B\x99...xedy')
 
 # Loads a wallet from a key store file
 wallet = KeyWallet.load("./keystore", "password")
@@ -503,8 +500,8 @@ wallet.get_address()
 # Returns a private key
 wallet.get_private_key()
 
-# Signs message
-signature = wallet.sign_message(b'D8\xe9...\xfc')
+# Signs the transaction
+signature = wallet.sign(b'D8\xe9...\xfc')
 ```
 
 
@@ -539,16 +536,16 @@ wallet = KeyWallet.create()
 ### load
 
 ```python
-load(hex_private_key: str)
+load(private_key: bytes)
 ```
 
 
 
-Loads a wallet from a private key and generates an instance of Wallet
+Loads a wallet from bytes of the private key and generates an instance of Wallet
 
 #### Parameters
 
-hex_private_key : A private key in hexadecimal - 256 bits in hexadecimal is 32 bytes, or 64 characters in the range 0-9 or A-F. A tiny bit of code that is paired with a public key to set off algorithms to encrypt and decrypt a text for the specific address
+private_key : Bytes of the private key
 
 #### Returns
 
@@ -557,8 +554,8 @@ An instance of Wallet class
 #### Example
 
 ```python
-# Loads a wallet from a private key
-wallet = KeyWallet.load("0x0000")
+# Loads a wallet from bytes of the private key
+wallet = KeyWallet.load(b'-B\x99...xedy')
 ```
 
 
@@ -623,7 +620,9 @@ wallet.store("./keystore", "password") # throw exception if having an error.
 get_address()
 ```
 
-Returns  an EOA address
+Returns an EOA address
+
+The format of your account (which is generated from your public key) is hxfd7e4560ba363f5aabd32caac7317feeee70ea57.
 
 #### Parameters
 
@@ -648,7 +647,7 @@ wallet.get_address()
 get_private_key()
 ```
 
-Returns the private key of the wallet
+Returns hex string of the private key of the wallet
 
 #### Parameters
 
@@ -656,7 +655,7 @@ None
 
 #### Returns
 
-The private key in hexadecimal
+Hex string of the private key 
 
 #### Example
 
@@ -667,27 +666,27 @@ wallet.get_private_key()
 
 
 
-### sign_message
+### sign
 
 ```python
-sign_message(message_hash: bytes)
+sign(data: bytes)
 ```
 
-Returns on ECDSA-SHA256 signature in bytes using massage hash
+Returns on bytes of ECDSA-SHA256 signature made from the data
 
 #### Parameters
 
-message_hash : Message hash in bytes
+data : bytes of the transaction
 
 #### Returns
 
-Signature in bytes
+Bytes of the signature
 
 #### Example
 
 ``` python
-# Signs message
-signature = wallet.sign_message(b'D8\xe9...\xfc')
+# Signs the transaction
+signature = wallet.sign(b'D8\xe9...\xfc')
 ```
 
 
@@ -718,13 +717,15 @@ from IconService.builder.transaction_builder import (
 from IconService.signed_transaction import SignedTransaction
 
 # Generates an instance of transaction for sending icx.
-transaction = TransactionBuilder()			\
+transaction = TransactionBuilder()					\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .value(150000000)								\
     .step_limit(1000000)							\
     .nid(3)											\
     .nonce(100)										\
+    .version(3)										\
+    .timestamp(1234567890)							\
     .build()
 
 # Generates an instance of transaction for deploying SCORE.
@@ -775,13 +776,15 @@ Builder for a **Transaction** object
 
 #### set methods
 
-* from_ : the wallet address making a transaction
-* to : The wallet address to receive coin or SCORE address  to receive a transaction
-* value : The amount of ICX to be sent
-* step_limit : The maximum step value for processing a transaction
-* nid : Network ID (1 for Main net, 2 for Test net, etc)
-* nonce :  An arbitrary number used to prevent transaction hash collision
-* build : Returns an ICX transaction object  
+* from_ : The wallet address making a transaction. The default address is your account address.
+* to : The wallet address to receive coin or SCORE address  to receive a transaction.
+* value : The amount of ICX to be sent. (Optional)
+* step_limit : The maximum step value for processing a transaction.
+* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
+* nonce :  An arbitrary number used to prevent transaction hash collision. (optional)
+* version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
+* timestamp : Transaction creation time. Timestamp is in microsecond. (Optional)
+* build : Returns an ICX transaction object. 
 
 #### Returns
 
@@ -791,13 +794,15 @@ A transaction object
 
 ```python
 # Generates an instance of transaction for sending icx.
-transaction = TransactionBuilder()			\
+transaction = TransactionBuilder()					\
     .from_(wallet.getAddress())						\
     .to("cx00...02")								\
     .value(150000000)								\
     .step_limit(1000000)							\
     .nid(3)											\
     .nonce(100)										\
+    .version(3)										\
+    .timestamp(1234567890)							\
     .build()
 ```
 
@@ -809,14 +814,28 @@ Builder for **DeployTransaction** object
 
 #### methods
 
-- from_ : The wallet address making a transaction
+- from_ : The wallet address making a transaction. The default address is your account address.
+
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
+
 - step_limit : The maximum step value for processing a transaction
-- nid : Network ID (1 for Main net, 2 for Test net, etc)
+
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
+
 - nonce :   An arbitrary number used to prevent transaction hash collision
+
 - content_type : Content's mime-type
+
 - content : Binary data of the SCORE
-- params : Parameters passed on the SCORE methods ; on_install (), on_update () (optional)
+
+- params : Parameters passed on the SCORE methods ; on_install (), on_update ().
+
+  		 Data type of the params should be **dict**. (optional (optional)
+
+- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
+
+- timestamp : Transaction creation time. Timestamp is in microsecond. (Optional)
+
 - build : Returns a deploy transaction object  
 
 #### Returns
@@ -847,13 +866,15 @@ Builder for **CallTransaction** object
 
 #### methods
 
-- from_ : The wallet address making a transaction
+- from_ : The wallet address making a transaction. The default address is your account address.
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - step_limit : The maximum step value for processing a transaction
-- nid : Network ID (1 for Main net, 2 for Test net, etc)
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - method : Methods in the SCORE
-- params : Parameters passed on the SCORE methods (optional)
+- params : Parameters passed on the SCORE methods. Data type of the params should be **dict**. (optional) 
+- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
+- timestamp : Transaction creation time. Timestamp is in microsecond. (Optional)
 - Build : Returns a call transaction object  
 
 #### Returns
@@ -883,12 +904,14 @@ Builder for **MessageTransaction** object
 
 #### methods
 
-- from_ : The wallet address making a transaction
+- from_ : The wallet address making a transaction. The default address is your account address.
 - to : The wallet address to receive coin or SCORE address  to receive a transaction
 - stepLimit : The maximum step value for processing a transaction
-- nid : Network ID (1 for Main net, 2 for Test net, etc)
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
 - nonce :  An arbitrary number used to prevent transaction hash collision
-- data : Data by the dataType
+- data : Data by the dataType. Data type of the data should be **string**.
+- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
+- timestamp : Transaction creation time. Timestamp is in microsecond. (Optional)
 - build : Returns a message transaction object  
 
 #### Returns
