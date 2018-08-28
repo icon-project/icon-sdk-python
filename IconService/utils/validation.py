@@ -87,7 +87,7 @@ def is_wallet_address(value) -> bool:
 
     :param value: wallet address
     """
-    return is_hx_prefixed(value) and len(remove_hx_prefix(value)) == 40
+    return is_str(value) and value.islower() and is_hx_prefixed(value) and len(remove_hx_prefix(value)) == 40
 
 
 def is_score_address(value) -> bool:
@@ -97,7 +97,7 @@ def is_score_address(value) -> bool:
 
     :param value: SCORE address
     """
-    return is_cx_prefixed(value) and len(remove_cx_prefix(value)) == 40
+    return is_str(value) and value.islower() and is_cx_prefixed(value) and len(remove_cx_prefix(value)) == 40
 
 
 def is_T_HASH(value):
