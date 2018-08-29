@@ -4,7 +4,7 @@
 
 # ICON SDK for Python
 
-ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples.
+ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples. It is reference to [ICON JSON-RPC API **v3**](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md).
 
 
 
@@ -122,17 +122,19 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Reference
 - [ICON JSON-RPC API v3](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md)
+- [ICON SDK for Python(Previous version)](https://github.com/icon-project/icon_sdk_for_python)
+    - Reference to [ICON JSON-RPC API **v2**] (https://github.com/icon-project/icx_JSON_RPC)
 
 ### Version
 
-0.0.1 beta
+1.0.0 beta
 
 ### Adding ICON SDK for Python
 
 First you need to get ICON SDK for Python into your project. This can be installed using pip as follows:
 
 ``````shell
-$ pip install icon-sdk-python
+$ pip install iconsdk
 ``````
 
 ### Creating an IconService instance and Setting a provider
