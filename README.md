@@ -123,7 +123,7 @@ ICON SDK for Python development and execution requires following environments.
 ### Reference
 - [ICON JSON-RPC API v3](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md)
 - [ICON SDK for Python(Previous version)](https://github.com/icon-project/icon_sdk_for_python)
-    - Reference to [ICON JSON-RPC API **v2**] (https://github.com/icon-project/icx_JSON_RPC)
+    - Reference to [ICON JSON-RPC API **v2**](https://github.com/icon-project/icx_JSON_RPC)
 
 ### Version
 
