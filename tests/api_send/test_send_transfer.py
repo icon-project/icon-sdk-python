@@ -33,7 +33,6 @@ class TestSendTransfer(TestSendSuper):
             .nid(3) \
             .nonce(self.setting["nonce"])\
             .version(3) \
-            .timestamp(1535437980679201) \
             .build()
         tx_dict = SignedTransaction.to_dict(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
