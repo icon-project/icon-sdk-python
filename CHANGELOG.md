@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.1] -  July, 31, 2018
+## [1.0.0] -  July, 31, 2018
 ### Added
  - Initialize version.
 

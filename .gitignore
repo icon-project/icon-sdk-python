@@ -14,5 +14,9 @@ ENV/
 env.bak/
 venv.bak/
 
+build/
+dist/
+icon_sdk_python.egg-info/
 
 examples
+log.ini
