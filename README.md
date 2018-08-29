@@ -83,7 +83,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
     - [Signing a transaction](#signing-a-transaction)
     - [Sending a transaction](#sending-a-transaction)
     - [Examples](#examples-2)
-    - [IcxTransactionBuilder](#icxtransactionbuilder)
+    - [TransactionBuilder](#transactionbuilder)
       - [set methods](#set-methods)
       - [Returns](#returns-14)
       - [Example](#example-14)
