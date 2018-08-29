@@ -19,7 +19,7 @@ with open("README.md", 'r') as f:
     long_description = f.read()
 
 setup(
-   name='icon-sdk-python',
+   name='iconsdk',
    version='1.0.0',
    description='ICON SDK for Python is a collection of libraries which allow you to interact '
                'with a local or remote Loopchain node, using an HTTP connection. ',
