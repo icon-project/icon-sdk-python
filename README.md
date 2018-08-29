@@ -123,7 +123,7 @@ ICON SDK for Python development and execution requires following environments.
 ### Reference
 - [ICON JSON-RPC API v3](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md)
 - [ICON SDK for Python(Previous version)](https://github.com/icon-project/icon_sdk_for_python)
-    - Reference to [ICON JSON-RPC API **v2**] (https://github.com/icon-project/icx_JSON_RPC)
+    - Reference to [ICON JSON-RPC API **v2**](https://github.com/icon-project/icx_JSON_RPC)
 
 ### Version
 
@@ -192,11 +192,12 @@ tx = icon_service.get_transaction("0x000...000")
 tx_result = icon_service.get_transaction_result("0x000...000");
 
 # Generates a call instance using the CallBuilder
-call = CallBuilder().from_(wallet.get_address())		\
-					.to("cx000...1")					\
-					.method("balance_of")				\
-					.params({"address":"hx000...1"})	\
-            		.build()
+call = CallBuilder().from_(wallet.get_address())
+                    .to("cx000...1")
+                    .method("balance_of")
+                    .params({"address":"hx000...1"})
+                    .build()
+
 # Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction on Loopchain
 result = icon_service.call(call)
 
@@ -462,11 +463,12 @@ Values returned by the executed SCORE function
 
 ```python
 # Generates a call instance using the CallBuilder
-call = CallBuilder().from_(wallet.get_address())		\
-					.to("cx000...1")					\
-					.method("balance_of")				\
-					.params({"address":"hx000...1"})	\
-            		.build()
+call = CallBuilder().from_(wallet.get_address())
+                    .to("cx000...1")
+                    .method("balance_of")
+                    .params({"address":"hx000...1"})
+                    .build()
+
 # Calls SCORE's external function which is read-only without creating a transaction on Loopchain
 result = icon_service.call(call)
 ```
@@ -711,7 +713,7 @@ Finally, you can send a transaction with the signed transaction object as follow
 
 ```python
 from IconService.builder.transaction_builder import (
-	TransactionBuilder,
+    TransactionBuilder,
     DeployTransactionBuilder,
     CallTransactionBuilder,
     MessageTransactionBuilder
@@ -719,48 +721,46 @@ from IconService.builder.transaction_builder import (
 from IconService.signed_transaction import SignedTransaction
 
 # Generates an instance of transaction for sending icx.
-transaction = TransactionBuilder()					\
-    .from_(wallet.getAddress())						\
-    .to("cx00...02")								\
-    .value(150000000)								\
-    .step_limit(1000000)							\
-    .nid(3)											\
-    .nonce(100)										\
-    .version(3)										\
-    .timestamp(1234567890)							\
+transaction = TransactionBuilder()
+    .from_(wallet.getAddress())
+    .to("cx00...02")
+    .value(150000000)
+    .step_limit(1000000).nid(3)
+    .nonce(100).version(3)
+    .timestamp(1234567890)
     .build()
 
 # Generates an instance of transaction for deploying SCORE.
-transaction = DeployTransactionBuilder()		\
-    .from_(wallet.getAddress())						\
-    .to("cx00...02")								\
-    .step_limit(1000000)							\
-    .nid(3)											\
-    .nonce(100)										\
-    .content_type("application/zip")				\
-    .content(b'D8\xe9...\xfc')						\
-    .params(params)									\
+transaction = DeployTransactionBuilder()
+    .from_(wallet.getAddress())
+    .to("cx00...02")
+    .step_limit(1000000)
+    .nid(3)
+    .nonce(100)
+    .content_type("application/zip")
+    .content(b'D8\xe9...\xfc')
+    .params(params)
     .build()
 
 # Generates an instance of transaction for calling method in SCORE.
-transaction = CallTransactionBuilder()			\
-    .from_(wallet.getAddress())						\
-    .to("cx00...02")								\
-    .step_limit(1000000)							\
-    .nid(3)											\
-    .nonce(100)										\
-    .method("balance_of")							\
-    .params(params)									\
-	.build()
+transaction = CallTransactionBuilder()
+    .from_(wallet.getAddress())
+    .to("cx00...02")
+    .step_limit(1000000)
+    .nid(3)
+    .nonce(100)
+    .method("balance_of")
+    .params(params)
+    .build()
 
 # Generates an instance of transaction for sending a message.
-transaction = MessageTransactionBuilder()		\
-    .from_(wallet.getAddress())						\
-    .to("cx00...02")								\
-    .step_limit(1000000)							\
-    .nid(3)											\
-    .nonce(100)										\
-    .data("test")								    \
+transaction = MessageTransactionBuilder()
+    .from_(wallet.getAddress())
+    .to("cx00...02")
+    .step_limit(1000000)
+    .nid(3)
+    .nonce(100)
+    .data("test")
     .build()
 
 # Returns the signed transaction object having a signature
@@ -796,15 +796,15 @@ A transaction object
 
 ```python
 # Generates an instance of transaction for sending icx.
-transaction = TransactionBuilder()					\
-    .from_(wallet.getAddress())						\
-    .to("cx00...02")								\
-    .value(150000000)								\
-    .step_limit(1000000)							\
-    .nid(3)											\
-    .nonce(100)										\
-    .version(3)										\
-    .timestamp(1234567890)							\
+transaction = TransactionBuilder()
+    .from_(wallet.getAddress())
+    .to("cx00...02")
+    .value(150000000)
+    .step_limit(1000000)
+    .nid(3)
+    .nonce(100)
+    .version(3)
+    .timestamp(1234567890)
     .build()
 ```
 
@@ -830,9 +830,7 @@ Builder for **DeployTransaction** object
 
 - content : Binary data of the SCORE
 
-- params : Parameters passed on the SCORE methods ; on_install (), on_update ().
-
-  		 Data type of the params should be **dict**. (optional (optional)
+- params : Parameters passed on the SCORE methods ; on_install (), on_update (). Data type of the params should be **dict**. (optional)
 
 - version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
 
@@ -848,15 +846,15 @@ A deploy transaction object
 
 ```python
 # Generates an instance of transaction for deploying SCORE.
-transaction = DeployTransactionBuilder()		\
-	.from_(wallet.getAddress())						\
-	.to("cx00...02")								\
-	.step_limit(1000000)							\
-	.nid(3)											\
-	.nonce(100)										\
-	.content_type("application/zip")				\
-	.content(b'D8\xe9...\xfc')						\
-	.params(params)									\
+transaction = DeployTransactionBuilder()
+	.from_(wallet.getAddress())
+	.to("cx00...02")
+	.step_limit(1000000)
+	.nid(3)
+	.nonce(100)
+	.content_type("application/zip")
+	.content(b'D8\xe9...\xfc')
+	.params(params)
 	.build()
 ```
 
@@ -887,14 +885,14 @@ A call transaction object
 
 ```python
 # Generates an instance of transaction for calling method in SCORE.
-transaction = CallTransactionBuilder()			\
-    .from_(wallet.getAddress())						\
-    .to("cx00...02")								\
-    .step_limit(1000000)							\
-    .nid(3)											\
-    .nonce(100)										\
-    .method("balance_of")							\
-    .params(params)									\
+transaction = CallTransactionBuilder()
+    .from_(wallet.getAddress())
+    .to("cx00...02")
+    .step_limit(1000000)
+    .nid(3)
+    .nonce(100)
+    .method("balance_of")
+    .params(params)
 	.build()
 ```
 
@@ -924,13 +922,13 @@ A message transaction object
 
 ```python
 # Generates an instance of transaction for sending a message.
-transaction = MessageTransactionBuilder()		\
-	.from_(wallet.getAddress())						\
-	.to("cx00...02")								\
-	.step_limit(1000000)							\
-	.nid(3)											\
-	.nonce(100)										\
-	.data("test")								    \
+transaction = MessageTransactionBuilder()
+	.from_(wallet.getAddress())
+	.to("cx00...02")
+	.step_limit(1000000)
+	.nid(3)
+	.nonce(100)
+	.data("test")
 	.build()
 ```
 
