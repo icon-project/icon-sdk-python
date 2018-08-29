@@ -894,7 +894,7 @@ transaction = CallTransactionBuilder()
     .nonce(100)
     .method("balance_of")
     .params(params)
-	.build()
+    .build()
 ```
 
 
