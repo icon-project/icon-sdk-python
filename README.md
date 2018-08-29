@@ -193,10 +193,11 @@ tx_result = icon_service.get_transaction_result("0x000...000");
 
 # Generates a call instance using the CallBuilder
 call = CallBuilder().from_(wallet.get_address())
-					.to("cx000...1")
-					.method("balance_of")
-					.params({"address":"hx000...1"})
-            		.build()
+                    .to("cx000...1")
+                    .method("balance_of")
+                    .params({"address":"hx000...1"})
+                    .build()
+
 # Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction on Loopchain
 result = icon_service.call(call)
 
@@ -463,10 +464,11 @@ Values returned by the executed SCORE function
 ```python
 # Generates a call instance using the CallBuilder
 call = CallBuilder().from_(wallet.get_address())
-					.to("cx000...1")
-					.method("balance_of")
-					.params({"address":"hx000...1"})
-            		.build()
+                    .to("cx000...1")
+                    .method("balance_of")
+                    .params({"address":"hx000...1"})
+                    .build()
+
 # Calls SCORE's external function which is read-only without creating a transaction on Loopchain
 result = icon_service.call(call)
 ```
@@ -711,7 +713,7 @@ Finally, you can send a transaction with the signed transaction object as follow
 
 ```python
 from IconService.builder.transaction_builder import (
-	TransactionBuilder,
+    TransactionBuilder,
     DeployTransactionBuilder,
     CallTransactionBuilder,
     MessageTransactionBuilder
@@ -723,10 +725,8 @@ transaction = TransactionBuilder()
     .from_(wallet.getAddress())
     .to("cx00...02")
     .value(150000000)
-    .step_limit(1000000)
-    .nid(3)
-    .nonce(100)
-    .version(3)
+    .step_limit(1000000).nid(3)
+    .nonce(100).version(3)
     .timestamp(1234567890)
     .build()
 
@@ -751,7 +751,7 @@ transaction = CallTransactionBuilder()
     .nonce(100)
     .method("balance_of")
     .params(params)
-	.build()
+    .build()
 
 # Generates an instance of transaction for sending a message.
 transaction = MessageTransactionBuilder()
@@ -795,7 +795,8 @@ A transaction object
 #### Example
 
 ```python
-# Generates an instance of transaction for sending icx.transaction = TransactionBuilder()
+# Generates an instance of transaction for sending icx.
+transaction = TransactionBuilder()
     .from_(wallet.getAddress())
     .to("cx00...02")
     .value(150000000)
@@ -829,9 +830,7 @@ Builder for **DeployTransaction** object
 
 - content : Binary data of the SCORE
 
-- params : Parameters passed on the SCORE methods ; on_install (), on_update ().
-
-  		 Data type of the params should be **dict**. (optional (optional)
+- params : Parameters passed on the SCORE methods ; on_install (), on_update (). Data type of the params should be **dict**. (optional)
 
 - version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
 
