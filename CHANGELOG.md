@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.0.3] -  August, 30, 2018
+### Added
+N/A
+
+### Changed
+- Revise README.md examples
+
+### Removed
+N/A
+
+## [1.0.2] -  August, 30, 2018
+### Added
+N/A
+
+### Changed
+- Revise broken README.md
+
+### Removed
+N/A
 
 ## [1.0.1] -  August, 30, 2018
 ### Added
