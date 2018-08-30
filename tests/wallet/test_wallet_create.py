@@ -14,8 +14,8 @@
 # limitations under the License.
 
 from unittest import TestCase, main
-from IconService.wallet.wallet import KeyWallet
-from IconService.utils.validation import is_wallet_address
+from iconsdk.wallet.wallet import KeyWallet
+from iconsdk.utils.validation import is_wallet_address
 
 
 class TestWalletCreate(TestCase):

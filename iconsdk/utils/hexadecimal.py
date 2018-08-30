@@ -22,8 +22,8 @@ It is used for
 - an address of SCORE starting with 'cx'
 """
 
-from IconService.utils.type import is_str, is_integer, is_bytes
-from IconService.exception import DataTypeException
+from iconsdk.utils.type import is_str, is_integer, is_bytes
+from iconsdk.exception import DataTypeException
 
 
 def is_0x_prefixed(value):

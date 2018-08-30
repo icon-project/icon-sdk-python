@@ -127,7 +127,7 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Version
 
-1.0.0 beta
+1.0.1 beta
 
 ### Adding ICON SDK for Python
 
@@ -150,14 +150,14 @@ After that, you need to create an IconService instance and set a provider.
  A simple API method getting a block matching the given block's height is as follows.
 
 ```python
-from IconService.Icon_service import IconService
-from IconService.providers.http_provider import HTTPProvider
+from iconsdk.icon_service import IconService
+from iconsdk.providers.http_provider import HTTPProvider
 
 # Creates an IconService instance using the HTTP provider and set a provider.
-icon_service = IconService(HttpProvider("https://iconx.io"));
+icon_service = IconService(HttpProvider("https://iconx.io"))
 
 # Gets a block matching the block height.
-block = icon_service.getBlock(1209);
+block = icon_service.getBlock(1209)
 ```
 
 
@@ -189,7 +189,7 @@ total_supply = icon_service.get_total_supply()
 tx = icon_service.get_transaction("0x000...000")
 
 # Returns the result of a transaction by transaction hash
-tx_result = icon_service.get_transaction_result("0x000...000");
+tx_result = icon_service.get_transaction_result("0x000...000")
 
 # Generates a call instance using the CallBuilder
 call = CallBuilder().from_(wallet.get_address())
@@ -428,7 +428,7 @@ Field :
 
 ```python
 # Returns the transaction result requested by transaction hash
-tx_result = icon_service.get_transaction_result("0x000...000");
+tx_result = icon_service.get_transaction_result("0x000...000")
 ```
 
 
@@ -484,7 +484,7 @@ You can make an instance of the wallet using bytes of the private key or from a 
 ### Examples
 
 ```python
-from IconService.wallet.wallet import KeyWallet
+from iconsdk.wallet.wallet import KeyWallet
 
 # Generates a wallet
 wallet = KeyWallet.create()

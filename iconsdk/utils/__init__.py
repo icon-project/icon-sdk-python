@@ -17,7 +17,7 @@ from os import path
 from functools import wraps
 from logging import StreamHandler, Formatter
 from time import time
-from IconService.utils.hexadecimal import add_0x_prefix
+from iconsdk.utils.hexadecimal import add_0x_prefix
 
 
 def store_keystore_file_on_the_path(file_path, json_string):

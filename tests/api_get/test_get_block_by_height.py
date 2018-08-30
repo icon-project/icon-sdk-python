@@ -14,11 +14,11 @@
 # limitations under the License.
 
 from unittest import TestCase, main
-from IconService.Icon_service import IconService
-from IconService.providers.http_provider import HTTPProvider
+from iconsdk.icon_service import IconService
+from iconsdk.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from IconService.exception import DataTypeException, JSONRPCException
-from IconService.utils.validation import is_block
+from iconsdk.exception import DataTypeException, JSONRPCException
+from iconsdk.utils.validation import is_block
 
 
 class TestGetBlockByHeight(TestCase):
