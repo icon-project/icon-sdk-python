@@ -16,7 +16,7 @@
 from os import path, walk
 from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
-from IconService.exception import ZipException
+from iconsdk.exception import ZipException
 
 
 def gen_deploy_data_content(_path: str) -> bytes:

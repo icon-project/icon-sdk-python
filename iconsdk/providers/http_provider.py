@@ -17,10 +17,10 @@ import json
 import requests
 from logging import getLogger
 from itertools import count
-from IconService.utils import to_dict
-from IconService.providers.provider import Provider
-from IconService.utils import set_logger
-from IconService.exception import JSONRPCException
+from iconsdk.utils import to_dict
+from iconsdk.providers.provider import Provider
+from iconsdk.utils import set_logger
+from iconsdk.exception import JSONRPCException
 
 
 class HTTPProvider(Provider):

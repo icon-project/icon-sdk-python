@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from unittest import TestCase, main
-from IconService.builder.call_builder import CallBuilder
+from iconsdk.builder.call_builder import CallBuilder
 
 
 class TestCallBuilder(TestCase):

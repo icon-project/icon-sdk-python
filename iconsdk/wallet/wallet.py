@@ -17,12 +17,12 @@ import json
 from hashlib import sha3_256
 from abc import ABCMeta, abstractmethod
 from secp256k1 import PrivateKey
-from IconService.utils.validation import is_password_of_keystore_file, is_keystore_file
-from IconService.exception import KeyStoreException, DataTypeException
+from iconsdk.utils.validation import is_password_of_keystore_file, is_keystore_file
+from iconsdk.exception import KeyStoreException, DataTypeException
 from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json
 from multipledispatch import dispatch
-from IconService.utils import store_keystore_file_on_the_path
-from IconService.libs.signer import sign
+from iconsdk.utils import store_keystore_file_on_the_path
+from iconsdk.libs.signer import sign
 
 
 class Wallet(metaclass=ABCMeta):

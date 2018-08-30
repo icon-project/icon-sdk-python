@@ -14,12 +14,12 @@
 # limitations under the License.
 
 from unittest import TestCase, main
-from IconService.Icon_service import IconService
-from IconService.providers.http_provider import HTTPProvider
+from iconsdk.icon_service import IconService
+from iconsdk.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from IconService.exception import DataTypeException, JSONRPCException
-from IconService.utils.hexadecimal import remove_0x_prefix, add_cx_prefix
-from IconService.utils.validation import is_transaction_result
+from iconsdk.exception import DataTypeException, JSONRPCException
+from iconsdk.utils.hexadecimal import remove_0x_prefix, add_cx_prefix
+from iconsdk.utils.validation import is_transaction_result
 
 
 class TestGetTransactionResult(TestCase):

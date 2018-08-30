@@ -14,9 +14,9 @@
 # limitations under the License.
 
 from re import match
-from IconService.exception import KeyStoreException, DataTypeException
-from IconService.utils.type import is_str, is_integer
-from IconService.utils.hexadecimal import (
+from iconsdk.exception import KeyStoreException, DataTypeException
+from iconsdk.utils.type import is_str, is_integer
+from iconsdk.utils.hexadecimal import (
     is_0x_prefixed,
     remove_0x_prefix,
     is_cx_prefixed,

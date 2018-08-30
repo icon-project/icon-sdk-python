@@ -15,10 +15,10 @@
 
 from tests.api_send.test_send_super import TestSendSuper
 
-from IconService.builder.transaction_builder import MessageTransactionBuilder
-from IconService.signed_transaction import SignedTransaction
-from IconService.utils.validation import is_message_transaction, is_T_HASH
-from IconService.exception import JSONRPCException
+from iconsdk.builder.transaction_builder import MessageTransactionBuilder
+from iconsdk.signed_transaction import SignedTransaction
+from iconsdk.utils.validation import is_message_transaction, is_T_HASH
+from iconsdk.exception import JSONRPCException
 
 
 class TestSendMessage(TestSendSuper):

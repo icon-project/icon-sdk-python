@@ -15,10 +15,10 @@
 
 from os import path
 from unittest import TestCase, main
-from IconService.wallet.wallet import KeyWallet
-from IconService.Icon_service import IconService
-from IconService.providers.http_provider import HTTPProvider
-from IconService.libs.in_memory_zip import gen_deploy_data_content
+from iconsdk.wallet.wallet import KeyWallet
+from iconsdk.icon_service import IconService
+from iconsdk.providers.http_provider import HTTPProvider
+from iconsdk.libs.in_memory_zip import gen_deploy_data_content
 from tests.example_config import TEST_PRIVATE_KEY, TEST_HTTP_ENDPOINT_URI_V3
 
 
@@ -30,7 +30,7 @@ class TestSendSuper(TestCase):
     @classmethod
     def setUpClass(cls):
         """
-        Sets needed data like an instance of a wallet and IconService
+        Sets needed data like an instance of a wallet and iconsdk
         and default values used to make 4 types of transactions. (transfer, call, deploy, message)
         """
         cls.wallet = KeyWallet.load(TEST_PRIVATE_KEY)

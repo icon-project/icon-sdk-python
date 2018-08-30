@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from IconService.utils.validation import (
+from iconsdk.utils.validation import (
     is_block_height,
     is_hex_block_hash,
     is_predefined_block_value,
@@ -21,16 +21,16 @@ from IconService.utils.validation import (
     is_wallet_address,
     is_T_HASH
 )
-from IconService.exception import AddressException, DataTypeException
-from IconService.providers.provider import Provider
-from IconService.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
-from IconService.builder.call_builder import Call
-from IconService.signed_transaction import SignedTransaction
+from iconsdk.exception import AddressException, DataTypeException
+from iconsdk.providers.provider import Provider
+from iconsdk.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
+from iconsdk.builder.call_builder import Call
+from iconsdk.signed_transaction import SignedTransaction
 
 
 class IconService:
     """
-    The IconService class contains the following API methods.
+    The iconsdk class contains the following API methods.
     It comes with the HttpProvider, the built-in provider,
     which is for connecting to HTTP and HTTPS based JSON-RPC servers.
     """

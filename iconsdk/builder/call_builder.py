@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from IconService.utils.hexadecimal import convert_params_value_to_hex_str
+from iconsdk.utils.hexadecimal import convert_params_value_to_hex_str
 
 
 class Call:
