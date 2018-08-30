@@ -139,11 +139,11 @@ $ pip install iconsdk
 
 ### Creating an IconService instance and Setting a provider
 
-After that, you need to create an iconsdk instance and set a provider.
+After that, you need to create an IconService instance and set a provider.
 
 - The **IconService** class contains the following API methods. It comes with the HttpProvider, the built-in provider, which is for connecting to HTTP and HTTPS based JSON-RPC servers.
 
-- The **provider** is how iconsdk connects to Loopchain.
+- The **provider** is how IconService connects to Loopchain.
 
 - The **HTTPProvider** takes the full URI where the server can be found. For local development this would be something like http://localhost:9000.
 
