@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.2] -  August, 31, 2018
+## [1.0.3] -  August, 31, 2018
 ### Added
 - Add FileNotFountError while loading the key file
 
