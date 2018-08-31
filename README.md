@@ -157,7 +157,7 @@ from iconsdk.providers.http_provider import HTTPProvider
 icon_service = IconService(HTTPProvider("https://iconx.io"))
 
 # Gets a block matching the block height.
-block = icon_service.getBlock(1209)
+block = icon_service.get_block(1209)
 ```
 
 
