@@ -35,7 +35,7 @@ class HTTPProvider(Provider):
     logger = getLogger("HTTPProvider")
 
     # No need to use logging, remove the line.
-    set_logger(logger, 'DEBUG')
+    # set_logger(logger, 'DEBUG')
 
     def __init__(self, endpoint_uri=None, request_kwargs=None):
         self.logger.debug("Init HTTP Provider")
