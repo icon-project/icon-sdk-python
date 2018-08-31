@@ -127,7 +127,7 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Version
 
-1.0.3 beta
+1.0.1 beta
 
 ### Adding ICON SDK for Python
 
