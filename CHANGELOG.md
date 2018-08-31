@@ -2,10 +2,11 @@
 
 ## [1.0.2] -  August, 31, 2018
 ### Added
-N/A
+- Add FileNotFountError while loading the key file
 
 ### Changed
-- The function creating a wallet has kdf key type which should be scrypt and change checking validation of wallet key.
+- Set the function `create_keyfile_json`'s param 'kdf' into 'scrypt'
+    - To set the params 'kdf' into 'scrypt' while creating key file json
 
 ### Removed
 N/A
