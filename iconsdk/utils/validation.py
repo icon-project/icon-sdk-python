@@ -48,11 +48,9 @@ def is_keystore_file(keystore: dict) -> bool:
     root_keys = ["version", "id", "address", "crypto", "coinType"]
     crypto_keys = ["ciphertext", "cipherparams", "cipher", "kdf", "kdfparams", "mac"]
     crypto_cipherparams_keys = ["iv"]
-    crypto_kdfparams_keys = ["dklen", "salt", "c", "prf"]
 
     is_valid = has_keys(keystore, root_keys) and has_keys(keystore["crypto"], crypto_keys)\
-               and has_keys(keystore["crypto"]["cipherparams"], crypto_cipherparams_keys) \
-               and has_keys(keystore["crypto"]["kdfparams"], crypto_kdfparams_keys)
+               and has_keys(keystore["crypto"]["cipherparams"], crypto_cipherparams_keys)
 
     if is_valid:
         return is_valid

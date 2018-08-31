@@ -93,12 +93,17 @@ class KeyWallet(Wallet):
         if not is_password_of_keystore_file(password):
             raise KeyStoreException('Invalid password.')
 
-        keystore = load_keyfile(file_path)
-        if is_keystore_file(keystore):
-            bytes_private_key = decode_keyfile_json(keystore, bytes(password, 'utf-8'))
-            private_key_object = PrivateKey(bytes_private_key)
-            wallet = KeyWallet(private_key_object)
-            return wallet
+        try:
+            keystore = load_keyfile(file_path)
+            if is_keystore_file(keystore):
+                bytes_private_key = decode_keyfile_json(keystore, bytes(password, 'utf-8'))
+                private_key_object = PrivateKey(bytes_private_key)
+                wallet = KeyWallet(private_key_object)
+                return wallet
+        except FileNotFoundError:
+            raise KeyStoreException("File is not found.")
+        except ValueError:
+            raise KeyStoreException("Password is wrong.")
 
     def store(self, file_path, password):
         """Stores data of an instance of a derived wallet class on the file path with your password.
@@ -116,7 +121,8 @@ class KeyWallet(Wallet):
             key_store_contents = create_keyfile_json(
                 self.__bytes_private_key,
                 bytes(password, 'utf-8'),
-                iterations=16384
+                iterations=16384,
+                kdf="scrypt"
             )
             key_store_contents['address'] = self.get_address()
             key_store_contents['coinType'] = 'icx'

@@ -127,7 +127,7 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Version
 
-1.0.1 beta
+1.0.2 beta
 
 ### Adding ICON SDK for Python
 
@@ -724,19 +724,17 @@ from iconsdk.signed_transaction import SignedTransaction
 
 # Generates an instance of transaction for sending icx.
 transaction = TransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .value(150000000)\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .version(3)\
-    .timestamp(1234567890)\
     .build()
 
 # Generates an instance of transaction for deploying SCORE.
 transaction = DeployTransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .step_limit(1000000)\
     .nid(3)\
@@ -748,7 +746,7 @@ transaction = DeployTransactionBuilder()\
 
 # Generates an instance of transaction for calling method in SCORE.
 transaction = CallTransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .step_limit(1000000)\
     .nid(3)\
@@ -759,7 +757,7 @@ transaction = CallTransactionBuilder()\
 
 # Generates an instance of transaction for sending a message.
 transaction = MessageTransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .step_limit(1000000)\
     .nid(3)\
@@ -783,7 +781,7 @@ Builder for a **Transaction** object
 #### set methods
 
 * from_ : The wallet address making a transaction. The default address is your account address.
-* to : The wallet address to receive coin or SCORE address  to receive a transaction.
+* to : The wallet address to receive coin or SCORE address to receive a transaction.
 * value : The amount of ICX to be sent. (Optional)
 * step_limit : The maximum step value for processing a transaction.
 * nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
@@ -801,14 +799,12 @@ A transaction object
 ```python
 # Generates an instance of transaction for sending icx.
 transaction = TransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .value(150000000)\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .version(3)\
-    .timestamp(1234567890)\
     .build()
 ```
 
@@ -851,7 +847,7 @@ A deploy transaction object
 ```python
 # Generates an instance of transaction for deploying SCORE.
 transaction = DeployTransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .step_limit(1000000)\
     .nid(3)\
@@ -890,7 +886,7 @@ A call transaction object
 ```python
 # Generates an instance of transaction for calling method in SCORE.
 transaction = CallTransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .step_limit(1000000)\
     .nid(3)\
@@ -927,7 +923,7 @@ A message transaction object
 ```python
 # Generates an instance of transaction for sending a message.
 transaction = MessageTransactionBuilder()\
-    .from_(wallet.getAddress())\
+    .from_(wallet.get_address())\
     .to("cx00...02")\
     .step_limit(1000000)\
     .nid(3)\
@@ -973,6 +969,8 @@ send_transaction(signed_transaction: SignedTransaction)
 Sends the transaction
 
 Delegates to **icx_sendTransaction** RPC method
+
+Need to wait for a while after sending the transaction. Because it takes time to make a consensus among nodes. We recommend 0.3 sec at least.
 
 #### Parameters
 
