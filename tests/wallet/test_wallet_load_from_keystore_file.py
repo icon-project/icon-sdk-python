@@ -40,15 +40,11 @@ class TestWalletLoadFromKeystoreFile(TestCase):
     def test_wallet_load_from_invalid_directory(self):
         """Case when loading a wallet from a invalid directory not existing."""
         keystore_file_path = path.join(self.TEST_DIR, "unknown_folder", "test_keystore.txt")
-
-        try:
-            wallet = KeyWallet.load(keystore_file_path, self.TEST_KEYSTORE_FILE_PASSWORD)
-        except FileNotFoundError:
-            self.assertTrue(True)
+        self.assertRaises(KeyStoreException, KeyWallet.load, keystore_file_path, self.TEST_KEYSTORE_FILE_PASSWORD)
 
     def test_wallet_load_with_invalid_password(self):
         """Case when loading a wallet with a invalid password."""
-        password = "1234wrongpassword"
+        password = "1234wrongpassword**"
         self.assertRaises(KeyStoreException, KeyWallet.load, self.TEST_KEYSTORE_FILE_DIR, password)
 
     def test_wallet_load_and_call_api(self):
