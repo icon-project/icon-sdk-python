@@ -20,8 +20,8 @@ from iconsdk.utils.type import is_integer
 
 def convert_transaction(transaction: dict):
     """
-    Convert return data about the transaction into the right format.
-    It supports data about a transaction made from not only JSON RPC V3 and but V2.
+    Convert transaction data into the right format.
+    It supports data about a transaction made not only from JSON RPC V3 but also from V2.
 
     [what to do on the method 'convert_common_data_on_transaction']
     1. Fields as value, fee, nid, stepLimit, timestamp, and nonce have to be converted to an integer.
@@ -50,14 +50,14 @@ def convert_transaction(transaction: dict):
 
 def convert_block(data: dict):
     """
-    Convert return data about the block into the right format.
-    It supports data about a transaction made from not only JSON RPC V3 and but V2.
+    Convert block data into the right format.
+    It supports data about a block made not only from JSON RPC V3 but also from V2.
 
-    1. If the genesis block, just returns data not to be converted because we can not know what data format is.
-    2. Transaction list on a block has to be converted by the method 'convert_common_data_on_transaction' transaction by transaction.
-       You can check what to do on the method at docstring of function 'convert_transaction'.
+    1. If the genesis block, don't convert data because we can not know what data format it is.
+    2. Transaction list on a block has to be converted by the method 'convert_common_data_on_transaction' for each transaction.
+       You can check what to do on the method in the docstring of the function 'convert_transaction'.
     3. The field name 'tx_hash' on the transaction made from JSON RPC V2 has to be converted to 'txHash'.
-       And the value of the field has to be prefixed with '0x'.
+       Furthermore, the value of the field has to be prefixed with '0x'.
 
     :param data: data about the block
     """
@@ -75,11 +75,11 @@ def convert_block(data: dict):
 
 def convert_common_data_on_transaction(transaction: dict):
     """
-    Convert common field on the transaction as value, fee, nid, stepLimit, timestamp, nonce, method, version, data.
-    Used in validating transaction list on block and single transaction.
+    Convert common fields in the transaction such as value, fee, nid, stepLimit, timestamp, nonce, method, version, data.
+    Used in validating a transaction list in a block or validating a single transaction.
 
-    1. Fields as value, fee, nid, stepLimit, timestamp, and nonce have to be converted to an integer.
-    2. Fields as timestamp and nonce have a different type of the value by the version as V2 or V3.
+    1. Fields such as value, fee, nid, stepLimit, timestamp, and nonce have to be converted to an integer.
+    2. Fields such as timestamp and nonce have a different type of the value by the version as V2 or V3.
         - If the version V3, the data type is hex string prefixed with '0x'.
         - If the version V2, the data type is a string but the meaning is an integer.
     3. The field 'method' has to be removed.
@@ -125,10 +125,10 @@ def convert_common_data_on_transaction(transaction: dict):
 
 def convert_transaction_result(data: dict):
     """
-    Convert return data about the transaction result into the right format.
-    It supports data about a transaction made from not only JSON RPC V3 and but V2.
+    Convert transaction result data into the right format.
+    It supports data about a transaction made not only from JSON RPC V3 but also from V2.
 
-    1. Fields as status, blockHeight, txIndex, stepUsed, stepPrice, cumulativeStepUsed have to be converted to an integer.
+    1. Fields such as status, blockHeight, txIndex, stepUsed, stepPrice, cumulativeStepUsed have to be converted to an integer.
     2. The field 'logsBloom' has to be converted to bytes.
 
     :param data: data about the transaction result

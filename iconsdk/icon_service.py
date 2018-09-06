@@ -31,9 +31,9 @@ from iconsdk.converter import convert_block, convert_transaction, convert_transa
 
 class IconService:
     """
-    The IconService class contains the following API methods.
-    It comes with the HttpProvider, the built-in provider,
-    which is for connecting to HTTP and HTTPS based JSON-RPC servers.
+    The IconService class contains a set of API methods.
+    It accepts a HTTPProvider which serves the purpose of 
+    connecting to HTTP and HTTPS based JSON-RPC servers.
     """
 
     def __init__(self, provider: Provider):
@@ -178,7 +178,7 @@ class IconService:
         Sends the transaction.
         Delegates to icx_sendTransaction RPC method.
 
-        :param signed_transaction: The signed transaction object having a signature field finally
+        :param signed_transaction: A signed transaction object
         :return: Transaction hash prefixed with '0x'
         """
         params = signed_transaction.signed_transaction_dict
