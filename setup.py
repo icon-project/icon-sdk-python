@@ -14,13 +14,20 @@
 # limitations under the License.
 
 from setuptools import setup, find_packages
+from os import environ, path
+
+version = environ.get('VERSION')
+
+if version is None:
+    with open(path.join('.', 'VERSION')) as version_file:
+        version = version_file.read().strip()
 
 with open("README.md", 'r') as f:
     long_description = f.read()
 
 setup(
    name='iconsdk',
-   version='1.0.3',
+   version=version,
    description='ICON SDK for Python is a collection of libraries which allow you to interact '
                'with a local or remote Loopchain node, using an HTTP connection. ',
    long_description=long_description,
