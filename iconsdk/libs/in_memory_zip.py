@@ -36,7 +36,7 @@ def gen_deploy_data_content(_path: str) -> bytes:
 
 
 class InMemoryZip:
-    """Class for making zip data in memory using BytesIO."""
+    """Class for compressing data in memory using zip and BytesIO."""
 
     def __init__(self):
         self._in_memory = BytesIO()
@@ -51,7 +51,7 @@ class InMemoryZip:
         return self._in_memory.read()
 
     def zip_in_memory(self, _path):
-        """Makes zip data(bytes) in memory.
+        """Compress zip data (bytes) in memory.
 
         :param _path: Path of the directory to be zipped.
         """

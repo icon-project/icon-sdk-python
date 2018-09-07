@@ -26,7 +26,7 @@ from iconsdk.libs.signer import sign
 
 
 class Wallet(metaclass=ABCMeta):
-    """An interface `Wallet` has 2 abstract methods, `get_address()` and `sign_message(hash: str)`."""
+    """An interface `Wallet` has 2 abstract methods, `get_address()` and `sign(hash: str)`."""
 
     @abstractmethod
     def get_address(self) -> str:
@@ -82,11 +82,11 @@ class KeyWallet(Wallet):
     @staticmethod
     @dispatch(str, str)
     def load(file_path, password):
-        """Loads a wallet from a key store file with your password and generates an instance of Wallet.
+        """Loads a wallet from a keystore file with your password and generates an instance of Wallet.
 
-        :param file_path: File path of the key store file. type(str)
+        :param file_path: File path of the keystore file. type(str)
         :param password:
-            Password for the key store file.
+            Password for the keystore file.
             It must include alphabet character, number, and special character.
         :return: An instance of Wallet class.
         """
@@ -108,9 +108,9 @@ class KeyWallet(Wallet):
     def store(self, file_path, password):
         """Stores data of an instance of a derived wallet class on the file path with your password.
 
-        :param file_path: File path of the key store file. type(str)
+        :param file_path: File path of the keystore file. type(str)
         :param password:
-            Password for the key store file. Password must include alphabet character, number, and special character.
+            Password for the keystore file. Password must include alphabet character, number, and special character.
             type(str)
         """
 
