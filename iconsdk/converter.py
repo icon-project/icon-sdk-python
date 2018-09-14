@@ -133,6 +133,11 @@ def convert_transaction_result(data: dict):
 
     :param data: data about the transaction result
     """
+    # Only for the transaction made with JSON RPC V2 successfully does not have the property 'status'
+    if "status" not in data and "code" in data and data["code"] == 0:
+        data["status"] = 1
+        del data["code"]
+        return
 
     # List of Fields which have to be converted to int
     int_fields = ["status", "blockHeight", "txIndex", "stepUsed", "stepPrice", "cumulativeStepUsed"]
@@ -143,4 +148,6 @@ def convert_transaction_result(data: dict):
 
     if "logsBloom" in data:
         data["logsBloom"] = convert_hex_str_to_bytes(data["logsBloom"])
+
+
 
