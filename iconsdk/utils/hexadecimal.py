@@ -22,7 +22,7 @@ It is used for
 - an address of SCORE starting with 'cx'
 """
 
-from iconsdk.utils.type import is_str, is_integer, is_bytes
+from iconsdk.utils.type import is_str
 from iconsdk.exception import DataTypeException
 
 
@@ -82,32 +82,3 @@ def add_cx_prefix(value):
     return 'cx' + value
 
 
-def convert_int_to_hex_str(value: int):
-    try:
-        if is_integer(value):
-            return add_0x_prefix(hex(value))
-        else:
-            raise DataTypeException("Data's type should be integer.")
-    except KeyError:
-        raise DataTypeException("Data type is wrong.")
-
-
-def convert_bytes_to_hex_str(value: bytes):
-    try:
-        if is_bytes(value):
-            return add_0x_prefix(value.hex())
-        else:
-            raise DataTypeException("Data's type should be bytes.")
-    except KeyError:
-        raise DataTypeException("Data type is wrong.")
-
-
-def convert_params_value_to_hex_str(params: dict):
-    """Converts params' values into hex str prefixed with '0x'."""
-    new_params = params
-    for key, value in params.items():
-        if isinstance(value, int):
-            new_params[key] = convert_int_to_hex_str(value)
-        elif isinstance(value, bytes):
-            new_params[key] = convert_bytes_to_hex_str(value)
-    return new_params

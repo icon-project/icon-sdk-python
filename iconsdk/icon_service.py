@@ -26,13 +26,14 @@ from iconsdk.providers.provider import Provider
 from iconsdk.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
 from iconsdk.builder.call_builder import Call
 from iconsdk.signed_transaction import SignedTransaction
+from iconsdk.converter import convert_block, convert_transaction, convert_transaction_result
 
 
 class IconService:
     """
-    The iconsdk class contains the following API methods.
-    It comes with the HttpProvider, the built-in provider,
-    which is for connecting to HTTP and HTTPS based JSON-RPC servers.
+    The IconService class contains a set of API methods.
+    It accepts a HTTPProvider which serves the purpose of 
+    connecting to HTTP and HTTPS based JSON-RPC servers.
     """
 
     def __init__(self, provider: Provider):
@@ -72,6 +73,7 @@ class IconService:
         else:
             raise DataTypeException("It's unrecognized block reference:{0!r}.".format(value))
 
+        convert_block(result)
         return result
 
     def get_total_supply(self):
@@ -124,7 +126,9 @@ class IconService:
         """
         if is_T_HASH(tx_hash):
             params = {'txHash': tx_hash}
-            return self.__provider.make_request('icx_getTransactionResult', params)
+            result = self.__provider.make_request('icx_getTransactionResult', params)
+            convert_transaction_result(result)
+            return result
         else:
             raise DataTypeException("This hash value is unrecognized.")
 
@@ -138,7 +142,9 @@ class IconService:
         """
         if is_T_HASH(tx_hash):
             params = {'txHash': tx_hash}
-            return self.__provider.make_request('icx_getTransactionByHash', params)
+            result = self.__provider.make_request('icx_getTransactionByHash', params)
+            convert_transaction(result)
+            return result
         else:
             raise DataTypeException("This hash value is unrecognized.")
 
@@ -172,7 +178,7 @@ class IconService:
         Sends the transaction.
         Delegates to icx_sendTransaction RPC method.
 
-        :param signed_transaction: The signed transaction object having a signature field finally
+        :param signed_transaction: A signed transaction object
         :return: Transaction hash prefixed with '0x'
         """
         params = signed_transaction.signed_transaction_dict

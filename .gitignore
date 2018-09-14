@@ -16,7 +16,9 @@ venv.bak/
 
 build/
 dist/
+tmp/
 iconsdk.egg-info/
 
 examples
 log.ini
+
