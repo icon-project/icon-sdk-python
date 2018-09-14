@@ -20,11 +20,11 @@ from iconsdk.exception import ZipException
 
 
 def gen_deploy_data_content(_path: str) -> bytes:
-    """Generate zip data(hex string) of SCORE.
+    """Generate bytes of zip data of SCORE.
 
     :param _path: Path of the directory to be zipped.
     """
-    if path.isdir(_path) is False:
+    if path.isdir(_path) is False and path.isfile(_path) is False:
         raise ValueError(f"Invalid path {_path}")
     try:
         memory_zip = InMemoryZip()
@@ -36,7 +36,7 @@ def gen_deploy_data_content(_path: str) -> bytes:
 
 
 class InMemoryZip:
-    """Class for making zip data in memory using BytesIO."""
+    """Class for compressing data in memory using zip and BytesIO."""
 
     def __init__(self):
         self._in_memory = BytesIO()
@@ -51,15 +51,21 @@ class InMemoryZip:
         return self._in_memory.read()
 
     def zip_in_memory(self, _path):
-        """Makes zip data(bytes) in memory.
+        """Compress zip data (bytes) in memory.
 
-        :param _path: Path of the directory to be zipped.
+        :param _path: The path of the directory to be zipped.
         """
         try:
-            with ZipFile(self._in_memory, 'a', ZIP_DEFLATED, False) as zf:
-                if path.isfile(_path):
-                    zf.write(_path)
-                else:
+            # when it is a zip file
+            if path.isfile(_path):
+                zf = ZipFile(_path, 'r', ZIP_DEFLATED, False)
+                zf.testzip()
+                with open(_path, mode='rb') as fp:
+                    fp.seek(0)
+                    self._in_memory.seek(0)
+                    self._in_memory.write(fp.read())
+            else:
+                with ZipFile(self._in_memory, 'a', ZIP_DEFLATED, False) as zf:
                     for root, folders, files in walk(_path):
                         if root.find('__pycache__') != -1:
                             continue
