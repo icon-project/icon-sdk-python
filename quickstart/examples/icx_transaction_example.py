@@ -19,7 +19,10 @@ from iconsdk.builder.transaction_builder import TransactionBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
+from iconsdk.exception import JSONRPCException
 from quickstart.examples.test.constant import TEST_HTTP_ENDPOINT_URI_V3, TEST_PRIVATE_KEY
+from quickstart.examples.util.repeater import retry
+
 
 # Loads a wallet from a key store file
 # Wallet for sending ICX
@@ -58,12 +61,14 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 print("txHash: ", tx_hash)
 
 
-sleep(1)
-# Returns the result of a transaction by transaction hash
-tx_result = icon_service.get_transaction_result(tx_hash)
-print("transaction status(1:success, 0:failure): ", tx_result["status"])
+@retry(JSONRPCException, tries=10, delay=1, back_off=2)
+def get_tx_result():
+    # Returns the result of a transaction by transaction hash
+    tx_result = icon_service.get_transaction_result(tx_hash)
+    print("transaction status(1:success, 0:failure): ", tx_result["status"])
 
-# Gets balance
-balance = icon_service.get_balance(wallet2.get_address())
-print("balance: ", balance, "\n")
+    # Gets balance
+    balance = icon_service.get_balance(wallet2.get_address())
+    print("balance: ", balance, "\n")
 
+get_tx_result()

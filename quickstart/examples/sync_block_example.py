@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from threading import Timer
 from time import sleep
 from iconsdk.wallet.wallet import KeyWallet
 from iconsdk.icon_service import IconService
@@ -20,45 +19,22 @@ from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.utils.convert_type import convert_hex_str_to_int
 from quickstart.examples.test.constant import TEST_HTTP_ENDPOINT_URI_V3
+from quickstart.examples.util.repeater import RepeatedTimer
 
 
 icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
 wallet = KeyWallet.load("./test/test_keystore", "abcd1234*")
 
 
-class RepeatedTimer(object):
-    def __init__(self, interval, func, *args, **kwargs):
-        self._timer = None
-        self.interval = interval
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
-        self.is_running = False
-        self.start()
-
-    def _run(self):
-        self.is_running = False
-        self.start()
-        self.func(*self.args, **self.kwargs)
-
-    def start(self):
-        if not self.is_running:
-            self._timer = Timer(self.interval, self._run)
-            self._timer.start()
-            self.is_running = True
-
-    def stop(self):
-        self._timer.cancel()
-        self.is_running = False
-
-
 def scan_forward_block(_time: int=100000, _interval: int=1):
     """Scans forward block"""
+    # Checks the last block height
     pre_last_height = icon_service.get_block("latest")["height"]
     print(f"Starts to scan forward block at block height({pre_last_height})")
 
     def find_new_block():
         """Finds generating new block since the pre last block and prints it"""
+        # Returns the last block
         last_block = icon_service.get_block("latest")
         last_height = last_block["height"]
         nonlocal pre_last_height
@@ -85,6 +61,7 @@ def get_financial_transaction(block):
     [What is the specific meaningful transaction]
     - First, finds ICX transactions on a block.
     - Second, finds token transfer on a block.  """
+    # Returns the transaction list.
     tx_list = block["confirmed_transaction_list"]
 
     if len(tx_list) > 0:
@@ -141,3 +118,4 @@ def get_token_symbol(token_address: str):
 
 
 scan_forward_block(1000, 1)
+
