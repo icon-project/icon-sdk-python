@@ -367,13 +367,13 @@ Information about a transaction
 
 Fields :
 
-- version : Protocol version ("0x3" for V3)
+- version : Protocol version (3 for V3)
 - from : An EOA address that created the transaction
 - to : An EOA address to receive coins, or SCORE address to execute the transaction
 - value : Amount of ICX coins in loop to transfer. When omitted, assumes 0. (1 icx = 10 ^ 18 loop)
 - stepLimit :  Maximum step allowance that can be used by the transaction
 - timestamp : Transaction creation time. Timestamp is in microseconds.
-- nid : Network ID ("0x1" for Main net, "0x2" for Test net, etc)
+- nid : Network ID (1 for Main net, etc)
 - nonce : An arbitrary number used to prevent transaction hash collision
 - txHash : Transaction hash
 - txIndex : Transaction index in a block. Null when it is pending.
@@ -784,7 +784,7 @@ Builder for a **Transaction** object
 * to : The wallet address to receive coin or SCORE address to receive a transaction.
 * value : The amount of ICX to be sent. (Optional)
 * step_limit : The maximum step value for processing a transaction.
-* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
+* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
 * nonce :  An arbitrary number used to prevent transaction hash collision. (optional)
 * version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
 * timestamp : Transaction creation time. Timestamp is in microseconds. (Optional)
@@ -819,7 +819,7 @@ Builder for **DeployTransaction** object
 * from_ : The wallet address making a transaction. The default address is your account address.
 * to : The wallet address to receive coin or SCORE address to receive a transaction
 * step_limit : The maximum step value for processing a transaction
-* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
+* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
 * nonce :   An arbitrary number used to prevent transaction hash collision
 * content_type : Content's MIME type
 * content : Binary data of the SCORE
@@ -859,7 +859,7 @@ Builder for **CallTransaction** object
 - from_ : The wallet address making a transaction. The default address is your account address.
 - to : The wallet address to receive coin or SCORE address to receive a transaction
 - step_limit : The maximum step value for processing a transaction
-- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - method : Methods in the SCORE
 - params : Parameters passed on the SCORE methods. Data type of the params should be **dict**. (optional) 
@@ -897,7 +897,7 @@ Builder for **MessageTransaction** object
 - from_ : The wallet address making a transaction. The default address is your account address.
 - to : The wallet address to receive coin or SCORE address to receive a transaction
 - stepLimit : The maximum step value for processing a transaction
-- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, 2 for Test net, etc) (Optional)
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - data : Data by the dataType. Data type of the data should be **string**.
 - version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
