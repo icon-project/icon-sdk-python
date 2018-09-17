@@ -27,7 +27,6 @@ from quickstart.examples.test.constant import (
 )
 from quickstart.examples.util.repeater import retry
 
-
 current_dir_path = path.abspath(path.dirname(__file__))
 score_path_standard_token = path.join(current_dir_path, 'sample_data/standard_token.zip')
 score_path_sample_token = path.join(current_dir_path, 'sample_data/sample_token.zip')
@@ -54,10 +53,10 @@ for score_path in score_paths:
         .version(3)\
         .build()
 
+    icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+
     # Returns the signed transaction object having a signature
     signed_transaction_dict = SignedTransaction(deploy_transaction, wallet1)
-
-    icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
 
     # Sends the transaction
     tx_hash = icon_service.send_transaction(signed_transaction_dict)
