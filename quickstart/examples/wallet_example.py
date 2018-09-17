@@ -34,3 +34,4 @@ wallet1.store(file_path, "abcd1234*")
 # Loads a wallet from a key store file
 wallet1 = KeyWallet.load("./test/test_keystore", "abcd1234*")
 print("[wallet1] address: ", wallet1.get_address(), " private key: ", wallet1.get_private_key())
+
