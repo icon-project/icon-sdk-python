@@ -104,7 +104,7 @@ def get_default_step_cost():
 
 Generate transaction using the values above.
 
-`nid` is networkId; 1: mainnet, 2:testnet, 3-: private id. 
+`nid` is networkId; 1: mainnet, 2-: etc. 
 
 `step_limit` is recommended by using 'default' step cost in the response of getStepCosts API.
 
@@ -210,7 +210,7 @@ This example shows how to send token and check the balance.
 
 You can send the token(CommonData.TOKEN_ADDRESS) that is already generated as an example.
 
-You can generate KeyWallet using `TEST_PRIVATE_KEY` just like in the case of `IcxTransactionExample`, then send 1 Token to the other wallet. You need token address to send your token.
+You can generate KeyWallet using `TEST_PRIVATE_KEY` just like in the case of  `icx_transaction_example`, then send 1 Token to the other wallet. You need token address to send your token.
 
 You can get a step cost to send token as follows.
 
@@ -218,53 +218,50 @@ You can get a step cost to send token as follows.
 # Returns a step cost  
 # GOVERNANCE_ADDRESS : cx0000000000000000000000000000000000000001
 def get_default_step_cost():
-    call = CallBuilder()\
+    _call = CallBuilder()\
         .from_(wallet1.get_address())\
         .to(GOVERNANCE_ADDRESS)\ 
         .method("getStepCosts")\
         .build()
-    _result = icon_service.call(call)
+    _result = icon_service.call(_call)
     default_step_cost = convert_hex_str_to_int(_result["default"])
     return default_step_cost
 ```
 
-Generate Transaction with the given parameters above. You have to add receiving address and value to ‘RpcObject’ to send token.
+Generate Transaction with the given parameters above. You have to add receiving address and value by entering the given key name('_to', '_value')  to send the token. Otherwise, the transaction will be rejected.
 
-`nid` is networkId; 1: mainnet, 2:testnet, 3-: private id. 
+`nid` is networkId; 1: mainnet, 2-: etc. 
 
 `step_limit` is recommended by using 'default' step cost multiplied by 2 in the response of getStepCosts API.
 
 `timestamp` is used to prevent the identical transactions. Only current time is required (Standard unit : us)
 If the timestamp is considerably different from the current time, the transaction will be rejected.
 
-`method` ; SCORE name that send transaction is “transfer”.
+`method` ; SCORE name that send transaction is 'transfer'.
 
-`params` You must enter the given key name("_to", "_value"). Otherwise, the transaction will be rejected.
+`params` You must enter the given key name('\_to', '\_value'). Otherwise, the transaction will be rejected.
 
 ```python
 # You must enter the given key name("_to", "_value"). Otherwise, the transaction will be rejected.
 params = {"_to": wallet2.get_address(), "_value": 10}
 
-score_address = "cx4881d1a738d8b44afd6520b222a781daf37062fc"
-
-# Enter receiving address and the token value.
+# Enters transaction information.
 call_transaction = CallTransactionBuilder()\
     .from_(wallet1.get_address())\
-    .to(score_address) \
+    .to(SCORE_ADDRESS) \
     .step_limit(get_default_step_cost()*2)\
     .nid(3) \
     .nonce(4) \
     .method("transfer")\
     .params(params)\
     .build()
-
 ```
 
 Generate SignedTransaction to add signature to your transaction.
 
 ```python
 # Returns the signed transaction object having a signature
-signed_transaction = SignedTransaction(transaction, wallet1)
+signed_transaction = SignedTransaction(call_transaction, wallet1)
 
 # Reads params to transfer to nodes
 print(signed_transaction.signed_transaction_dict)
@@ -299,7 +296,7 @@ print("transaction status(1:success, 0:failure): ", tx_result["status"])
 transaction status(1:success, 0:failure):  1
 ```
 
-*For the TransactionResult, please refer to the `IcxTransactionExample`.*
+*For the TransactionResult, please refer to the `icx_transaction_example`.*
 
 #### Check the Token Balance
 
@@ -309,21 +306,21 @@ You can check the token balance by calling ‘balanceOf’ from the token SCORE.
 
 `method`  ; Method name to check the balance 
 
-`params` ; You must enter the given key name (“_owner”). Otherwise, your transaction will be rejected.
+`params` ; You must enter the given key name ('_owner'). Otherwise, your transaction will be rejected.
 
 ```python
 params = {
     "_owner": wallet2.get_address()
 }
 
-test_call = CallBuilder()\
+call = CallBuilder()\
     .from_(wallet1.get_address())\
     .to(score_address)\
     .method("balanceOf")\
     .params(params)\
     .build()
 
-result = icon_service.call(test_call)
+result = icon_service.call(call)
 print(result)
 
 # Output
@@ -358,7 +355,6 @@ install_content_bytes = gen_deploy_data_content(score_path)
 
 # Loads a wallet from a key store file
 wallet1 = KeyWallet.load(TEST_PRIVATE_KEY)
-    
 ```
 
 Generate transaction with the given values above.
@@ -424,7 +420,7 @@ score address:  cx8c5ea60f73aafe10f9debfe2e3140b56335f5cfc
 waiting a second for accepting score...
 ```
 
-*For the 'TransactionResult', please refer to the `IcxTransactionExample`.*
+*For the 'TransactionResult', please refer to the `icx_transaction_example`.*
 
 
 
@@ -459,13 +455,13 @@ tx_list = last_block["confirmed_transaction_list"]
 Starts to scan forward block at block height(129)
 ```
 
-If a new block has been created, get the transaction list. You can check the following information using the ConfirmedTransaction:
+If a new block has been created, get the transaction list. You can check the following information.
 
 - version : json rpc server version
 - to : Receiving address of transaction
 - value: The amount of ICX coins to transfer to the address. If omitted, the value is assumed to be 0
 - timestamp: timestamp of the transmitting transaction (unit: microseconds)
-- nid : network ID
+- nid : network ID (1: mainnet, 2-: etc)
 - signature: digital signature data of the transaction
 - txHash : transaction hash
 - dataType: A value indicating the type of the data item (call, deploy, message)
@@ -473,40 +469,34 @@ If a new block has been created, get the transaction list. You can check the fol
 
 #### Transaction Output
 
-After reading the `TransactionResult`, merge with `ConfirmedTransaction` to send ICX or tokens. Transaction output is as follows:
+After reading the transaction result, you can check history having sent ICX or tokens. Transaction output is as follows:
 
 ```python
-def get_financial_transaction(block):
-    """
-    Gets specific meaningful transactions and prints it.
+# Returns confirmed transaction list
+tx_list = block["confirmed_transaction_list"]
 
-    [What is the specific meaningful transaction]
-    - First, finds ICX transactions on a block.
-    - Second, finds token transfer on a block.  """
-    tx_list = block["confirmed_transaction_list"]
+if len(tx_list) > 0:
+    for tx in tx_list:
+        print("\ntxHash:", tx["txHash"])
+        tx_result = icon_service.get_transaction_result(tx["txHash"])
 
-    if len(tx_list) > 0:
-        for tx in tx_list:
-            print("\ntxHash:", tx["txHash"])
-            tx_result = icon_service.get_transaction_result(tx["txHash"])
+        # Finds ICX transaction
+        if "value" in tx and tx["value"] > 0:
+            print("[ICX]")
+            print("status: ", tx_result["status"])
+            print("from  : ", tx["from"])
+            print("to    : ", tx["to"])
+            print("amount: ", tx["value"])
 
-            # Finds ICX transaction
-            if "value" in tx and tx["value"] > 0:
-                print("[ICX]")
-                print("status: ", tx_result["status"])
-                print("from  : ", tx["from"])
-                print("to    : ", tx["to"])
-                print("amount: ", tx["value"])
-
-            # Finds token transfer
-            if "dataType" in tx and tx["dataType"] == "call" and \
-            "method" in tx["data"] and tx["data"]["method"] == "transfer":
-                score_address = tx["to"]
-                print(f"[{get_token_name(score_address)} Token({get_token_symbol(score_address)})]")
-                print("status: ", tx_result["status"])
-                print("from  : ", tx["from"])
-                print("to    : ", tx["data"]["params"]["_to"])
-                print("amount: ", convert_hex_str_to_int(tx["data"]["params"]["_value"]))
+        # Finds token transfer
+        if "dataType" in tx and tx["dataType"] == "call" and \
+        "method" in tx["data"] and tx["data"]["method"] == "transfer":
+            score_address = tx["to"]
+            print(f"[{get_token_name(score_address)} Token({get_token_symbol(score_address)})]")
+            print("status: ", tx_result["status"])
+            print("from  : ", tx["from"])
+            print("to    : ", tx["data"]["params"]["_to"])
+            print("amount: ", convert_hex_str_to_int(tx["data"]["params"]["_value"]))
 
 ```
 
@@ -515,13 +505,8 @@ def get_financial_transaction(block):
 You can check the token SCORE by calling the `name` and` symbol` functions.
 
 ```python
+# Returns token name
 def get_token_name(token_address: str):
-    """
-    Gets the token name
-
-    If not have the external method `name` to get the score name,
-    it will raise JSONRPCException.
-    """
     call = CallBuilder()\
         .from_(wallet.get_address())\
         .to(token_address)\
@@ -529,14 +514,8 @@ def get_token_name(token_address: str):
         .build()
     return icon_service.call(call)
 
-
+# Returns token symbol
 def get_token_symbol(token_address: str):
-    """
-    Gets the token symbol
-
-    If not have the external method `symbol` to get the score symbol,
-    it will raise JSONRPCException.
-    """
     call = CallBuilder()\
         .from_(wallet.get_address())\
         .to(token_address)\

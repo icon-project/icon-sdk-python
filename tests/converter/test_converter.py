@@ -24,6 +24,7 @@ from iconsdk.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 from logging import getLogger
 from iconsdk.utils import set_logger
+import pprint
 
 
 class TestConverter(TestCase):
@@ -55,6 +56,7 @@ class TestConverter(TestCase):
         """
         for tx_result in self.tx_results:
             convert_transaction_result(tx_result)
+            print(tx_result)
             self.assertTrue(validate_transaction_result(tx_result))
 
     def test_integrate_converter(self):
@@ -86,6 +88,7 @@ class TestConverter(TestCase):
         for height in range(0, last_block_height if last_block_height < 500 else 500):
             # Scenario 2: Get all of the transaction data on that block and validate the transaction data.
             block = icon_service.get_block(height)
+            # pprint.pprint(block)
             self.assertTrue(validate_block(block))
 
             # Except for the genesis block
@@ -94,12 +97,14 @@ class TestConverter(TestCase):
                     # Scenario 3: Get all of the transaction result data on that transaction
                     # and validate the transaction result data.
                     transaction_result = icon_service.get_transaction_result(transaction_in_block["txHash"])
-                    logger.debug(transaction_result)
+                    # logger.debug(transaction_result)
+                    # pprint.pprint(transaction_result)
                     self.assertTrue(validate_transaction_result(transaction_result))
                     # Scenario 4: Repeatedly, get the other blocks from the last to the first
                     # and validate all of three kinds of the data.
                     transaction = icon_service.get_transaction(transaction_in_block["txHash"])
-                    logger.debug(transaction)
+                    # logger.debug(transaction)
+                    # pprint.pprint(transaction)
                     self.assertTrue(validate_transaction(transaction))
 
 
