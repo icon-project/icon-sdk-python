@@ -13,9 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#TEST_HTTP_ENDPOINT_URI_V3 = "http://13.209.103.183:9000/api/v3"
-#TEST_PRIVATE_KEY = bytes.fromhex("2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79")
-
 # integrate test
 TEST_HTTP_ENDPOINT_URI_V3 = "http://localhost:9000/api/v3"
 TEST_PRIVATE_KEY = bytes.fromhex("a0a1c51d2deeba854ca25aab72e465d701e0f47fb97e2110dc5157d752ab154a")
