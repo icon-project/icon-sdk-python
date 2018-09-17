@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from iconsdk.exception import DataTypeException
 
 
 class Transaction:
@@ -76,6 +77,11 @@ class DeployTransaction(Transaction):
                  timestamp: int, content_type: str, content: bytes, params: dict):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self.__content_type = content_type
+
+        # Content should not be empty.
+        if not content:
+            raise DataTypeException("Content type should be bytes.")
+
         self.__content = content
         self.__params = params
 

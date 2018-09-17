@@ -19,7 +19,8 @@ from iconsdk.wallet.wallet import Wallet
 from iconsdk.libs.serializer import serialize
 from iconsdk.builder.transaction_builder import Transaction
 from iconsdk.utils import get_timestamp
-from iconsdk.utils.hexadecimal import add_0x_prefix, convert_int_to_hex_str, convert_params_value_to_hex_str
+from iconsdk.utils.hexadecimal import add_0x_prefix
+from iconsdk.utils.convert_type import convert_int_to_hex_str, convert_params_value_to_hex_str
 
 
 class SignedTransaction:

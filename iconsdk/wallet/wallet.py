@@ -19,14 +19,14 @@ from abc import ABCMeta, abstractmethod
 from secp256k1 import PrivateKey
 from iconsdk.utils.validation import is_password_of_keystore_file, is_keystore_file
 from iconsdk.exception import KeyStoreException, DataTypeException
-from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json
+from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json, extract_key_from_keyfile
 from multipledispatch import dispatch
 from iconsdk.utils import store_keystore_file_on_the_path
 from iconsdk.libs.signer import sign
 
 
 class Wallet(metaclass=ABCMeta):
-    """An interface `Wallet` has 2 abstract methods, `get_address()` and `sign_message(hash: str)`."""
+    """An interface `Wallet` has 2 abstract methods, `get_address()` and `sign(hash: str)`."""
 
     @abstractmethod
     def get_address(self) -> str:
@@ -82,21 +82,19 @@ class KeyWallet(Wallet):
     @staticmethod
     @dispatch(str, str)
     def load(file_path, password):
-        """Loads a wallet from a key store file with your password and generates an instance of Wallet.
+        """Loads a wallet from a keystore file with your password and generates an instance of Wallet.
 
-        :param file_path: File path of the key store file. type(str)
+        :param file_path: File path of the keystore file. type(str)
         :param password:
-            Password for the key store file.
+            Password for the keystore file.
             It must include alphabet character, number, and special character.
         :return: An instance of Wallet class.
         """
         if not is_password_of_keystore_file(password):
             raise KeyStoreException('Invalid password.')
-
         try:
-            keystore = load_keyfile(file_path)
-            if is_keystore_file(keystore):
-                bytes_private_key = decode_keyfile_json(keystore, bytes(password, 'utf-8'))
+            with open(file_path, 'rb') as file:
+                bytes_private_key = extract_key_from_keyfile(file, bytes(password, 'utf-8'))
                 private_key_object = PrivateKey(bytes_private_key)
                 wallet = KeyWallet(private_key_object)
                 return wallet
@@ -104,13 +102,15 @@ class KeyWallet(Wallet):
             raise KeyStoreException("File is not found.")
         except ValueError:
             raise KeyStoreException("Password is wrong.")
+        except Exception as e:
+            raise KeyStoreException(f'keystore file error.{e}')
 
     def store(self, file_path, password):
         """Stores data of an instance of a derived wallet class on the file path with your password.
 
-        :param file_path: File path of the key store file. type(str)
+        :param file_path: File path of the keystore file. type(str)
         :param password:
-            Password for the key store file. Password must include alphabet character, number, and special character.
+            Password for the keystore file. Password must include alphabet character, number, and special character.
             type(str)
         """
 

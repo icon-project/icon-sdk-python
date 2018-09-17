@@ -17,7 +17,7 @@ from unittest import TestCase, main
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from iconsdk.exception import DataTypeException, AddressException
+from iconsdk.exception import AddressException
 
 
 class TestGetBalance(TestCase):

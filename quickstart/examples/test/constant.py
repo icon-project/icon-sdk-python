@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# integrate test
 TEST_HTTP_ENDPOINT_URI_V3 = "http://localhost:9000/api/v3"
 TEST_PRIVATE_KEY = bytes.fromhex("a0a1c51d2deeba854ca25aab72e465d701e0f47fb97e2110dc5157d752ab154a")
+GOVERNANCE_ADDRESS = "cx0000000000000000000000000000000000000001"
+SCORE_INSTALL_ADDRESS = "cx0000000000000000000000000000000000000000"
+SCORE_ADDRESS = "cxa755b2ef6eb46c1e817c636be3c21d26c81fe6cc"
