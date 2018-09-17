@@ -19,6 +19,10 @@ dist/
 tmp/
 iconsdk.egg-info/
 
-examples
 log.ini
 
+deploy_token_example_tmp.py
+constant_tmp.py
+example_config_tmp.py
+
+test_keystore
