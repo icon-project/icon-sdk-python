@@ -92,13 +92,13 @@ You can get a step cost to transfer ICX as follows.
 # Returns a step cost  
 # GOVERNANCE_ADDRESS : cx0000000000000000000000000000000000000001
 def get_default_step_cost():
-    call = CallBuilder()\
+    _call = CallBuilder()\
         .from_(wallet1.get_address())\
-        .to(GOVERNANCE_ADDRESS)\ 
+        .to(GOVERNANCE_ADDRESS)\
         .method("getStepCosts")\
         .build()
-    _result = icon_service.call(call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])
+    _result = icon_service.call(_call)
+    default_step_cost = convert_hex_str_to_int(_result["default"])*2
     return default_step_cost
 ```
 
@@ -117,7 +117,7 @@ transaction = TransactionBuilder()\
     .from_(wallet1.get_address())\
     .to(wallet2.get_address())\
     .value(10000)\
-    .step_limit(100000000) \
+    .step_limit(get_default_step_cost()) \
     .nid(3) \
     .nonce(2) \
     .version(3) \
@@ -220,11 +220,11 @@ You can get a step cost to send token as follows.
 def get_default_step_cost():
     _call = CallBuilder()\
         .from_(wallet1.get_address())\
-        .to(GOVERNANCE_ADDRESS)\ 
+        .to(GOVERNANCE_ADDRESS)\
         .method("getStepCosts")\
         .build()
     _result = icon_service.call(_call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])
+    default_step_cost = convert_hex_str_to_int(_result["default"])*2
     return default_step_cost
 ```
 
@@ -249,7 +249,7 @@ params = {"_to": wallet2.get_address(), "_value": 10}
 call_transaction = CallTransactionBuilder()\
     .from_(wallet1.get_address())\
     .to(SCORE_ADDRESS) \
-    .step_limit(get_default_step_cost()*2)\
+    .step_limit(get_default_step_cost())\
     .nid(3) \
     .nonce(4) \
     .method("transfer")\
@@ -315,13 +315,13 @@ params = {
 
 call = CallBuilder()\
     .from_(wallet1.get_address())\
-    .to(score_address)\
+    .to(SCORE_ADDRESS)\
     .method("balanceOf")\
     .params(params)\
     .build()
 
 result = icon_service.call(call)
-print(result)
+print("balance: ", convert_hex_str_to_int(result))
 
 # Output
 balance:  1000000000000000000000

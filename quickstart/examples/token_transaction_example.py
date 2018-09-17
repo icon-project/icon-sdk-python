@@ -20,12 +20,14 @@ from iconsdk.builder.transaction_builder import CallTransactionBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.utils.convert_type import convert_hex_str_to_int
+from iconsdk.exception import JSONRPCException
 from quickstart.examples.test.constant import (
     TEST_HTTP_ENDPOINT_URI_V3,
     TEST_PRIVATE_KEY,
     GOVERNANCE_ADDRESS,
     SCORE_ADDRESS
 )
+from quickstart.examples.util.repeater import retry
 
 
 # Returns a step cost. You can use it for getting the recommended value of 'step limit'.
@@ -36,7 +38,7 @@ def get_default_step_cost():
         .method("getStepCosts")\
         .build()
     _result = icon_service.call(_call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])
+    default_step_cost = convert_hex_str_to_int(_result["default"])*2
     return default_step_cost
 
 
@@ -54,7 +56,7 @@ params = {"_to": wallet2.get_address(), "_value": 10}
 call_transaction = CallTransactionBuilder()\
     .from_(wallet1.get_address())\
     .to(SCORE_ADDRESS) \
-    .step_limit(get_default_step_cost()*2)\
+    .step_limit(get_default_step_cost())\
     .nid(3) \
     .nonce(4) \
     .method("transfer")\
@@ -71,6 +73,16 @@ pprint(signed_transaction.signed_transaction_dict)
 # Sends transaction
 tx_hash = icon_service.send_transaction(signed_transaction)
 print("txHash: ", tx_hash)
+
+
+@retry(JSONRPCException, tries=10, delay=1, back_off=2)
+def get_tx_result():
+    # Returns the result of a transaction by transaction hash
+    tx_result = icon_service.get_transaction_result(tx_hash)
+    print("transaction status(1:success, 0:failure): ", tx_result["status"])
+
+
+get_tx_result()
 
 params = {
     "_owner": wallet2.get_address()

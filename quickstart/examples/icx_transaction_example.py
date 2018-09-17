@@ -20,7 +20,9 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.exception import JSONRPCException
-from quickstart.examples.test.constant import TEST_HTTP_ENDPOINT_URI_V3, TEST_PRIVATE_KEY
+from iconsdk.utils.convert_type import convert_hex_str_to_int
+from iconsdk.builder.call_builder import CallBuilder
+from quickstart.examples.test.constant import TEST_HTTP_ENDPOINT_URI_V3, TEST_PRIVATE_KEY, GOVERNANCE_ADDRESS
 from quickstart.examples.util.repeater import retry
 
 
@@ -34,13 +36,28 @@ print("[wallet1] address: ", wallet1.get_address(), " private key: ", wallet1.ge
 wallet2 = KeyWallet.create()
 print("[wallet2] address: ", wallet2.get_address(), " private key: ", wallet2.get_private_key())
 
+icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+
+
+# Returns a step cost. You can use it for getting the recommended value of 'step limit'.
+def get_default_step_cost():
+    _call = CallBuilder()\
+        .from_(wallet1.get_address())\
+        .to(GOVERNANCE_ADDRESS)\
+        .method("getStepCosts")\
+        .build()
+    _result = icon_service.call(_call)
+    default_step_cost = convert_hex_str_to_int(_result["default"])*2
+    return default_step_cost
+
+
 # Generates an instance of transaction for sending icx.
-# 1:mainnet, 2:testnet, 3~:private id
+# nid(network id); 1:mainnet, 2~:etc
 transaction = TransactionBuilder()\
     .from_(wallet1.get_address())\
     .to(wallet2.get_address())\
     .value(10000)\
-    .step_limit(100000000) \
+    .step_limit(get_default_step_cost()) \
     .nid(3) \
     .nonce(2) \
     .version(3) \
@@ -51,10 +68,8 @@ transaction = TransactionBuilder()\
 signed_transaction = SignedTransaction(transaction, wallet1)
 
 # Reads params to transfer to nodes
-print("params: ")
+print("\nparams: ")
 pprint(signed_transaction.signed_transaction_dict)
-
-icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
 
 # Sends the transaction
 tx_hash = icon_service.send_transaction(signed_transaction)
@@ -65,10 +80,12 @@ print("txHash: ", tx_hash)
 def get_tx_result():
     # Returns the result of a transaction by transaction hash
     tx_result = icon_service.get_transaction_result(tx_hash)
-    print("transaction status(1:success, 0:failure): ", tx_result["status"])
+    print("\ntransaction status(1:success, 0:failure): ", tx_result["status"])
 
     # Gets balance
     balance = icon_service.get_balance(wallet2.get_address())
     print("balance: ", balance, "\n")
 
+
 get_tx_result()
+
