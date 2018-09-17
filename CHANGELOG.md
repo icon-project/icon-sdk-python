@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.4] -  Sep, 17, 2018
+### Added
+- Add quickstart module
+    - Add samples and README.md for quickstart
+- Add Converter to convert return data from hex str into an int
+- Add repeater for calling the decorated function
+    - To check returning transaction result after consensus
+
+### Changed
+- Amend the way to load a key file having 'bom'
+
+### Removed
+N/A
+
+
+
 ## [1.0.3] -  August, 31, 2018
 ### Added
 - Add FileNotFountError while loading the key file
