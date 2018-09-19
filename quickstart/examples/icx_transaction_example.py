@@ -47,7 +47,7 @@ def get_default_step_cost():
         .method("getStepCosts")\
         .build()
     _result = icon_service.call(_call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])*2
+    default_step_cost = convert_hex_str_to_int(_result["default"])
     return default_step_cost
 
 
