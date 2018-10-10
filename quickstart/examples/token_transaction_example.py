@@ -38,7 +38,7 @@ def get_default_step_cost():
         .method("getStepCosts")\
         .build()
     _result = icon_service.call(_call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])*2
+    default_step_cost = convert_hex_str_to_int(_result["default"])
     return default_step_cost
 
 
@@ -56,7 +56,7 @@ params = {"_to": wallet2.get_address(), "_value": 10}
 call_transaction = CallTransactionBuilder()\
     .from_(wallet1.get_address())\
     .to(SCORE_ADDRESS) \
-    .step_limit(get_default_step_cost())\
+    .step_limit(get_default_step_cost()*2)\
     .nid(3) \
     .nonce(4) \
     .method("transfer")\

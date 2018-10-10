@@ -18,20 +18,39 @@ from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.libs.in_memory_zip import gen_deploy_data_content
 from iconsdk.builder.transaction_builder import DeployTransactionBuilder
+from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.exception import JSONRPCException
+from iconsdk.utils.convert_type import convert_hex_str_to_int
 from quickstart.examples.test.constant import (
     TEST_HTTP_ENDPOINT_URI_V3,
     TEST_PRIVATE_KEY,
-    SCORE_INSTALL_ADDRESS
+    SCORE_INSTALL_ADDRESS,
+    GOVERNANCE_ADDRESS
 )
 from quickstart.examples.util.repeater import retry
 
 current_dir_path = path.abspath(path.dirname(__file__))
 score_path_standard_token = path.join(current_dir_path, 'sample_data/standard_token.zip')
 score_path_sample_token = path.join(current_dir_path, 'sample_data/sample_token.zip')
+score_paths = [score_path_standard_token, score_path_sample_token]
+icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
 
-score_paths = [score_path_sample_token, score_path_standard_token]
+
+# Returns the max step limit
+def get_max_step_limit():
+    _param = {
+        "context_type": "invoke"
+    }
+    _call = CallBuilder()\
+        .from_(wallet1.get_address())\
+        .to(GOVERNANCE_ADDRESS)\
+        .method("getMaxStepLimit")\
+        .params(_param)\
+        .build()
+    _result = icon_service.call(_call)
+    return convert_hex_str_to_int(_result)
+
 
 for score_path in score_paths:
     # Reads the zip file 'standard_token.zip' and returns bytes of the file
@@ -45,15 +64,13 @@ for score_path in score_paths:
     deploy_transaction = DeployTransactionBuilder()\
         .from_(wallet1.get_address())\
         .to(SCORE_INSTALL_ADDRESS) \
-        .step_limit(2013265920)\
+        .step_limit(get_max_step_limit())\
         .nid(3)\
         .nonce(3)\
         .content_type("application/zip")\
         .content(install_content_bytes)\
         .version(3)\
         .build()
-
-    icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
 
     # Returns the signed transaction object having a signature
     signed_transaction_dict = SignedTransaction(deploy_transaction, wallet1)

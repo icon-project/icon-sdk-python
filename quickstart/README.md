@@ -98,7 +98,7 @@ def get_default_step_cost():
         .method("getStepCosts")\
         .build()
     _result = icon_service.call(_call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])*2
+    default_step_cost = convert_hex_str_to_int(_result["default"])
     return default_step_cost
 ```
 
@@ -208,7 +208,7 @@ This example shows how to send token and check the balance.
 
 #### Token Transfer
 
-You can send the token(CommonData.TOKEN_ADDRESS) that is already generated as an example.
+You can send the token that is already generated as an example.
 
 You can generate KeyWallet using `TEST_PRIVATE_KEY` just like in the case of  `icx_transaction_example`, then send 1 Token to the other wallet. You need token address to send your token.
 
@@ -224,7 +224,7 @@ def get_default_step_cost():
         .method("getStepCosts")\
         .build()
     _result = icon_service.call(_call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])*2
+    default_step_cost = convert_hex_str_to_int(_result["default"])
     return default_step_cost
 ```
 
@@ -249,7 +249,7 @@ params = {"_to": wallet2.get_address(), "_value": 10}
 call_transaction = CallTransactionBuilder()\
     .from_(wallet1.get_address())\
     .to(SCORE_ADDRESS) \
-    .step_limit(get_default_step_cost())\
+    .step_limit(get_default_step_cost()*2)\
     .nid(3) \
     .nonce(4) \
     .method("transfer")\
@@ -347,7 +347,9 @@ In this example, you will use `standard_token.zip` from the `sample_data` folder
 
 *standard_token.zip : TokenStandard SCORE Project Zip file.
 
- Generate Keywallet using `TEST_PRIVATE_KEY` in the `constant.py`, then read the binary data from `standard_token.zip` by using the function `gen_deploy_data_content`
+ Generate Keywallet using `TEST_PRIVATE_KEY`, then read the binary data from `standard_token.zip` by using the function `gen_deploy_data_content`.
+
+*score_path: File path where the zip file of SCORE is on.
 
 ```python
 # Reads the zip file 'standard_token.zip' and returns bytes of the file
@@ -357,7 +359,26 @@ install_content_bytes = gen_deploy_data_content(score_path)
 wallet1 = KeyWallet.load(TEST_PRIVATE_KEY)
 ```
 
-Generate transaction with the given values above.
+You can get a max step limit to send token as follows.
+
+```python
+# Returns a max step limit
+# GOVERNANCE_ADDRESS : cx0000000000000000000000000000000000000001
+def get_max_step_limit():
+    _param = {
+        "context_type": "invoke"
+    }
+    _call = CallBuilder()\
+        .from_(wallet1.get_address())\
+        .to(GOVERNANCE_ADDRESS)\
+        .method("getMaxStepLimit")\
+        .params(_param)\
+        .build()
+    _result = icon_service.call(_call)
+    return convert_hex_str_to_int(_result)
+```
+
+Generate transaction with the given values.
 
 `SCORE_INSTALL_ADDRESS` uses cx0 to deploy SCORE.
 
@@ -374,7 +395,7 @@ params = {
 deploy_transaction = DeployTransactionBuilder()\
         .from_(wallet1.get_address())\
         .to(SCORE_INSTALL_ADDRESS) \
-        .step_limit(2013265920)\
+        .step_limit(get_max_step_limit())\
         .nid(3)\
         .nonce(3)\
         .content_type("application/zip")\
