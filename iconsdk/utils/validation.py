@@ -34,7 +34,7 @@ def is_password_of_keystore_file(password) -> bool:
         True: When format of the password is valid.
         False: When format of the password is invalid.
     """
-    return bool(match(r'^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+{}:<>?]).{8,}$', password))
+    return bool(match(r'^(?=.*\d)(?=.*[a-zA-Z])(?=.*[?!:\.,%+-/*<>{}\(\)\[\]`"\'~_^\\|@#$&]).{8,}$', password))
 
 
 def is_keystore_file(keystore: dict) -> bool:
