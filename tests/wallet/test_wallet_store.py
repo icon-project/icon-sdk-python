@@ -42,9 +42,9 @@ class TestWalletStore(TestCase):
         self.assertRaises(KeyStoreException, wallet.store, self.TEST_WRONG_PATH, self.TEST_KEYSTORE_FILE_NEW_PASSWORD)
 
     def test_wallet_store_with_wrong_password(self):
-        """Case when entering a invalid password."""
+        """Successful Case to store wallet even though entering a invalid password."""
         wallet = KeyWallet.create()
-        self.assertRaises(KeyStoreException, wallet.store, self.TEST_NEW_PATH, self.TEST_KEYSTORE_FILE_WRONG_PASSWORD)
+        wallet.store(self.TEST_NEW_PATH, self.TEST_KEYSTORE_FILE_WRONG_PASSWORD)
 
     def test_wallet_store_overwriting(self):
         """Case when overwriting the existing keystore file."""

@@ -27,7 +27,10 @@ from iconsdk.utils.hexadecimal import (
 
 
 def is_password_of_keystore_file(password) -> bool:
-    """Validates a password.
+    """
+    Validates a password.
+
+    * This function is no used longer.
 
     :param password: The password the user entering. type(str)
     :return: type(bool)

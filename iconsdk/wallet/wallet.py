@@ -17,9 +17,9 @@ import json
 from hashlib import sha3_256
 from abc import ABCMeta, abstractmethod
 from secp256k1 import PrivateKey
-from iconsdk.utils.validation import is_password_of_keystore_file, is_keystore_file
+from iconsdk.utils.validation import is_keystore_file
 from iconsdk.exception import KeyStoreException, DataTypeException
-from eth_keyfile import load_keyfile, decode_keyfile_json, create_keyfile_json, extract_key_from_keyfile
+from eth_keyfile import create_keyfile_json, extract_key_from_keyfile
 from multipledispatch import dispatch
 from iconsdk.utils import store_keystore_file_on_the_path
 from iconsdk.libs.signer import sign
@@ -90,8 +90,6 @@ class KeyWallet(Wallet):
             It must include alphabet character, number, and special character.
         :return: An instance of Wallet class.
         """
-        if not is_password_of_keystore_file(password):
-            raise KeyStoreException('Invalid password.')
         try:
             with open(file_path, 'rb') as file:
                 bytes_private_key = extract_key_from_keyfile(file, bytes(password, 'utf-8'))
@@ -113,10 +111,6 @@ class KeyWallet(Wallet):
             Password for the keystore file. Password must include alphabet character, number, and special character.
             type(str)
         """
-
-        if not is_password_of_keystore_file(password):
-            raise KeyStoreException('Invalid password.')
-
         try:
             key_store_contents = create_keyfile_json(
                 self.__bytes_private_key,
