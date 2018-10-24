@@ -26,20 +26,6 @@ from iconsdk.utils.hexadecimal import (
 )
 
 
-def is_password_of_keystore_file(password) -> bool:
-    """
-    Validates a password.
-
-    * This function is no used longer.
-
-    :param password: The password the user entering. type(str)
-    :return: type(bool)
-        True: When format of the password is valid.
-        False: When format of the password is invalid.
-    """
-    return bool(match(r'^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+{}:<>?]).{8,}$', password))
-
-
 def is_keystore_file(keystore: dict) -> bool:
     """Checks data in a keystore file is valid.
 
