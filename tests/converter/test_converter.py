@@ -85,7 +85,7 @@ class TestConverter(TestCase):
         # Scenario 1: Get the last block data and validate the block data.
         last_block_height = icon_service.get_block("latest")["height"]
 
-        for height in range(0, last_block_height if last_block_height < 500 else 500):
+        for height in range(0, last_block_height if last_block_height < 200 else 200):
             # Scenario 2: Get all of the transaction data on that block and validate the transaction data.
             block = icon_service.get_block(height)
             # pprint.pprint(block)
