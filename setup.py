@@ -41,7 +41,7 @@ setup(
         'eth-keyfile==0.5.1',
         'secp256k1==0.13.2',
         'multipledispatch==0.5.0',
-        'requests==2.19.1'
+        'requests>=2.20.0'
    ],
    license='Apache License 2.0',
    classifiers=[
