@@ -235,8 +235,7 @@ def is_call_transaction(params: dict) -> bool:
     return is_basic_transaction(params) \
            and has_keys(params, inner_key_of_params) \
            and has_keys(params["data"], inner_key_of_data) \
-           and params["dataType"] == "call" \
-           and 'value' not in params
+           and params["dataType"] == "call"
 
 
 def is_message_transaction(params: dict) -> bool:
@@ -245,5 +244,4 @@ def is_message_transaction(params: dict) -> bool:
     return is_basic_transaction(params) \
            and has_keys(params, inner_key_of_params) \
            and is_0x_prefixed(params["data"]) \
-           and params["dataType"] == "message" \
-           and 'value' not in params
+           and params["dataType"] == "message"
