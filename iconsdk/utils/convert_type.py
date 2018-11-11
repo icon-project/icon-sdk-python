@@ -36,13 +36,17 @@ def convert_bytes_to_hex_str(value: bytes):
 
 def convert_params_value_to_hex_str(params: dict):
     """Converts params' values into hex str prefixed with '0x'."""
-    new_params = params
-    for key, value in params.items():
-        if isinstance(value, int):
-            new_params[key] = convert_int_to_hex_str(value)
-        elif isinstance(value, bytes):
-            new_params[key] = convert_bytes_to_hex_str(value)
-    return new_params
+
+    if isinstance(params, dict):
+        new_params = params
+        for key, value in params.items():
+            if isinstance(value, int):
+                new_params[key] = convert_int_to_hex_str(value)
+            elif isinstance(value, bytes):
+                new_params[key] = convert_bytes_to_hex_str(value)
+            return new_params
+    else:
+        raise DataTypeException("Params type should be dict.")
 
 
 def convert_hex_str_to_int(value: str):
