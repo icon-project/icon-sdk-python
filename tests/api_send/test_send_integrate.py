@@ -19,7 +19,7 @@ from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_deploy_transaction, is_T_HASH, is_call_transaction
-from iconsdk.exception import JSONRPCException
+from iconsdk.exception import JSONRPCException, DataTypeException
 
 
 class TestSendDeploy(TestSendSuper):
@@ -53,7 +53,7 @@ class TestSendDeploy(TestSendSuper):
             .params(param) \
             .version(3)     \
             .build()
-        tx_dict = SignedTransaction.to_dict(deploy_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
 
         # Test install SCORE : Sends transaction which makes the SCORE install correctly
@@ -72,7 +72,7 @@ class TestSendDeploy(TestSendSuper):
             .method("acceptScore")\
             .params(params)\
             .build()
-        tx_dict = SignedTransaction.to_dict(call_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(call_transaction)
         self.assertTrue(is_call_transaction(tx_dict))
 
         signed_transaction_dict = SignedTransaction(call_transaction, self.wallet)
@@ -91,7 +91,7 @@ class TestSendDeploy(TestSendSuper):
             .content_type(self.setting["content_type"]) \
             .content(self.setting["content_update"]) \
             .build()
-        tx_dict = SignedTransaction.to_dict(deploy_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
 
         # Test update SCORE : Sends transaction which makes the SCORE update correctly
@@ -104,7 +104,7 @@ class TestSendDeploy(TestSendSuper):
         call_transaction = CallTransactionBuilder().from_(self.setting["from"]).to(self.setting["to_governance"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).method("acceptScore").params(
             params).build()
-        tx_dict = SignedTransaction.to_dict(call_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(call_transaction)
         self.assertTrue(is_call_transaction(tx_dict))
 
         signed_transaction_dict = SignedTransaction(call_transaction, self.wallet)
@@ -138,7 +138,7 @@ class TestSendDeploy(TestSendSuper):
             .nid(self.setting["nid"])\
             .step_limit(self.setting["step_limit"])\
             .build()
-        tx_dict = SignedTransaction.to_dict(call_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(call_transaction)
         self.assertTrue(is_call_transaction(tx_dict))
 
         signed_transaction_dict = SignedTransaction(call_transaction, self.wallet)
@@ -163,11 +163,10 @@ class TestSendDeploy(TestSendSuper):
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
 
         # Test install SCORE : When not having a required property - contentType
-        deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to_install"]) \
+        deploy_transaction_builder = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to_install"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .content(self.setting["content_install"]).build()
-        signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+            .content(self.setting["content_install"])
+        self.assertRaises(DataTypeException, deploy_transaction_builder.build)
 
         # Test install SCORE : When data type of the address is wrong
         wrong_address = "hx4873b94352c8c1f3b2f09aaeccea31ce9e90"

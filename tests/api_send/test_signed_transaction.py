@@ -30,24 +30,24 @@ class TestSignedTransaction(TestSendSuper):
         icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"])\
             .nonce(self.setting["nonce"]).build()
-        tx_dict = SignedTransaction.to_dict(icx_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
         # When not having an optional property, nonce
         icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).build()
-        tx_dict = SignedTransaction.to_dict(icx_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
         # When not having an required property, value
         icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).build()
-        tx_dict = SignedTransaction.to_dict(icx_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
         self.assertFalse(is_icx_transaction(tx_dict))
 
         # Update SCORE
         deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).content_type(self.setting["content_type"])\
             .content(self.setting["content_update"]).build()
-        tx_dict = SignedTransaction.to_dict(deploy_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
 
         # Install SCORE
@@ -55,20 +55,20 @@ class TestSignedTransaction(TestSendSuper):
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).nonce(self.setting["nonce"])\
             .content_type(self.setting["content_type"]).content(self.setting["content_install"])\
             .params(self.setting["params_install"]).build()
-        tx_dict = SignedTransaction.to_dict(deploy_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
 
         # SCORE method call
         call_transaction = CallTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).nonce(self.setting["nonce"])\
             .method(self.setting["method"]).params(self.setting["params_call"]).build()
-        tx_dict = SignedTransaction.to_dict(call_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(call_transaction)
         self.assertTrue(is_call_transaction(tx_dict))
 
         # Message send
         msg_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"])\
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
-        tx_dict = SignedTransaction.to_dict(msg_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(msg_transaction)
         self.assertTrue(is_message_transaction(tx_dict))
 
     def test_signed_transaction_transfer(self):

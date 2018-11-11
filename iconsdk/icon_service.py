@@ -181,7 +181,7 @@ class IconService:
         :param signed_transaction: A signed transaction object
         :return: Transaction hash prefixed with '0x'
         """
-        params = signed_transaction.signed_transaction_dict
+        params = signed_transaction.signed_transaction_as_dict
         return self.__provider.make_request('icx_sendTransaction', params)
 
 
