@@ -65,8 +65,14 @@ class InMemoryZip:
                     self._in_memory.seek(0)
                     self._in_memory.write(fp.read())
             else:
+                # root path for figuring out directory of tests
+                tmp_root = None
                 with ZipFile(self._in_memory, 'a', ZIP_DEFLATED, False) as zf:
                     for root, folders, files in walk(_path):
+                        if 'package.json' in files:
+                            tmp_root = root
+                        if tmp_root and root.replace(tmp_root,'') == '/tests':
+                            continue
                         if root.find('__pycache__') != -1:
                             continue
                         if root.find('/.') != -1:
