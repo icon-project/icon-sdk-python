@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from iconsdk.utils.convert_type import convert_params_value_to_hex_str
+from iconsdk.exception import DataTypeException
 
 
 class Call:
@@ -41,6 +42,9 @@ class Call:
     @property
     def params(self):
         return convert_params_value_to_hex_str(self.__params) if self.__params else None
+
+    def to_dict(self):
+        return {"from_": self.from_, "to": self.to, "method": self.method, "params": self.params}
 
 
 class CallBuilder:
@@ -70,7 +74,20 @@ class CallBuilder:
         self._params = params
         return self
 
-    def build(self):
+    def build(self) -> Call:
         return Call(self._from_, self._to, self._method, self._params)
+
+    @classmethod
+    def from_dict(cls, call_as_dict: dict) -> 'CallBuilder':
+        """Returns a CallBuilder made from dict"""
+        try:
+            return cls(
+                from_=call_as_dict['from_'],
+                to=call_as_dict['to'],
+                method=call_as_dict['method'],
+                params=call_as_dict['params'] if "params" in call_as_dict else None
+            )
+        except KeyError:
+            raise DataTypeException("The input data invalid. Mapping key not found.")
 
 
