@@ -23,7 +23,7 @@ class TestWalletStore(TestCase):
 
     TEST_DIR = path.abspath("tests/keystore_file")
     TEST_KEYSTORE_FILE_NEW_PASSWORD = "Adas21312**"
-    TEST_KEYSTORE_FILE_WRONG_PASSWORD = "Adas2**"
+    TEST_KEYSTORE_FILE_WRONG_PASSWORD = "123456"
     TEST_NEW_PATH = path.join(TEST_DIR, "test_new_keystore.txt")
     TEST_WRONG_PATH = path.join(TEST_DIR, "unknown_folder", "test_keystore.txt")
 
