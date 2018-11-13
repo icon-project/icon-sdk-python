@@ -37,7 +37,7 @@ class SignedTransaction:
         self.__signed_transaction_dict["signature"] = b64encode(signature).decode()
 
     @property
-    def signed_transaction_as_dict(self):
+    def signed_transaction_dict(self):
         return self.__signed_transaction_dict
 
     @staticmethod

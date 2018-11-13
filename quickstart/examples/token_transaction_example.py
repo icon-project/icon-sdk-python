@@ -68,7 +68,7 @@ signed_transaction = SignedTransaction(call_transaction, wallet1)
 
 # Reads params to transfer to nodes
 print("params:")
-pprint(signed_transaction.signed_transaction_as_dict)
+pprint(signed_transaction.signed_transaction_dict)
 
 # Sends transaction
 tx_hash = icon_service.send_transaction(signed_transaction)
