@@ -1,5 +1,20 @@
 # Changelog
 
+
+## [1.0.5] -  Nov, 15, 2018
+### Added
+- Add the method of `get_max_step_limit`
+- Make the call and transaction have the method of `from_dict` to convert the dict to call or transaction object
+- Make the call and transaction have the method of `to_dict` to convert call or transaction object to the dict
+
+### Changed
+- Upgrade requests to version 2.20.0 or later
+- Amend `gen_deploy_data_content` not to load tests directory
+
+### Removed
+N/A
+
+
 ## [1.0.4] -  Sep, 17, 2018
 ### Added
 - Add quickstart module
@@ -13,7 +28,6 @@
 
 ### Removed
 N/A
-
 
 
 ## [1.0.3] -  August, 31, 2018
