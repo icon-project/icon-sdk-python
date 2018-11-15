@@ -8,6 +8,7 @@ install:
 - cd icon-sdk-java-test
 - npm install
 - node index.js &
+- sleep 5
 - cd ..
 
 script:
