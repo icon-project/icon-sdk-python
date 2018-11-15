@@ -1,7 +1,6 @@
 language: python
 python:
 - "3.6"
-- "3.7"
 
 install:
 - git clone "https://oauth2:$Gitlab_token@repo.theloop.co.kr/icon/icon-sdk/icon-sdk-java-test.git"
