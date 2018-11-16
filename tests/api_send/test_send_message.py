@@ -33,7 +33,7 @@ class TestSendMessage(TestSendSuper):
             .nid(self.setting["nid"]) \
             .nonce(self.setting["nonce"])\
             .data(self.setting["data"]).build()
-        tx_dict = SignedTransaction.to_dict(message_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(message_transaction)
         self.assertTrue(is_message_transaction(tx_dict))
 
         # Checks if sending transaction correctly

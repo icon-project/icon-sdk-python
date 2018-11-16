@@ -34,7 +34,7 @@ class TestSendTransfer(TestSendSuper):
             .nonce(self.setting["nonce"])\
             .version(3) \
             .build()
-        tx_dict = SignedTransaction.to_dict(icx_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
 
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
@@ -44,7 +44,7 @@ class TestSendTransfer(TestSendSuper):
         # When not having an optional property, nonce
         icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).build()
-        tx_dict = SignedTransaction.to_dict(icx_transaction)
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
 
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)

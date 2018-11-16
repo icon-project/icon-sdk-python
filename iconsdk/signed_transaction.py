@@ -31,7 +31,7 @@ class SignedTransaction:
         :param transaction: A transaction object not having a signature field yet
         :param wallet: A wallet object
         """
-        self.__signed_transaction_dict = self.to_dict(transaction, wallet)
+        self.__signed_transaction_dict = self.convert_tx_to_jsonrpc_request(transaction, wallet)
         message_hash = sha3_256(serialize(self.__signed_transaction_dict)).digest()
         signature = wallet.sign(message_hash)
         self.__signed_transaction_dict["signature"] = b64encode(signature).decode()
@@ -41,21 +41,17 @@ class SignedTransaction:
         return self.__signed_transaction_dict
 
     @staticmethod
-    def to_dict(transaction, wallet: Wallet=None):
-        """Converts an instance of the transaction into a dictionary"""
+    def convert_tx_to_jsonrpc_request(transaction, wallet: Wallet=None):
+        """Converts an instance of the transaction into JSON RPC request in dict"""
         dict_tx = {
             "version": convert_int_to_hex_str(transaction.version) if transaction.version else "0x3",
             "from": transaction.from_ if transaction.from_ else wallet.get_address(),
+            "to": transaction.to,
             "stepLimit": convert_int_to_hex_str(transaction.step_limit),
             "timestamp": convert_int_to_hex_str(transaction.timestamp) if transaction.timestamp else get_timestamp(),
-            # Network ID ("0x1" for Main net, "0x2" for Test net, etc)
             "nid": convert_int_to_hex_str(transaction.nid) if transaction.nid else "0x1"
         }
 
-        if transaction.to is not None:
-            dict_tx["to"] = transaction.to
-
-        # value can be 0
         if transaction.value is not None:
             dict_tx["value"] = convert_int_to_hex_str(transaction.value)
 

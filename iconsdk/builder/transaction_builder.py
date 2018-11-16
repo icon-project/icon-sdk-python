@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from iconsdk.exception import DataTypeException
 
 
@@ -28,7 +29,6 @@ class Transaction:
         self.__nonce = nonce
         self.__version = version
         self.__timestamp = timestamp
-
 
     @property
     def from_(self):
@@ -70,6 +70,10 @@ class Transaction:
     def data(self):
         return None
 
+    def to_dict(self):
+        return {"from_": self.from_, "to": self.to, "value": self.value, "step_limit": self.step_limit, "nid": self.nid,
+                "nonce": self.nonce, "version": self.version, "timestamp": self.timestamp}
+
 
 class DeployTransaction(Transaction):
     """Subclass `DeployTransaction`, making a transaction object for deploying SCORE which is read-only."""
@@ -101,6 +105,12 @@ class DeployTransaction(Transaction):
     def params(self):
         return self.__params
 
+    def to_dict(self):
+        transaction_as_dict = super().to_dict()
+        transaction_as_dict.update({"content_type": self.content_type, "content": self.content,
+                                    "data_type": self.data_type, "params": self.params})
+        return transaction_as_dict
+
 
 class CallTransaction(Transaction):
     """Subclass `CallTransaction`, making a transaction object for calling a method in SCORE which is read-only."""
@@ -122,6 +132,11 @@ class CallTransaction(Transaction):
     def params(self):
         return self.__params
 
+    def to_dict(self):
+        transaction_as_dict = super().to_dict()
+        transaction_as_dict.update({"method": self.method, "data_type": self.data_type, "params": self.params})
+        return transaction_as_dict
+
 
 class MessageTransaction(Transaction):
     """Subclass `MessageTransaction`, making a transaction object for sending a message which is read-only."""
@@ -137,6 +152,11 @@ class MessageTransaction(Transaction):
     @property
     def data(self):
         return self.__data
+
+    def to_dict(self):
+        transaction_as_dict = super().to_dict()
+        transaction_as_dict.update({"data_type": self.data_type, "data": self.data})
+        return transaction_as_dict
 
 
 class TransactionBuilder:
@@ -186,8 +206,27 @@ class TransactionBuilder:
         return self
 
     def build(self) -> Transaction:
+        if not self._to or not self._step_limit:
+            raise DataTypeException("'to' and 'step_limit' should be required.")
         return Transaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce, self._version,
                            self._timestamp)
+
+    @classmethod
+    def from_dict(cls, transaction_as_dict: dict) -> 'TransactionBuilder':
+        """Returns a TransactionBuilder made from dict"""
+        try:
+            return cls(
+                from_=transaction_as_dict['from_'] if "from_" in transaction_as_dict else None,
+                to=transaction_as_dict['to'],
+                value=transaction_as_dict['value'] if "value" in transaction_as_dict else None,
+                step_limit=transaction_as_dict['step_limit'],
+                nid=transaction_as_dict['nid'] if 'nid' in transaction_as_dict else None,
+                nonce=transaction_as_dict["nonce"] if "nonce" in transaction_as_dict else None,
+                version=transaction_as_dict["version"] if "version" in transaction_as_dict else None,
+                timestamp=transaction_as_dict["timestamp"] if "timestamp" in transaction_as_dict else None
+            )
+        except KeyError:
+            raise DataTypeException("The input data invalid. Mapping key not found.")
 
 
 class DeployTransactionBuilder(TransactionBuilder):
@@ -214,8 +253,22 @@ class DeployTransactionBuilder(TransactionBuilder):
         return self
 
     def build(self) -> DeployTransaction:
+        if not self._content_type or not self._content:
+            raise DataTypeException("'content_type' and 'content' should be required.")
         return DeployTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce, self._version,
                                  self._timestamp, self._content_type, self._content, self._params)
+
+    @classmethod
+    def from_dict(cls, transaction_as_dict: dict) -> 'DeployTransactionBuilder':
+        """Returns a DeployTransactionBuilder made from dict"""
+        try:
+            cls = super().from_dict(transaction_as_dict)
+            cls.content(transaction_as_dict['content'])
+            cls.content_type(transaction_as_dict['content_type'])
+            cls.params(transaction_as_dict['params'] if "params" in transaction_as_dict else None)
+            return cls
+        except KeyError:
+            raise DataTypeException("The input data invalid. Mapping key not found.")
 
 
 class CallTransactionBuilder(TransactionBuilder):
@@ -236,8 +289,21 @@ class CallTransactionBuilder(TransactionBuilder):
         return self
 
     def build(self) -> CallTransaction:
-        return CallTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce, self._version,
+        if not self._method:
+            raise DataTypeException("'method' should be required.")
+        return CallTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce, self._version,
                                self._timestamp, self._method, self._params)
+
+    @classmethod
+    def from_dict(cls, transaction_as_dict: dict) -> 'CallTransactionBuilder':
+        """Returns a CallTransactionBuilder made from dict"""
+        try:
+            cls = super().from_dict(transaction_as_dict)
+            cls.method(transaction_as_dict["method"])
+            cls.params(transaction_as_dict["params"] if "params" in transaction_as_dict else None)
+            return cls
+        except KeyError:
+            raise DataTypeException("The input data invalid. Mapping key not found.")
 
 
 class MessageTransactionBuilder(TransactionBuilder):
@@ -252,5 +318,19 @@ class MessageTransactionBuilder(TransactionBuilder):
         return self
 
     def build(self) -> MessageTransaction:
-        return MessageTransaction(self._from_, self._to, None, self._step_limit, self._nid, self._nonce, self._version,
+        if not self._data:
+            raise DataTypeException("'data' should be required.")
+        return MessageTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce, self._version,
                                   self._timestamp, self._data)
+
+    @classmethod
+    def from_dict(cls, transaction_as_dict: dict) -> 'MessageTransactionBuilder':
+        """Returns a MessageTransactionBuilder made from dict"""
+        try:
+            cls = super().from_dict(transaction_as_dict)
+            cls.data(transaction_as_dict["data"])
+            return cls
+        except KeyError:
+            raise DataTypeException("The input data invalid. Mapping key not found.")
+
+

@@ -128,7 +128,7 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Version
 
-1.0.4 beta
+1.0.5 beta
 
 ### Adding ICON SDK for Python
 
@@ -834,7 +834,7 @@ transaction = CallTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .method("balance_of")\
+    .method("transfer")\
     .params(params)\
     .build()
 
@@ -867,11 +867,11 @@ Builder for a **Transaction** object
 * to : The wallet address to receive coin or SCORE address to receive a transaction.
 * value : The amount of ICX to be sent. (Optional)
 * step_limit : The maximum step value for processing a transaction.
-* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
-* nonce :  An arbitrary number used to prevent transaction hash collision. (optional)
-* version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
-* timestamp : Transaction creation time. Timestamp is in microseconds. (Optional)
-* build : Returns an ICX transaction object. 
+* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
+* nonce :  An arbitrary number used to prevent transaction hash collision. (Optional)
+* version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
+* timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
+* build : Returns an ICX transaction object
 
 #### Returns
 
@@ -902,13 +902,13 @@ Builder for **DeployTransaction** object
 * from_ : The wallet address making a transaction. The default address is your account address.
 * to : The wallet address to receive coin or SCORE address to receive a transaction
 * step_limit : The maximum step value for processing a transaction
-* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
-* nonce :   An arbitrary number used to prevent transaction hash collision
+* nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
+* nonce : An arbitrary number used to prevent transaction hash collision
 * content_type : Content's MIME type
 * content : Binary data of the SCORE
 * params : Parameters passed on the SCORE methods ; on_install (), on_update (). Data type of the params should be **dict**. (optional)
-* version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
-* timestamp : Transaction creation time. Timestamp is in microseconds. (Optional)
+* version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
+* timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
 * build : Returns a deploy transaction object
 
 #### Returns
@@ -942,12 +942,12 @@ Builder for **CallTransaction** object
 - from_ : The wallet address making a transaction. The default address is your account address.
 - to : The wallet address to receive coin or SCORE address to receive a transaction
 - step_limit : The maximum step value for processing a transaction
-- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - method : Methods in the SCORE
 - params : Parameters passed on the SCORE methods. Data type of the params should be **dict**. (optional) 
-- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
-- timestamp : Transaction creation time. Timestamp is in microseconds. (Optional)
+- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
+- timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
 - Build : Returns a call transaction object  
 
 #### Returns
@@ -964,7 +964,7 @@ transaction = CallTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .method("balance_of")\
+    .method("transfer")\
     .params(params)\
     .build()
 ```
@@ -980,11 +980,11 @@ Builder for **MessageTransaction** object
 - from_ : The wallet address making a transaction. The default address is your account address.
 - to : The wallet address to receive coin or SCORE address to receive a transaction
 - stepLimit : The maximum step value for processing a transaction
-- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc) (Optional)
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - data : Data by the dataType. Data type of the data should be **string**.
-- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value. (Optional)
-- timestamp : Transaction creation time. Timestamp is in microseconds. (Optional)
+- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
+- timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
 - build : Returns a message transaction object  
 
 #### Returns
