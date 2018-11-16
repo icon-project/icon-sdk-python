@@ -14,7 +14,7 @@ script:
 - python setup.py test
 
 before_deploy:
-- rm -rf icon-sdk-java-test
+- rm -rf icon-mock-node
 
 deploy:
   provider: pypi
