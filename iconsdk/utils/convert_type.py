@@ -44,7 +44,7 @@ def convert_params_value_to_hex_str(params: dict):
                 new_params[key] = convert_int_to_hex_str(value)
             elif isinstance(value, bytes):
                 new_params[key] = convert_bytes_to_hex_str(value)
-            return new_params
+        return new_params
     else:
         raise DataTypeException("Params type should be dict.")
 
