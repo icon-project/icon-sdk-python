@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [1.0.6] -  Nov, 22, 2018
+### Added
+N/A
+
+### Changed
+- Fix : convert_params_value_to_hex_str() converts first item of dict only
+
+### Removed
+N/A
+
+
 ## [1.0.5] -  Nov, 15, 2018
 ### Added
 - Add the method of `get_max_step_limit`
