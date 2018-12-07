@@ -845,7 +845,7 @@ transaction = MessageTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .data("0x00..0")\
+    .data("0x74657374")\
     .build()
 
 # Returns the signed transaction object having a signature
@@ -1001,7 +1001,7 @@ transaction = MessageTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .data("0x00..0")\
+    .data("0x74657374")\
     .build()
 ```
 

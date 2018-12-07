@@ -148,7 +148,7 @@ class MessageTransaction(Transaction):
         if is_0x_prefixed(data):
             self.__data = data
         else:
-            raise DataTypeException("Message's data should be hex string prefixed with '0x'.")
+            raise DataTypeException("Message data should be hex string prefixed with '0x'.")
 
     @property
     def data_type(self):
