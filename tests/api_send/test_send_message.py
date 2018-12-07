@@ -26,6 +26,7 @@ from iconsdk.exception import JSONRPCException, DataTypeException
 class TestSendMessage(TestSendSuper):
 
     def test_send_message(self):
+        sleep_time = 2
 
         # Checks if making an instance of message transaction correctly
         message_transaction = MessageTransactionBuilder()\
@@ -44,7 +45,7 @@ class TestSendMessage(TestSendSuper):
         self.assertTrue(is_T_HASH(result))
 
         # When having an optional property, nonce
-        sleep(2)
+        sleep(sleep_time)
         message_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
         signed_transaction_dict = SignedTransaction(message_transaction, self.wallet)
@@ -52,7 +53,7 @@ class TestSendMessage(TestSendSuper):
         self.assertTrue(is_T_HASH(result))
 
         # When the data is hex string
-        sleep(2)
+        sleep(sleep_time)
         tx_result = self.icon_service.get_transaction_result(result)
         tx = self.icon_service.get_transaction(result)
 
