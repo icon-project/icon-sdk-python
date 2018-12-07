@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.7] -  Dec, 7, 2018
+### Added
+N/A
+
+### Changed
+- Fix : The data type of the Message type transaction's data is changed from string to hex string prefixed with '0x'
+
+### Removed
+N/A
+
 
 ## [1.0.6] -  Nov, 22, 2018
 ### Added

@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from iconsdk.exception import DataTypeException
+from iconsdk.utils.validation import is_0x_prefixed
 
 
 class Transaction:
@@ -143,7 +144,11 @@ class MessageTransaction(Transaction):
     def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
                  timestamp: int, data: str):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
-        self.__data = data
+
+        if is_0x_prefixed(data):
+            self.__data = data
+        else:
+            raise DataTypeException("Message's data should be hex string prefixed with '0x'.")
 
     @property
     def data_type(self):
