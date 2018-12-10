@@ -23,7 +23,7 @@ from iconsdk.builder.transaction_builder import (
 from iconsdk.utils import get_timestamp
 from iconsdk.wallet.wallet import KeyWallet
 from tests.example_config import TEST_PRIVATE_KEY
-from iconsdk.utils.validation import has_keys
+from iconsdk.utils.validation import has_keys, is_0x_prefixed
 from copy import deepcopy
 from iconsdk.exception import DataTypeException
 
@@ -68,7 +68,7 @@ class TestTransactionBuilder(TestCase):
                 "init_supply": 10000
             },
             # It is used to send message only.
-            "data": "test",
+            "data": "0x" + "test".encode().hex(),
             "version": 3,
             "timestamp": get_timestamp()
         }
@@ -109,6 +109,7 @@ class TestTransactionBuilder(TestCase):
         return self._is_basic_transaction(params) \
                and has_keys(params, inner_key_of_params) \
                and isinstance(params["data"], str) \
+               and is_0x_prefixed(params["data"]) \
                and params["data_type"] == "message"
 
     def test_transaction_builder_from_dict(self):

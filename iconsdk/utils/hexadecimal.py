@@ -21,6 +21,7 @@ It is used for
 - an address of a wallet starting with 'hx'
 - an address of SCORE starting with 'cx'
 """
+from re import match
 
 from iconsdk.utils.type import is_str
 from iconsdk.exception import DataTypeException
@@ -82,3 +83,16 @@ def add_cx_prefix(value):
     return 'cx' + value
 
 
+def is_lowercase_hex_string(value: str) -> bool:
+    """Check whether value is hexadecimal format or not
+
+    :param value: text
+    :return: True(lowercase hexadecimal) otherwise False
+    """
+    try:
+        result = None
+        if isinstance(value, str):
+            result = match('[0-9a-f]+', value)
+        return result is not None and len(result.group(0)) == len(value)
+    except Exception:
+        raise DataTypeException("Not lowercase hex string. Get: {0}.".format(repr(value)))

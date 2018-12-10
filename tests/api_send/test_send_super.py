@@ -74,7 +74,7 @@ class TestSendSuper(TestCase):
                 "init_supply": 10000
             },
             # It is used to send message only.
-            "data": "test"
+            "data": "0x" + "test".encode().hex()
         }
 
 

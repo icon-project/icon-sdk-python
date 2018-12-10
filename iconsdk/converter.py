@@ -85,7 +85,6 @@ def convert_common_data_on_transaction(transaction: dict):
     3. The field 'method' has to be removed.
     4. The field 'version' has to be added number 2 if the version is 2 or if 3, has to be converted to an integer.
     5. If the field 'dataType' is 'deploy', the field 'content' has to be converted to bytes.
-       Or if 'message', the field 'data' has to be converted to an integer.
 
     :param transaction: data about the single transaction
     """
@@ -119,8 +118,6 @@ def convert_common_data_on_transaction(transaction: dict):
     if "dataType" in transaction:
         if transaction["dataType"] == "deploy":
             transaction["data"]["content"] = convert_hex_str_to_bytes(transaction["data"]["content"])
-        elif transaction["dataType"] == "message":
-            transaction["data"] = bytearray.fromhex(remove_0x_prefix(transaction["data"])).decode()
 
 
 def convert_transaction_result(data: dict):
