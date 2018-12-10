@@ -61,15 +61,18 @@ class SignedTransaction:
         if transaction.data_type is not None:
             dict_tx["dataType"] = transaction.data_type
 
-        if transaction.data_type in ('deploy', 'call', 'message'):
+        if transaction.data_type in ('deploy', 'call'):
             dict_tx["data"] = generate_data_value(transaction)
+        elif transaction.data_type == 'message':
+            dict_tx["data"] = transaction.data
+
         return dict_tx
 
 
 def generate_data_value(transaction):
     """
     Generates data value in transaction from the other data like content_type, content, method or params
-    by data types such as deploy, call, message.
+    by data types such as deploy and call.
     """
     if transaction.data_type == "deploy":
         # Content's data type is bytes and return value is hex string prefixed with '0x'.
@@ -85,6 +88,4 @@ def generate_data_value(transaction):
         # Params is an optional property.
         if transaction.params:
             data["params"] = convert_params_value_to_hex_str(transaction.params)
-    else:  # When data type is message
-        data = add_0x_prefix(transaction.data.encode().hex())
     return data
