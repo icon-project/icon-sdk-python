@@ -21,7 +21,7 @@ from iconsdk.exception import DataTypeException
 def convert_int_to_hex_str(value: int):
     """Converts an integer to hex string prefixed with '0x'."""
     if is_integer(value):
-        return add_0x_prefix(hex(value))
+        return hex(value)
     else:
         raise DataTypeException("Data type should be integer.")
 
