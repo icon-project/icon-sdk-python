@@ -245,3 +245,6 @@ def is_message_transaction(params: dict) -> bool:
            and has_keys(params, inner_key_of_params) \
            and is_0x_prefixed(params["data"]) \
            and params["dataType"] == "message"
+
+
+

@@ -846,7 +846,7 @@ transaction = MessageTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .data("test")\
+    .data("0x74657374")\
     .build()
 
 # Returns the signed transaction object having a signature
@@ -983,7 +983,7 @@ Builder for **MessageTransaction** object
 - stepLimit : The maximum step value for processing a transaction
 - nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
 - nonce :  An arbitrary number used to prevent transaction hash collision
-- data : Data by the dataType. Data type of the data should be **string**.
+- data : Data by the dataType. Data type of the data should be **lowercase hex string** prefixed with '0x'.
 - version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
 - timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
 - build : Returns a message transaction object  
@@ -1002,7 +1002,7 @@ transaction = MessageTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .data("test")\
+    .data("0x74657374")\
     .build()
 ```
 
