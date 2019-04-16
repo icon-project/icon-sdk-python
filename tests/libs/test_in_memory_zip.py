@@ -15,6 +15,7 @@
 
 from os import path
 from unittest import TestCase, main
+
 from iconsdk.libs.in_memory_zip import gen_deploy_data_content
 
 

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from os import path, remove
+
 from iconsdk.wallet.wallet import KeyWallet
 from quickstart.examples.test.constant import TEST_PRIVATE_KEY
 

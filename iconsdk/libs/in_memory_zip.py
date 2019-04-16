@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import path, walk
 from io import BytesIO
+from os import path, walk
 from zipfile import ZipFile, ZIP_DEFLATED
+
 from iconsdk.exception import ZipException
 
 

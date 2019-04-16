@@ -23,8 +23,8 @@ It is used for
 """
 from re import match
 
-from iconsdk.utils.type import is_str
 from iconsdk.exception import DataTypeException
+from iconsdk.utils.type import is_str
 
 
 def is_0x_prefixed(value):

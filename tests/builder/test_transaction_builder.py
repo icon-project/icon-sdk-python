@@ -13,19 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from copy import deepcopy
 from unittest import TestCase, main
+
 from iconsdk.builder.transaction_builder import (
     TransactionBuilder,
     CallTransactionBuilder,
     MessageTransactionBuilder,
     DeployTransactionBuilder
 )
+from iconsdk.exception import DataTypeException
 from iconsdk.utils import get_timestamp
+from iconsdk.utils.validation import has_keys, is_0x_prefixed
 from iconsdk.wallet.wallet import KeyWallet
 from tests.example_config import TEST_PRIVATE_KEY
-from iconsdk.utils.validation import has_keys, is_0x_prefixed
-from copy import deepcopy
-from iconsdk.exception import DataTypeException
 
 
 class TestTransactionBuilder(TestCase):

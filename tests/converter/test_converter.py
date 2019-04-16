@@ -13,18 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from logging import getLogger
 from unittest import TestCase, main
-from tests.converter.example_blocks import block_v2_1, block_v2_2, block_v2_3, block_v3_1, block_v3_2, block_genesis
-from tests.converter.example_transactions import transaction_v2_1, transaction_v2_2, transaction_v3_1, transaction_v3_2, transaction_v3_3
-from tests.converter.example_tx_results import tx_result_v2_1, tx_result_v2_2, tx_result_v3_1, tx_result_v3_2, tx_result_v3_3
+
 from iconsdk.converter import convert_block, convert_transaction, convert_transaction_result
-from iconsdk.utils.hexadecimal import is_0x_prefixed
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from logging import getLogger
 from iconsdk.utils import set_logger
-import pprint
+from iconsdk.utils.hexadecimal import is_0x_prefixed
+from tests.converter.example_blocks import block_v2_1, block_v2_2, block_v2_3, block_v3_1, block_v3_2, block_genesis
+from tests.converter.example_transactions import transaction_v2_1, transaction_v2_2, transaction_v3_1, transaction_v3_2, \
+    transaction_v3_3
+from tests.converter.example_tx_results import tx_result_v2_1, tx_result_v2_2, tx_result_v3_1, tx_result_v3_2, \
+    tx_result_v3_3
+from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 
 
 class TestConverter(TestCase):

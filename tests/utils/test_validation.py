@@ -15,9 +15,11 @@
 
 from os import path
 from unittest import TestCase, main
-from iconsdk.utils.validation import is_keystore_file, has_keys, is_keystore_file_for_icon
+
 from eth_keyfile import load_keyfile
+
 from iconsdk.exception import KeyStoreException
+from iconsdk.utils.validation import is_keystore_file, has_keys, is_keystore_file_for_icon
 
 
 class TestValidation(TestCase):

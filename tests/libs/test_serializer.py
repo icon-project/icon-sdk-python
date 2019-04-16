@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hashlib import sha3_256
 from unittest import TestCase, main
+
 from iconsdk.libs.serializer import serialize
 from tests.example_tx_requests import TEST_REQUEST_TRANSFER_ICX, TEST_REQUEST_SCORE_FUNCTION_CALL
 
