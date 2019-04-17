@@ -1,117 +1,118 @@
+---
 
+title: "ICON SDK for Python"
+excerpt: ""
 
-
-
-# ICON SDK for Python
+---
 
 ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples. It is reference to [ICON JSON-RPC API **v3**](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md).
 
 
+## Table of Contents
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [ICON SDK for Python](#icon-sdk-for-python)
-  - [Quick start](#quick-start)
-    - [Requirements](#requirements)
-    - [Reference](#reference)
-    - [Version](#version)
-    - [Adding ICON SDK for Python](#adding-icon-sdk-for-python)
-    - [Creating an IconService instance and Setting a provider](#creating-an-iconservice-instance-and-setting-a-provider)
-  - [Querying API methods](#querying-api-methods)
-    - [Examples](#examples)
-    - [Error cases](#error-cases)
-    - [get_block](#get_block)
-      - [Parameters](#parameters)
-      - [Returns](#returns)
-      - [Example](#example)
-    - [get_balance](#get_balance)
-      - [Parameters](#parameters-1)
-      - [Returns](#returns-1)
-      - [Example](#example-1)
-    - [get_score_api](#get_score_api)
-      - [Parameters](#parameters-2)
-      - [Returns](#returns-2)
-      - [Example](#example-2)
-    - [get_total_supply](#get_total_supply)
-      - [Parameters](#parameters-3)
-      - [Returns](#returns-3)
-      - [Example](#example-3)
-    - [get_transaction](#get_transaction)
-      - [Parameters](#parameters-4)
-      - [Returns](#returns-4)
-      - [Example](#example-4)
-    - [get_transaction_result](#get_transaction_result)
-      - [Parameters](#parameters-5)
-      - [Returns](#returns-5)
-      - [Example](#example-5)
-    - [call](#call)
-      - [Parameters](#parameters-6)
-      - [Returns](#returns-6)
-      - [Example](#example-6)
-  - [Loading a wallet and storing the keystore](#loading-a-wallet-and-storing-the-keystore)
-    - [Examples](#examples-1)
-  - [API methods of KeyWallet](#api-methods-of-keywallet)
-    - [create](#create)
-      - [Parameters](#parameters-7)
-      - [Returns](#returns-7)
-      - [Example](#example-7)
-    - [load](#load)
-      - [Parameters](#parameters-8)
-      - [Returns](#returns-8)
-      - [Example](#example-8)
-    - [load](#load-1)
-      - [Parameters](#parameters-9)
-      - [Returns](#returns-9)
-      - [Example](#example-9)
-    - [store](#store)
-      - [Parameters](#parameters-10)
-      - [Returns](#returns-10)
-      - [Example](#example-10)
-    - [get_address](#get_address)
-      - [Parameters](#parameters-11)
-      - [Returns](#returns-11)
-      - [Example](#example-11)
-    - [get_private_key](#get_private_key)
-      - [Parameters](#parameters-12)
-      - [Returns](#returns-12)
-      - [Example](#example-12)
-    - [sign](#sign)
-      - [Parameters](#parameters-13)
-      - [Returns](#returns-13)
-      - [Example](#example-13)
-  - [Signing and Sending transaction](#signing-and-sending-transaction)
-    - [Generating a transaction](#generating-a-transaction)
-    - [Signing a transaction](#signing-a-transaction)
-    - [Sending a transaction](#sending-a-transaction)
-    - [Examples](#examples-2)
-    - [TransactionBuilder](#transactionbuilder)
-      - [set methods](#set-methods)
-      - [Returns](#returns-14)
-      - [Example](#example-14)
-    - [DeployTransactionBuilder](#deploytransactionbuilder)
-      - [methods](#methods)
-      - [Returns](#returns-15)
-      - [Example](#example-15)
-    - [CallTransactionBuilder](#calltransactionbuilder)
-      - [methods](#methods-1)
-      - [Returns](#returns-16)
-      - [Example](#example-16)
-    - [MessageTransactionBuilder](#messagetransactionbuilder)
-      - [methods](#methods-2)
-      - [Returns](#returns-17)
-      - [Example](#example-17)
-    - [SignedTransaction](#signedtransaction)
-      - [Parameters](#parameters-14)
-      - [Returns](#returns-18)
-      - [Example](#example-18)
-    - [send_transaction](#send_transaction)
-      - [Parameters](#parameters-15)
-      - [Returns](#returns-19)
-      - [Example](#example-19)
+- [Quick Start](#quick-start)
+  - [Requirements](#requirements)
+  - [Reference](#reference)
+  - [Version](#version)
+  - [Installation](#installation)
+  - [Creating an IconService Instance and Setting a Provider](#creating-an-iconservice-instance-and-setting-a-provider)
+- [Querying API Methods](#querying-api-methods)
+  - [Examples](#examples)
+  - [Error Cases](#error-cases)
+  - [get_block](#get_block)
+    - [Parameters](#parameters)
+    - [Returns](#returns)
+    - [Example](#example)
+  - [get_balance](#get_balance)
+    - [Parameters](#parameters-1)
+    - [Returns](#returns-1)
+    - [Example](#example-1)
+  - [get_score_api](#get_score_api)
+    - [Parameters](#parameters-2)
+    - [Returns](#returns-2)
+    - [Example](#example-2)
+  - [get_total_supply](#get_total_supply)
+    - [Parameters](#parameters-3)
+    - [Returns](#returns-3)
+    - [Example](#example-3)
+  - [get_transaction](#get_transaction)
+    - [Parameters](#parameters-4)
+    - [Returns](#returns-4)
+    - [Example](#example-4)
+  - [get_transaction_result](#get_transaction_result)
+    - [Parameters](#parameters-5)
+    - [Returns](#returns-5)
+    - [Example](#example-5)
+  - [call](#call)
+    - [Parameters](#parameters-6)
+    - [Returns](#returns-6)
+    - [Example](#example-6)
+- [Loading a Wallet and Storing the Keystore](#loading-a-wallet-and-storing-the-keystore)
+  - [Examples](#examples-1)
+- [API Methods of KeyWallet](#api-methods-of-keywallet)
+  - [create](#create)
+    - [Parameters](#parameters-7)
+    - [Returns](#returns-7)
+    - [Example](#example-7)
+  - [load](#load)
+    - [Parameters](#parameters-8)
+    - [Returns](#returns-8)
+    - [Example](#example-8)
+  - [load](#load-1)
+    - [Parameters](#parameters-9)
+    - [Returns](#returns-9)
+    - [Example](#example-9)
+  - [store](#store)
+    - [Parameters](#parameters-10)
+    - [Returns](#returns-10)
+    - [Example](#example-10)
+  - [get_address](#get_address)
+    - [Parameters](#parameters-11)
+    - [Returns](#returns-11)
+    - [Example](#example-11)
+  - [get_private_key](#get_private_key)
+    - [Parameters](#parameters-12)
+    - [Returns](#returns-12)
+    - [Example](#example-12)
+  - [sign](#sign)
+    - [Parameters](#parameters-13)
+    - [Returns](#returns-13)
+    - [Example](#example-13)
+- [Signing and Sending Transaction](#signing-and-sending-transaction)
+  - [Generating a Transaction](#generating-a-transaction)
+  - [Signing a Transaction](#signing-a-transaction)
+  - [Sending a Transaction](#sending-a-transaction)
+  - [Examples](#examples-2)
+  - [TransactionBuilder](#transactionbuilder)
+    - [set methods](#set-methods)
+    - [Returns](#returns-14)
+    - [Example](#example-14)
+  - [DeployTransactionBuilder](#deploytransactionbuilder)
+    - [methods](#methods)
+    - [Returns](#returns-15)
+    - [Example](#example-15)
+  - [CallTransactionBuilder](#calltransactionbuilder)
+    - [methods](#methods-1)
+    - [Returns](#returns-16)
+    - [Example](#example-16)
+  - [MessageTransactionBuilder](#messagetransactionbuilder)
+    - [methods](#methods-2)
+    - [Returns](#returns-17)
+    - [Example](#example-17)
+  - [SignedTransaction](#signedtransaction)
+    - [Parameters](#parameters-14)
+    - [Returns](#returns-18)
+    - [Example](#example-18)
+  - [send_transaction](#send_transaction)
+    - [Parameters](#parameters-15)
+    - [Returns](#returns-19)
+    - [Example](#example-19)
 
 <!-- /TOC -->
 
-## Quick start
+## Quick Start
 
 ### Requirements
 
@@ -130,15 +131,15 @@ ICON SDK for Python development and execution requires following environments.
 
 1.0.7 beta
 
-### Adding ICON SDK for Python
+### Installation
 
-First you need to get ICON SDK for Python into your project. This can be installed using pip as follows:
+At first, you need to get ICON SDK for Python into your project. It can be installed using pip as follows:
 
 ``````shell
 $ pip install iconsdk
 ``````
 
-### Creating an IconService instance and Setting a provider
+### Creating an IconService Instance and Setting a Provider
 
 After that, you need to create an IconService instance and set a provider.
 
@@ -148,7 +149,7 @@ After that, you need to create an IconService instance and set a provider.
 
 - The **HTTPProvider** takes the full URI where the server can be found. For local development, this would be something like http://localhost:9000.
 
-Here is an example of a simple API method call for getting a block by its height:
+Here is an example of calling a simple API method to get a block by its height :
 
 ```python
 from iconsdk.icon_service import IconService
@@ -163,7 +164,7 @@ block = icon_service.get_block(1209)
 
 
 
-## Querying API methods
+## Querying API Methods
 
 ### Examples
 
@@ -208,9 +209,9 @@ result = icon_service.call(call)
 
 
 
-### Error cases
+### Error Cases
 
-There are different types of error case as follows.  The exception is raised with the specific message. You can get more info about the exception from the message.   
+There are different types of error cases as below.  The exception is raised with the specific message. You can get more information about the exception from the message.   
 
 - **KeyStoreException** 
   - It is raised when making or loading a key store file.  
@@ -270,7 +271,7 @@ Block data
 
 [Example of a returned block data](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md#icx_getlastblock)
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid. 
 * JSONRPCException :  JSON-RPC Response is error.
@@ -308,7 +309,7 @@ address : An address of EOA or SCORE
 
 Number of ICX coins
 
-#### Error cases
+#### Error Cases
 
 * AddressException : Address is invalid. 
 * DataTypeException : Data type is invalid.
@@ -354,7 +355,7 @@ Fields :
 * Readonly : External (readonly=True)
 * Payable: Payable
 
-#### Error cases
+#### Error Cases
 
 * AddressException : Address is invalid.
 * DataTypeException : Data type is invalid.
@@ -387,7 +388,7 @@ None
 
 Total number of ICX coins issued
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid.
 * JSONRPCException :  JSON-RPC Response is error.
@@ -437,7 +438,7 @@ Fields :
 - dataType : Data type; call, deploy, message
 - data : Contains various type of data depending on the dataType
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid.
 * JSONRPCException :  JSON-RPC Response is error.
@@ -485,7 +486,7 @@ Field :
 * eventLogs : Array of eventlogs generated by this transaction 
 * logsBloom : Bloom filter to quickly retrieve related eventlogs
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid.
 * JSONRPCException :  JSON-RPC Response is error.
@@ -525,7 +526,7 @@ Fields :
 
 Values returned by the executed SCORE function
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid.
 * JSONRPCException :  JSON-RPC Response is error.
@@ -546,7 +547,7 @@ result = icon_service.call(call)
 
 
 
-## Loading a wallet and storing the keystore
+## Loading a Wallet and Storing the Keystore
 
 To send transactions, first, you should make an instance of your wallet.  
 
@@ -581,7 +582,7 @@ signature = wallet.sign(b'D8\xe9...\xfc')
 
 
 
-## API methods of KeyWallet
+## API Methods of KeyWallet
 
 ### create
 
@@ -624,7 +625,7 @@ private_key : Bytes of the private key
 
 An instance of Wallet class
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Private key is invalid.
 
@@ -655,7 +656,7 @@ Loads a wallet from a keystore file with your password and generates an instance
 
 An instance of Wallet class
 
-#### Error cases
+#### Error Cases
 
 * KeyStoreException: Key store file is invalid.
 
@@ -686,7 +687,7 @@ Stores data of an instance of a derived wallet class on the file path with your 
 
 None
 
-#### Error cases
+#### Error Cases
 
 * KeyStoreException: Key store file is invalid.
 
@@ -767,7 +768,7 @@ data : bytes of the transaction
 
 Bytes of the signature
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid.
 
@@ -780,17 +781,17 @@ signature = wallet.sign(b'D8\xe9...\xfc')
 
 
 
-## Signing and Sending transaction
+## Signing and Sending Transaction
 
-### Generating a transaction
+### Generating a Transaction
 
 After then, you should create an instance of the transaction using different types of **transaction builders** as follows.  
 
-### Signing a transaction
+### Signing a Transaction
 
 Before sending a transaction, the transaction should be signed by using **SignedTransaction** class. The SignedTransaction class is used to sign the transaction by returning an instance of the signed transaction as demonstrated in the example below. The instance of the signed transaction has the property of a signature.  
 
-### Sending a transaction
+### Sending a Transaction
 
 Finally, you can send a transaction with the signed transaction object as follows.
 
@@ -1024,7 +1025,7 @@ Returns the signed transaction object having a signature
 
 The signed transaction object having a signature field finally
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid.
 
@@ -1057,7 +1058,7 @@ signed_transaction : A signed transaction object
 
 Transaction hash prefixed with '0x'
 
-#### Error cases
+#### Error Cases
 
 * DataTypeException : Data type is invalid.
 * JSONRPCException :  JSON-RPC Response is error.
