@@ -14,13 +14,14 @@
 # limitations under the License.
 
 import json
-import requests
-from logging import getLogger
 from itertools import count
-from iconsdk.utils import to_dict
-from iconsdk.providers.provider import Provider
-from iconsdk.utils import set_logger
+from logging import getLogger
+
+import requests
+
 from iconsdk.exception import JSONRPCException
+from iconsdk.providers.provider import Provider
+from iconsdk.utils import to_dict
 
 
 class HTTPProvider(Provider):

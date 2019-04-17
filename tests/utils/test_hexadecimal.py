@@ -12,17 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from unittest import TestCase, main
+
+from unittest import TestCase
 
 from iconsdk.utils.hexadecimal import (
     is_lowercase_hex_string,
     add_0x_prefix,
-    add_hx_prefix,
     add_cx_prefix,
     is_0x_prefixed,
     remove_0x_prefix
 )
-from iconsdk.exception import DataTypeException
 
 
 class TestHexadecimal(TestCase):

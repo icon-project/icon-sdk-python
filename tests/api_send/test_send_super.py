@@ -13,12 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import path
 from unittest import TestCase, main
-from iconsdk.wallet.wallet import KeyWallet
+
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from iconsdk.libs.in_memory_zip import gen_deploy_data_content
+from iconsdk.wallet.wallet import KeyWallet
 from tests.example_config import TEST_PRIVATE_KEY, TEST_HTTP_ENDPOINT_URI_V3
 
 
@@ -80,5 +79,3 @@ class TestSendSuper(TestCase):
 
 if __name__ == "__main__":
     main()
-
-

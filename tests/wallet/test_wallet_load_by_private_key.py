@@ -14,10 +14,12 @@
 # limitations under the License.
 
 from unittest import TestCase, main
-from iconsdk.wallet.wallet import KeyWallet
+
 from secp256k1 import PrivateKey
-from iconsdk.utils.validation import is_wallet_address
+
 from iconsdk.exception import DataTypeException
+from iconsdk.utils.validation import is_wallet_address
+from iconsdk.wallet.wallet import KeyWallet
 
 
 class TestWalletLoadByPrivateKey(TestCase):

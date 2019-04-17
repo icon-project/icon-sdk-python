@@ -15,10 +15,11 @@
 
 from os import path
 from unittest import TestCase, main
-from iconsdk.wallet.wallet import KeyWallet
+
 from iconsdk.exception import KeyStoreException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
+from iconsdk.wallet.wallet import KeyWallet
 from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 
 

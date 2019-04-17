@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hashlib import sha3_256
 from copy import deepcopy
-
+from hashlib import sha3_256
 
 translator = str.maketrans({
     "\\": "\\\\",
