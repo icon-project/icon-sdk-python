@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from iconsdk.utils.convert_type import convert_hex_str_to_int, convert_hex_str_to_bytes
-from iconsdk.utils.hexadecimal import add_0x_prefix, is_0x_prefixed, remove_0x_prefix
+from iconsdk.utils.hexadecimal import add_0x_prefix, is_0x_prefixed
 from iconsdk.utils.type import is_integer
 
 

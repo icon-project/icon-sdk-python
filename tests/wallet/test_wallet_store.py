@@ -15,8 +15,9 @@
 
 from os import path, remove
 from unittest import TestCase, main
-from iconsdk.wallet.wallet import KeyWallet
+
 from iconsdk.exception import KeyStoreException
+from iconsdk.wallet.wallet import KeyWallet
 
 
 class TestWalletStore(TestCase):

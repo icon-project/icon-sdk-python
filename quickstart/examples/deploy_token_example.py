@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from os import path
-from iconsdk.wallet.wallet import KeyWallet
-from iconsdk.icon_service import IconService
-from iconsdk.providers.http_provider import HTTPProvider
-from iconsdk.libs.in_memory_zip import gen_deploy_data_content
-from iconsdk.builder.transaction_builder import DeployTransactionBuilder
+
 from iconsdk.builder.call_builder import CallBuilder
-from iconsdk.signed_transaction import SignedTransaction
+from iconsdk.builder.transaction_builder import DeployTransactionBuilder
 from iconsdk.exception import JSONRPCException
+from iconsdk.icon_service import IconService
+from iconsdk.libs.in_memory_zip import gen_deploy_data_content
+from iconsdk.providers.http_provider import HTTPProvider
+from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.convert_type import convert_hex_str_to_int
+from iconsdk.wallet.wallet import KeyWallet
 from quickstart.examples.test.constant import (
     TEST_HTTP_ENDPOINT_URI_V3,
     TEST_PRIVATE_KEY,

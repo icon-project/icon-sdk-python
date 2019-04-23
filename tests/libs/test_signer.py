@@ -15,7 +15,9 @@
 
 from hashlib import sha3_256
 from unittest import TestCase, main
+
 from secp256k1 import PrivateKey
+
 from iconsdk.libs.serializer import serialize
 from iconsdk.libs.signer import sign
 from tests.example_tx_requests import TEST_REQUEST_SCORE_FUNCTION_CALL, \

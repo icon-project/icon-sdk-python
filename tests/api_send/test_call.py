@@ -14,11 +14,12 @@
 # limitations under the License.
 
 from unittest import TestCase, main
-from iconsdk.icon_service import IconService
-from iconsdk.wallet.wallet import KeyWallet
-from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
+
 from iconsdk.builder.call_builder import CallBuilder
+from iconsdk.icon_service import IconService
+from iconsdk.providers.http_provider import HTTPProvider
+from iconsdk.wallet.wallet import KeyWallet
+from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 
 
 class TestCall(TestCase):

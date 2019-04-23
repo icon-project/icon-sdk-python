@@ -1,11 +1,22 @@
 # Changelog
 
+## [1.0.8] -  Apr, 23, 2019
+### Added
+N/A
+
+### Changed
+- Fix: Convert the negative value into hex str correctly by using `hex` function 
+- Fix: Convert hex str to bytes correctly by using `fromhex` method 
+
+### Removed
+N/A
+
 ## [1.0.7] -  Dec, 7, 2018
 ### Added
 N/A
 
 ### Changed
-- Fix : The data type of the Message type transaction's data is changed from string to hex string prefixed with '0x'
+- Fix: The data type of the Message type transaction's data is changed from string to hex string prefixed with '0x'
 
 ### Removed
 N/A
@@ -16,7 +27,7 @@ N/A
 N/A
 
 ### Changed
-- Fix : convert_params_value_to_hex_str() converts first item of dict only
+- Fix: convert_params_value_to_hex_str() converts first item of dict only
 
 ### Removed
 N/A

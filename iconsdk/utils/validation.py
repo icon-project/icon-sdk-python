@@ -13,9 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from re import match
 from iconsdk.exception import KeyStoreException, DataTypeException
-from iconsdk.utils.type import is_str, is_integer
 from iconsdk.utils.hexadecimal import (
     is_0x_prefixed,
     remove_0x_prefix,
@@ -24,6 +22,7 @@ from iconsdk.utils.hexadecimal import (
     is_hx_prefixed,
     remove_hx_prefix
 )
+from iconsdk.utils.type import is_str, is_integer
 
 
 def is_keystore_file(keystore: dict) -> bool:
