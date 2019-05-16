@@ -17,32 +17,39 @@ from base64 import b64encode
 from hashlib import sha3_256
 
 from iconsdk.builder.transaction_builder import Transaction
+from iconsdk.exception import DataTypeException
 from iconsdk.libs.serializer import serialize
 from iconsdk.utils import get_timestamp
-from iconsdk.utils.convert_type import convert_int_to_hex_str, convert_params_value_to_hex_str
-from iconsdk.utils.hexadecimal import add_0x_prefix
+from iconsdk.utils.convert_type import convert_int_to_hex_str
+from iconsdk.utils.gen_tx_data import generate_data_value
 from iconsdk.wallet.wallet import Wallet
 
 
 class SignedTransaction:
 
-    def __init__(self, transaction: Transaction, wallet: Wallet):
+    def __init__(self, transaction: Transaction, wallet: Wallet, step_limit: int = None):
         """Converts raw transaction into the signed transaction object having a signature.
 
         :param transaction: A transaction object not having a signature field yet
         :param wallet: A wallet object
         """
+        if transaction.step_limit is None:
+            if step_limit is None:
+                raise DataTypeException("Transaction should have step limit when signed.")
+            else:
+                transaction.step_limit = step_limit
+
         self.__signed_transaction_dict = self.convert_tx_to_jsonrpc_request(transaction, wallet)
         message_hash = sha3_256(serialize(self.__signed_transaction_dict)).digest()
         signature = wallet.sign(message_hash)
         self.__signed_transaction_dict["signature"] = b64encode(signature).decode()
 
     @property
-    def signed_transaction_dict(self):
+    def signed_transaction_dict(self) -> dict:
         return self.__signed_transaction_dict
 
     @staticmethod
-    def convert_tx_to_jsonrpc_request(transaction, wallet: Wallet=None):
+    def convert_tx_to_jsonrpc_request(transaction, wallet: Wallet = None) -> dict:
         """Converts an instance of the transaction into JSON RPC request in dict"""
         dict_tx = {
             "version": convert_int_to_hex_str(transaction.version) if transaction.version else "0x3",
@@ -68,25 +75,3 @@ class SignedTransaction:
             dict_tx["data"] = transaction.data
 
         return dict_tx
-
-
-def generate_data_value(transaction):
-    """
-    Generates data value in transaction from the other data like content_type, content, method or params
-    by data types such as deploy and call.
-    """
-    if transaction.data_type == "deploy":
-        # Content's data type is bytes and return value is hex string prefixed with '0x'.
-        data = {
-            "contentType": transaction.content_type,
-            "content": add_0x_prefix(transaction.content.hex())
-        }
-        # Params is an optional property.
-        if transaction.params:
-            data["params"] = convert_params_value_to_hex_str(transaction.params)
-    elif transaction.data_type == "call":
-        data = {"method": transaction.method}
-        # Params is an optional property.
-        if transaction.params:
-            data["params"] = convert_params_value_to_hex_str(transaction.params)
-    return data
