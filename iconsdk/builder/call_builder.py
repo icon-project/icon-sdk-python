@@ -89,5 +89,3 @@ class CallBuilder:
             )
         except KeyError:
             raise DataTypeException("The input data invalid. Mapping key not found.")
-
-

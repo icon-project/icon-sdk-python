@@ -37,7 +37,7 @@ def is_keystore_file(keystore: dict) -> bool:
     crypto_keys = ["ciphertext", "cipherparams", "cipher", "kdf", "kdfparams", "mac"]
     crypto_cipherparams_keys = ["iv"]
 
-    is_valid = has_keys(keystore, root_keys) and has_keys(keystore["crypto"], crypto_keys)\
+    is_valid = has_keys(keystore, root_keys) and has_keys(keystore["crypto"], crypto_keys) \
                and has_keys(keystore["crypto"]["cipherparams"], crypto_cipherparams_keys)
 
     if is_valid:
@@ -244,6 +244,3 @@ def is_message_transaction(params: dict) -> bool:
            and has_keys(params, inner_key_of_params) \
            and is_0x_prefixed(params["data"]) \
            and params["dataType"] == "message"
-
-
-
