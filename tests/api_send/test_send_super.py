@@ -33,7 +33,8 @@ class TestSendSuper(TestCase):
         and default values used to make 4 types of transactions. (transfer, call, deploy, message)
         """
         cls.wallet = KeyWallet.load(TEST_PRIVATE_KEY)
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.version = 3
+        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3, cls.version))
 
         # bytes of sample_token's content
         # current_dir_path = path.abspath(path.dirname(__file__))
