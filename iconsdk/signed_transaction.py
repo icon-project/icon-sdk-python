@@ -33,11 +33,10 @@ class SignedTransaction:
         :param transaction: A transaction object not having a signature field yet
         :param wallet: A wallet object
         """
+        if step_limit is not None:
+            transaction.step_limit = step_limit
         if transaction.step_limit is None:
-            if step_limit is None:
-                raise DataTypeException("Transaction should have step limit when signed.")
-            else:
-                transaction.step_limit = step_limit
+            raise DataTypeException("Transaction should have step limit when signed.")
 
         self.__signed_transaction_dict = self.convert_tx_to_jsonrpc_request(transaction, wallet)
         message_hash = sha3_256(serialize(self.__signed_transaction_dict)).digest()
