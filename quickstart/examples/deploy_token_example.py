@@ -34,14 +34,14 @@ from quickstart.examples.util.repeater import retry
 current_dir_path = path.abspath(path.dirname(__file__))
 score_path_standard_token = path.join(current_dir_path, 'sample_data/standard_token.zip')
 score_path_sample_token = path.join(current_dir_path, 'sample_data/sample_token.zip')
-score_paths = [score_path_standard_token, score_path_sample_token]
+score_paths = [score_path_sample_token, score_path_standard_token]
 icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
 
 
 # Returns the max step limit
 def get_max_step_limit():
     _param = {
-        "context_type": "invoke"
+        "contextType": "invoke"
     }
     _call = CallBuilder()\
         .from_(wallet1.get_address())\
@@ -80,7 +80,7 @@ for score_path in score_paths:
     tx_hash = icon_service.send_transaction(signed_transaction_dict)
     print("txHash: ", tx_hash)
 
-    @retry(JSONRPCException, tries=10, delay=1, back_off=2)
+    @retry(JSONRPCException, tries=10, delay=2, back_off=2)
     def get_tx_result():
         # Returns the result of a transaction by transaction hash
         tx_result = icon_service.get_transaction_result(tx_hash)

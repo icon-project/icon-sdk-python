@@ -15,4 +15,4 @@
 
 # integrate test
 TEST_HTTP_ENDPOINT_URI_V3 = "http://localhost:9000/api/v3"
-TEST_PRIVATE_KEY = bytes.fromhex("2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79")
+TEST_PRIVATE_KEY = bytes.fromhex("592eb276d534e2c41a2d9356c0ab262dc233d87e4dd71ce705ec130a8d27ff0c")
