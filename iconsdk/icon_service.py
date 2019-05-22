@@ -187,7 +187,7 @@ class IconService:
         params = signed_transaction.signed_transaction_dict
         return self.__provider.make_request('icx_sendTransaction', params)
 
-    def estimate_step(self, transaction: Transaction):
+    def estimate_step(self, transaction: Transaction) -> int:
         """
         Returns an estimated step of how much step is necessary to allow the transaction to complete.
 
@@ -220,4 +220,5 @@ class IconService:
         elif transaction.data_type == 'message':
             params["data"] = transaction.data
 
-        return self.__provider.make_request('debug_estimateStep', params)
+        result = self.__provider.make_request('debug_estimateStep', params)
+        return int(result, 16)
