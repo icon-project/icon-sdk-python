@@ -14,10 +14,14 @@
 # limitations under the License.
 
 from iconsdk.builder.call_builder import Call
+from iconsdk.builder.transaction_builder import Transaction
 from iconsdk.converter import convert_block, convert_transaction, convert_transaction_result
 from iconsdk.exception import AddressException, DataTypeException
 from iconsdk.providers.provider import Provider
 from iconsdk.signed_transaction import SignedTransaction
+from iconsdk.utils import get_timestamp
+from iconsdk.utils.convert_type import convert_int_to_hex_str
+from iconsdk.utils.gen_tx_data import generate_data_value
 from iconsdk.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
 from iconsdk.utils.validation import (
     is_block_height,
@@ -94,7 +98,6 @@ class IconService:
         :param address: An address of EOA or SCORE. type(str)
         :return: Number of ICX coins
         """
-
         if is_score_address(address) or is_wallet_address(address):
             params = {'address': address}
             result = self.__provider.make_request('icx_getBalance', params)
@@ -110,11 +113,11 @@ class IconService:
         :param address: A SCORE address to be examined
         :return: A list of API methods of the SCORE and its information
         """
-        if is_score_address(address):
-            params = {'address': address}
-            return self.__provider.make_request('icx_getScoreApi', params)
-        else:
+        if not is_score_address(address):
             raise AddressException("SCORE Address is wrong.")
+
+        params = {'address': address}
+        return self.__provider.make_request('icx_getScoreApi', params)
 
     def get_transaction_result(self, tx_hash: str):
         """
@@ -124,13 +127,13 @@ class IconService:
         :param tx_hash: Hash of a transaction prefixed with '0x'
         :return A transaction result object
         """
-        if is_T_HASH(tx_hash):
-            params = {'txHash': tx_hash}
-            result = self.__provider.make_request('icx_getTransactionResult', params)
-            convert_transaction_result(result)
-            return result
-        else:
+        if not is_T_HASH(tx_hash):
             raise DataTypeException("This hash value is unrecognized.")
+
+        params = {'txHash': tx_hash}
+        result = self.__provider.make_request('icx_getTransactionResult', params)
+        convert_transaction_result(result)
+        return result
 
     def get_transaction(self, tx_hash: str):
         """
@@ -140,13 +143,13 @@ class IconService:
         :param tx_hash: Transaction hash prefixed with '0x'
         :return: Information about a transaction
         """
-        if is_T_HASH(tx_hash):
-            params = {'txHash': tx_hash}
-            result = self.__provider.make_request('icx_getTransactionByHash', params)
-            convert_transaction(result)
-            return result
-        else:
+        if not is_T_HASH(tx_hash):
             raise DataTypeException("This hash value is unrecognized.")
+
+        params = {'txHash': tx_hash}
+        result = self.__provider.make_request('icx_getTransactionByHash', params)
+        convert_transaction(result)
+        return result
 
     def call(self, call: object):
         """
@@ -156,22 +159,22 @@ class IconService:
         :param call: Call object made by CallBuilder
         :return: Values returned by the executed SCORE function
         """
-        if isinstance(call, Call):
-            params = {
-                "from": call.from_,
-                "to": call.to,
-                "dataType": "call",
-                "data": {
-                    "method": call.method
-                }
-            }
-
-            if isinstance(call.params, dict):
-                params["data"]["params"] = call.params
-
-            return self.__provider.make_request('icx_call', params)
-        else:
+        if not isinstance(call, Call):
             raise DataTypeException("Call object is unrecognized.")
+
+        params = {
+            "from": call.from_,
+            "to": call.to,
+            "dataType": "call",
+            "data": {
+                "method": call.method
+            }
+        }
+
+        if isinstance(call.params, dict):
+            params["data"]["params"] = call.params
+
+        return self.__provider.make_request('icx_call', params)
 
     def send_transaction(self, signed_transaction: SignedTransaction):
         """
@@ -184,5 +187,38 @@ class IconService:
         params = signed_transaction.signed_transaction_dict
         return self.__provider.make_request('icx_sendTransaction', params)
 
+    def estimate_step(self, transaction: Transaction) -> int:
+        """
+        Returns an estimated step of how much step is necessary to allow the transaction to complete.
 
+        :param transaction: Transaction
+        :return: an estimated step
+        """
+        if not isinstance(transaction, Transaction):
+            raise DataTypeException("Transaction object is unrecognized.")
 
+        params = {
+            "version": convert_int_to_hex_str(transaction.version) if transaction.version else "0x3",
+            "from": transaction.from_,
+            "to": transaction.to,
+            "timestamp": convert_int_to_hex_str(
+                transaction.timestamp) if transaction.timestamp else get_timestamp(),
+            "nid": convert_int_to_hex_str(transaction.nid) if transaction.nid else "0x1"
+        }
+
+        if transaction.value is not None:
+            params["value"] = convert_int_to_hex_str(transaction.value)
+
+        if transaction.nonce is not None:
+            params["nonce"] = convert_int_to_hex_str(transaction.nonce)
+
+        if transaction.data_type is not None:
+            params["dataType"] = transaction.data_type
+
+        if transaction.data_type in ('deploy', 'call'):
+            params["data"] = generate_data_value(transaction)
+        elif transaction.data_type == 'message':
+            params["data"] = transaction.data
+
+        result = self.__provider.make_request('debug_estimateStep', params)
+        return int(result, 16)

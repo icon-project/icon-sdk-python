@@ -1,20 +1,15 @@
 language: python
 python:
-- "3.6"
+  - "3.6"
+
+services:
+  - docker
 
 install:
-- git clone "https://oauth2:$Gitlab_token@repo.theloop.co.kr/icon/icon-sdk/icon-mock-node.git"
-- cd icon-mock-node
-- npm install
-- node index.js &
-- sleep 5
-- cd ..
+- docker run -d -it --name tbears-container -p 9000:9000 iconloop/tbears:1.2.0-rc2
 
 script:
 - python setup.py test
-
-before_deploy:
-- rm -rf icon-mock-node
 
 deploy:
   provider: pypi

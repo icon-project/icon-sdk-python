@@ -109,8 +109,16 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
     - [Parameters](#parameters-15)
     - [Returns](#returns-19)
     - [Example](#example-19)
+- [Estimating step](#estimating-step)
+  - [Examples](#examples-3)
+  - [estimate_step](#estimate_step)
+    - [Parameters](#parameters-16)
+    - [Returns](#returns-20)
+    - [Example](#example-20)
 
 <!-- /TOC -->
+
+
 
 ## Quick Start
 
@@ -129,7 +137,7 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Version
 
-1.0.8 beta
+1.0.9 beta
 
 ### Installation
 
@@ -156,7 +164,7 @@ from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 
 # Creates an IconService instance using the HTTP provider and set a provider.
-icon_service = IconService(HTTPProvider("https://iconx.io"))
+icon_service = IconService(HTTPProvider("http://localhost:9000", 3))
 
 # Gets a block by a given block height.
 block = icon_service.get_block(1209)
@@ -1068,4 +1076,80 @@ Transaction hash prefixed with '0x'
 ```python
 # Sends the transaction
 tx_hash = icon_service.send_transaction(signed_transaction)
+```
+
+
+
+## Estimating Step
+
+It is important to set a proper `step_limit` value in your transaction to make the submitted transaction executed successfully.
+
+`estimate_step` API provides a way to **estimate** the Step usage of a given transaction. Using the method, you can get an estimated Step usage before sending your transaction then make a `SignedTransaction` with the `step_limit` based on the estimation.
+
+### Examples
+
+```python
+# Generates a raw transaction without the stepLimit
+transaction = TransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(150000000)\
+    .nid(3)\
+    .nonce(100)\
+    .build()
+    
+# Returns an estimated step value
+estimate_step = icon_service.estimate_step(transaction)
+
+# Adds some margin to the estimated step 
+estimate_step += 10000
+
+# Returns the signed transaction object having a signature with the same raw transaction and the estimated step
+signed_transaction = SignedTransaction(transaction, wallet, estimate_step)
+
+# Sends the transaction
+tx_hash = icon_service.send_transaction(signed_transaction)
+```
+
+Note that the estimation can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimation when you set the `step_limit` of the `SignedTransaction`.
+
+
+
+### estimate_step
+
+```python
+estimate_step(transaction: Transaction)
+```
+
+Returns an estimated step of how much step is necessary to allow the transaction to complete
+
+Delegates to **debug_estimateStep** RPC method
+
+#### Parameters
+
+transaction : An Transaction object made by TransactionBuilder
+
+#### Returns
+
+Number of an estimated step
+
+#### Error Cases
+
+- DataTypeException : Data type is invalid.
+- JSONRPCException :  JSON-RPC Response is error.
+
+#### Example
+
+```python
+# Generates a raw transaction without the stepLimit
+transaction = TransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(150000000)\
+    .nid(3)\
+    .nonce(100)\
+    .build()
+    
+# Returns an estimated step value
+estimate_step = icon_service.estimate_step(transaction)
 ```

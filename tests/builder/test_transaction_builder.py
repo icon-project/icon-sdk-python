@@ -140,10 +140,12 @@ class TestTransactionBuilder(TestCase):
         self.assertTrue(self._is_icx_transaction(transaction_as_dict))
         self.assertEqual(None, transaction_as_dict["nid"])
 
-        # case 2 for icx transaction : failed case without the required field same as step_limit
+        # case 2 for icx transaction : successful case without the 'step_limit' field for estimate step
         input_transaction_as_dict3 = deepcopy(input_transaction_as_dict)
         del input_transaction_as_dict3["step_limit"]
-        self.assertRaises(DataTypeException, TransactionBuilder.from_dict, input_transaction_as_dict3)
+        transaction = TransactionBuilder.from_dict(input_transaction_as_dict3).build()
+        transaction_as_dict = transaction.to_dict()
+        self.assertTrue(self._is_icx_transaction(transaction_as_dict))
 
         # case 0 for call transaction : successful case with every fields of call transaction
         input_call_transaction_as_dict = deepcopy(input_transaction_as_dict)
@@ -177,7 +179,8 @@ class TestTransactionBuilder(TestCase):
         message_transaction = MessageTransactionBuilder.from_dict(input_message_transaction_as_dict).build()
         message_transaction_as_dict = message_transaction.to_dict()
         self.assertTrue(
-            isinstance(MessageTransactionBuilder.from_dict(input_message_transaction_as_dict), MessageTransactionBuilder))
+            isinstance(MessageTransactionBuilder.from_dict(input_message_transaction_as_dict),
+                       MessageTransactionBuilder))
         self.assertTrue(self._is_message_transaction(message_transaction_as_dict))
 
         # case 0 for deploy transaction : successful case with every fields of deploy transaction
