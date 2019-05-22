@@ -110,10 +110,15 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
     - [Returns](#returns-19)
     - [Example](#example-19)
 - [Estimating step](#estimating-step)
-  - [Examples](#example-20)
+  - [Examples](#examples-3)
   - [estimate_step](#estimate_step)
+    - [Parameters](#parameters-20)
+    - [Returns](#returns-20)
+    - [Example](#example-20)
 
 <!-- /TOC -->
+
+
 
 ## Quick Start
 
