@@ -20,7 +20,7 @@ class TestEstimateStep(TestSendSuper):
             .version(3) \
             .build()
 
-        self.assertEqual(100000, int(self.icon_service.estimate_step(icx_transaction), 16))
+        self.assertEqual(100000, self.icon_service.estimate_step(icx_transaction))
 
     def test_estimate_step_with_message_transaction(self):
         # Checks if making an instance of message transaction correctly
@@ -32,7 +32,7 @@ class TestEstimateStep(TestSendSuper):
             .nonce(self.setting["nonce"]) \
             .data(self.setting["data"]).build()
 
-        self.assertEqual(102400, int(self.icon_service.estimate_step(message_transaction), 16))
+        self.assertEqual(102400, self.icon_service.estimate_step(message_transaction))
 
     def test_estimate_step_with_deploy_transaction(self):
         param = {"init_supply": 10000}
@@ -48,7 +48,7 @@ class TestEstimateStep(TestSendSuper):
             .version(3) \
             .build()
 
-        self.assertEqual(1042767600, int(self.icon_service.estimate_step(deploy_transaction), 16))
+        self.assertEqual(1042767600, self.icon_service.estimate_step(deploy_transaction))
 
     def test_estimate_step_with_call_transaction(self):
 
@@ -92,4 +92,4 @@ class TestEstimateStep(TestSendSuper):
             .method("transfer") \
             .params(params) \
             .build()
-        self.assertEqual(155160, int(self.icon_service.estimate_step(call_transaction), 16))
+        self.assertEqual(155160, self.icon_service.estimate_step(call_transaction))
