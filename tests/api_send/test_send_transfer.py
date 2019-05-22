@@ -75,13 +75,6 @@ class TestSendTransfer(TestSendSuper):
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
 
-        # When not having a required property, nid
-        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
-            .value(self.setting["value"]).step_limit(self.setting["step_limit"]) \
-            .nonce(self.setting["nonce"]).build()
-        signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
-
         # When a sending address is wrong - not the wallet's address
         wrong_address = "hx5bfdb090f43a808005ffc27c25b213145e80b7cd"
         icx_transaction = TransactionBuilder().from_(wrong_address).to(self.setting["to"]) \
@@ -89,4 +82,3 @@ class TestSendTransfer(TestSendSuper):
             .nonce(self.setting["nonce"]).build()
         signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
-

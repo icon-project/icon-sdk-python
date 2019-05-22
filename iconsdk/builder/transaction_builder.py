@@ -47,6 +47,10 @@ class Transaction:
     def step_limit(self):
         return self.__step_limit
 
+    @step_limit.setter
+    def step_limit(self, step_limit):
+        self.__step_limit = step_limit
+
     @property
     def nid(self):
         return self.__nid
@@ -78,6 +82,7 @@ class Transaction:
 
 class DeployTransaction(Transaction):
     """Subclass `DeployTransaction`, making a transaction object for deploying SCORE which is read-only."""
+
     def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
                  timestamp: int, content_type: str, content: bytes, params: dict):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
@@ -115,6 +120,7 @@ class DeployTransaction(Transaction):
 
 class CallTransaction(Transaction):
     """Subclass `CallTransaction`, making a transaction object for calling a method in SCORE which is read-only."""
+
     def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int,
                  version: int, timestamp: int, method: str, params: dict):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
@@ -141,6 +147,7 @@ class CallTransaction(Transaction):
 
 class MessageTransaction(Transaction):
     """Subclass `MessageTransaction`, making a transaction object for sending a message which is read-only."""
+
     def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
                  timestamp: int, data: str):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
@@ -167,8 +174,8 @@ class MessageTransaction(Transaction):
 class TransactionBuilder:
     """Builder for `Transaction` object"""
 
-    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
-                 nonce: int=None, version: int=None, timestamp: int=None):
+    def __init__(self, from_: str = None, to: str = None, value: int = None, step_limit: int = None, nid: int = None,
+                 nonce: int = None, version: int = None, timestamp: int = None):
         self._from_ = from_
         self._to = to
         self._value = value
@@ -211,8 +218,8 @@ class TransactionBuilder:
         return self
 
     def build(self) -> Transaction:
-        if not self._to or not self._step_limit:
-            raise DataTypeException("'to' and 'step_limit' should be required.")
+        if not self._to:
+            raise DataTypeException("'to' should be required.")
         return Transaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce, self._version,
                            self._timestamp)
 
@@ -224,7 +231,7 @@ class TransactionBuilder:
                 from_=transaction_as_dict['from_'] if "from_" in transaction_as_dict else None,
                 to=transaction_as_dict['to'],
                 value=transaction_as_dict['value'] if "value" in transaction_as_dict else None,
-                step_limit=transaction_as_dict['step_limit'],
+                step_limit=transaction_as_dict['step_limit'] if "step_limit" in transaction_as_dict else None,
                 nid=transaction_as_dict['nid'] if 'nid' in transaction_as_dict else None,
                 nonce=transaction_as_dict["nonce"] if "nonce" in transaction_as_dict else None,
                 version=transaction_as_dict["version"] if "version" in transaction_as_dict else None,
@@ -237,9 +244,10 @@ class TransactionBuilder:
 class DeployTransactionBuilder(TransactionBuilder):
     """Builder for `DeployTransaction` object"""
 
-    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
-                 nonce: int=None, version: int=None, timestamp: int=None, content_type: str=None, content: bytes=None,
-                 params: dict=None):
+    def __init__(self, from_: str = None, to: str = None, value: int = None, step_limit: int = None, nid: int = None,
+                 nonce: int = None, version: int = None, timestamp: int = None, content_type: str = None,
+                 content: bytes = None,
+                 params: dict = None):
         TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._content_type = content_type
         self._content = content
@@ -279,8 +287,9 @@ class DeployTransactionBuilder(TransactionBuilder):
 class CallTransactionBuilder(TransactionBuilder):
     """Builder for `CallTransaction` object"""
 
-    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
-                 nonce: int=None, version: int=None, timestamp: int=None, method: str=None, params: dict =None):
+    def __init__(self, from_: str = None, to: str = None, value: int = None, step_limit: int = None, nid: int = None,
+                 nonce: int = None, version: int = None, timestamp: int = None, method: str = None,
+                 params: dict = None):
         TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._method = method
         self._params = params
@@ -296,8 +305,8 @@ class CallTransactionBuilder(TransactionBuilder):
     def build(self) -> CallTransaction:
         if not self._method:
             raise DataTypeException("'method' should be required.")
-        return CallTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce, self._version,
-                               self._timestamp, self._method, self._params)
+        return CallTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce,
+                               self._version, self._timestamp, self._method, self._params)
 
     @classmethod
     def from_dict(cls, transaction_as_dict: dict) -> 'CallTransactionBuilder':
@@ -313,8 +322,9 @@ class CallTransactionBuilder(TransactionBuilder):
 
 class MessageTransactionBuilder(TransactionBuilder):
     """Builder for `MessageTransaction` object"""
-    def __init__(self, from_: str=None, to: str=None, value: int=None, step_limit: int=None, nid: int=None,
-                 nonce: int=None, version: int=None, timestamp: int=None, data: str=None):
+
+    def __init__(self, from_: str = None, to: str = None, value: int = None, step_limit: int = None, nid: int = None,
+                 nonce: int = None, version: int = None, timestamp: int = None, data: str = None):
         TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._data = data
 
@@ -325,7 +335,8 @@ class MessageTransactionBuilder(TransactionBuilder):
     def build(self) -> MessageTransaction:
         if not self._data:
             raise DataTypeException("'data' should be required.")
-        return MessageTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce, self._version,
+        return MessageTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce,
+                                  self._version,
                                   self._timestamp, self._data)
 
     @classmethod
@@ -337,5 +348,3 @@ class MessageTransactionBuilder(TransactionBuilder):
             return cls
         except KeyError:
             raise DataTypeException("The input data invalid. Mapping key not found.")
-
-

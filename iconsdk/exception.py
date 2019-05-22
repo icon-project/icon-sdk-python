@@ -27,6 +27,7 @@ class IconServiceExceptionCode(IntEnum):
     DATA_TYPE_ERROR = 4
     JSON_RPC_ERROR = 5
     ZIP_MEMORY_ERROR = 6
+    URL_ERROR = 7
 
     def __str__(self) -> str:
         return str(self.name).capitalize().replace('_', ' ')
@@ -87,3 +88,8 @@ class ZipException(IconServiceBaseException):
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.ZIP_MEMORY_ERROR)
 
+
+class URLException(IconServiceBaseException):
+    """Error regarding invalid URL"""
+    def __init__(self, message: Optional[str]):
+        super().__init__(message, IconServiceExceptionCode.URL_ERROR)
