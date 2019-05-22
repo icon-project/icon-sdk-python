@@ -109,6 +109,9 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
     - [Parameters](#parameters-15)
     - [Returns](#returns-19)
     - [Example](#example-19)
+- [Estimating step](#estimating-step)
+  - [Examples](#example-20)
+  - [estimate_step](#estimate_step)
 
 <!-- /TOC -->
 
@@ -1077,6 +1080,8 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 It is important to set a proper `stepLimit` value in your transaction to make the submitted transaction executed successfully.
 
 You can get an estimated step before sending your transaction and use it later for making a `SignedTransaction`.
+
+### Examples
 
 ```python
 # Generates a raw transaction without the stepLimit
