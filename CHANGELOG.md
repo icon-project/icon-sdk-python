@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.9] -  May, 22, 2019
+### Added
+- Add the method of `estimate_step`
+
+### Changed
+N/A
+
+### Removed
+N/A
+
 ## [1.0.8] -  Apr, 23, 2019
 ### Added
 N/A
