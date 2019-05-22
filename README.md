@@ -1082,9 +1082,9 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 
 ## Estimating Step
 
-It is important to set a proper `stepLimit` value in your transaction to make the submitted transaction executed successfully.
+It is important to set a proper `step_limit` value in your transaction to make the submitted transaction executed successfully.
 
-You can get an estimated step before sending your transaction and use it later for making a `SignedTransaction`.
+`estimate_step` API provides a way to **estimate** the Step usage of a given transaction. Using the method, you can get an estimated Step usage before sending your transaction then make a `SignedTransaction` with the `step_limit` based on the estimation.
 
 ### Examples
 
@@ -1101,7 +1101,7 @@ transaction = TransactionBuilder()\
 # Returns an estimated step value
 estimate_step = icon_service.estimate_step(transaction)
 
-# Adds some margin value to the estimated step 
+# Adds some margin to the estimated step 
 estimate_step += 10000
 
 # Returns the signed transaction object having a signature with the same raw transaction and the estimated step
@@ -1111,7 +1111,7 @@ signed_transaction = SignedTransaction(transaction, wallet, estimate_step)
 tx_hash = icon_service.send_transaction(signed_transaction)
 ```
 
-Note that the estimation can be smaller or larger than the actual amount of step to be used by the transaction for several reasons, so it is recommended to add some margin value to the estimation when you set `stepLimit` parameter of `SignedTransaction`.
+Note that the estimation can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimation when you set the `step_limit` of the `SignedTransaction`.
 
 
 
