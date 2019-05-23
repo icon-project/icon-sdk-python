@@ -19,11 +19,11 @@ Get different types of examples as follows.
 
 ## WalletExample
 
-This example shows how to create a new `KeyWallet` and load wallet with privateKey or Keystore file.
+This example shows how to create a wallet object by using a method of `create` and load it with a private key or a keystore file by using a method of `load`.
 
 ### Create
 
-Create new EOA by calling `create` function. After creation, the address and private Key can be looked up.
+Create new EOA by calling `create` method. After creation, the address and private key can be looked up.
 
 ```python
 # Generates a wallet 
@@ -38,22 +38,20 @@ private key:  39765c71ed1884ce08010900ed817119f4227a8b3ee7a36c906c0ae9b5b11cae
 
 ### Load
 
-You can load an existing EOA by calling `load` function.
+You can load an existing EOA by calling a `load` method.
 
-After creation, the address and private Key can be looked up.
+After creation, the address and private key can be looked up.
 
 ```python
-# Loads a wallet from a key store file
-wallet = KeyWallet.load(TEST_PRIVATE_KEY) # bytes of the private key
+# Loads a wallet from a private key in bytes
+wallet = KeyWallet.load(TEST_PRIVATE_KEY) 
 print("address: ", wallet.get_address()) # Returns an address
 print("private key: ", wallet.get_private_key()) # Returns a private key
 ```
 
 ### Store
 
-After `KeyWallet` object creation, Keystore file can be stored by calling `store` function.
-
-After calling `store`, Keystore file name can be looked up with the returned value.
+After creating a `Wallet` object, you can generate a keystore file on the file path by calling a `store` method. 
 
 ```python
 # Stores a key store file on the file path
@@ -69,7 +67,7 @@ This example shows how to transfer ICX and check the result.
 
 ### ICX Transfer
 
-In this example, you can create sending KeyWallet with `TEST_PRIVATE_KEY` and receiving Keywallet. And transfer 1 ICX from `wallet1` to `wallet2`.
+In this example, you can create two wallets for sending and receiving ICX to transfer 1ICX from `wallet1` to `wallet2`.
 
 ```python
 # Wallet for sending ICX
@@ -179,7 +177,7 @@ In this example, you can check the ICX balance by looking up the transaction bef
 ICX balance can be checked with calling the `getBalance` method of `IconService`.
 
 ```python
-# Gets balance
+# Returns balance
 balance = icon_service.get_balance(wallet2.get_address())
 print("balance: ", balance)
     
