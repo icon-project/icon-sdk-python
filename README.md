@@ -18,7 +18,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
   - [Version](#version)
   - [Installation](#installation)
   - [Creating an IconService Instance and Setting a Provider](#creating-an-iconservice-instance-and-setting-a-provider)
-- [Querying API Methods](#querying-api-methods)
+- [Queries](#queries)
   - [Examples](#examples)
   - [Error Cases](#error-cases)
   - [get_block](#get_block)
@@ -80,7 +80,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
     - [Parameters](#parameters-13)
     - [Returns](#returns-13)
     - [Example](#example-13)
-- [Signing and Sending Transaction](#signing-and-sending-transaction)
+- [Transactions](#transactions)
   - [Generating a Transaction](#generating-a-transaction)
   - [Signing a Transaction](#signing-a-transaction)
   - [Sending a Transaction](#sending-a-transaction)
@@ -155,7 +155,7 @@ After that, you need to create an IconService instance and set a provider.
 
 - A **provider** defines how the IconService connects to Loopchain.
 
-- The **HTTPProvider** takes the full URI where the server can be found. For local development, this would be something like http://localhost:9000.
+- The **HTTPProvider** takes a base domain URL where the server can be found. For local development, this would be something like http://localhost:9000.
 
 Here is an example of calling a simple API method to get a block by its height :
 
@@ -172,7 +172,7 @@ block = icon_service.get_block(1209)
 
 
 
-## Querying API Methods
+## Queries
 
 ### Examples
 
@@ -789,7 +789,7 @@ signature = wallet.sign(b'D8\xe9...\xfc')
 
 
 
-## Signing and Sending Transaction
+## Transactions
 
 ### Generating a Transaction
 

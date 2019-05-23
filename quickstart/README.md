@@ -1,27 +1,246 @@
 ---
 
-title: "ICON SDK Quickstart for Python"
+title: "ICON SDK Quick Start for Python"
 excerpt: ""
 
 ---
 
-ICON SDK Quickstart for Python is an example project for a user to use ICON SDK for Python easily with examples.
+This document describes how to interact with `ICON Network` using Python SDK. This document contains SDK installation, API usage guide, and code examples.
 
-Get different types of examples as follows.
+Get different types of examples as follows. Complete source code is found on Github at <https://github.com/icon-project/icon-sdk-python/tree/master/quickstart>
 
-| Example       | Description |
-| ------------- | ----------- |
-| [WalletExample](#walletexample) | An example of creating and loading a keywallet. |
-| [IcxTransactionExample](#icxtransactionexample) | An example of transferring ICX and confirming the result. |
-| [TokenTransactionExample](#tokentransactionexample) | An example of transferring IRC token and confirming the result. |
-| [DeployTokenExample](#deploytokenexample) | An example of deploying token. |
-| [SyncBlockExample](#syncblockexample) | An example of checking block confirmation and printing the ICX and token transfer information. |
+| Example                                                 | Description                                                  |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| [Wallet](#wallet)                                       | An example of creating and loading a keywallet.              |
+| [ICX Transfer](#icx-transfer)                           | An example of transferring ICX and confirming the result.    |
+| [Token Deploy and Transfer](#token-deploy-and-transfer) | An example of deploying an IRC token, transferring the token and confirming the result. |
+| [Sync Block](#sync-block)                               | An example of checking block confirmation and printing the ICX and token transfer information. |
 
-## WalletExample
+
+
+## Prerequisite
+
+Enumerate any required knowledge, configuration, or resources to complete this tutorial.
+Provide links to other useful resources.
+Helping your readers to prepare increases the likelihood that they will continue reading.
+
+ICON SDK for Python development and execution requires following environments.
+
+- Python
+
+  - Version: Python 3.6+
+
+  - IDE: Pycharm is recommended.
+
+    
+
+## Installation
+
+Should present the information of latest stable version.
+
+At first, you need to get ICON SDK for Python into your project. It can be installed using pip as follows:
+
+```shell
+$ pip install iconsdk
+```
+
+
+
+## How to Use
+
+Import, initialize, deinitialize, and basic call that applies to every or most code to use the SDK. 
+This section also serves as a test if the SDK has been correctly installed and ready to use.  
+
+### Create IconService and Set Provider
+
+After that, you need to create an IconService instance and set a provider.
+
+- The **IconService** class contains a set of API methods. It accepts a HTTPProvider which serves the purpose of connecting to HTTP and HTTPS based JSON-RPC servers.
+- A **provider** defines how the IconService connects to Loopchain.
+- The **HTTPProvider** takes a base domain URL where the server can be found. For local development, this would be something like http://localhost:9000.
+
+Here is an example of calling a simple API method to get a block by its height :
+
+```python
+from iconsdk.icon_service import IconService
+from iconsdk.providers.http_provider import HTTPProvider
+
+# Creates an IconService instance using the HTTP provider and set a provider.
+icon_service = IconService(HTTPProvider("http://localhost:9000", 3))
+
+# Gets a block by a given block height.
+block = icon_service.get_block(1209)
+```
+
+
+
+### Queries
+
+```python
+from iconsdk.builder.call_builder import CallBuilder
+
+# Returns block information by block height
+block = icon_service.get_block(1000)    		 
+
+# Returns block information by block hash
+block = icon_service.get_block("0x000...000")
+
+# Returns the last block information
+block = icon_service.get_block("latest")    	
+
+# Returns the balance of the account of given address
+balance = icon_service.get_balance("hx000...1")
+
+# Returns a list of the SCORE APIs
+score_apis = icon_service.get_score_api("cx000...1")
+
+# Returns the total supply of ICX
+total_supply = icon_service.get_total_supply()
+
+# Returns information about a transaction requested by transaction hash
+tx = icon_service.get_transaction("0x000...000")
+
+# Returns the result of a transaction by transaction hash
+tx_result = icon_service.get_transaction_result("0x000...000")
+
+# Generates a call instance using the CallBuilder
+call = CallBuilder().from_(wallet.get_address())\
+                    .to("cx000...1")\
+                    .method("balance_of")\
+                    .params({"address": "hx000...1"})\
+                    .build()
+
+# Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction on Loopchain
+result = icon_service.call(call)
+
+```
+
+### Transactions 
+
+Calling SCORE APIs to change states is requested as sending a transaction. 
+Before sending a transaction, the transaction should be signed. It can be done using a `Wallet` object. 
+
+#### Generate a transaction
+
+After then, you should create an instance of the transaction using different types of transaction builders as follows.
+
+```python
+from iconsdk.builder.transaction_builder import (
+    TransactionBuilder,
+    DeployTransactionBuilder,
+    CallTransactionBuilder,
+    MessageTransactionBuilder
+)
+from iconsdk.signed_transaction import SignedTransaction
+
+# Generates an instance of transaction for sending icx.
+transaction = TransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(150000000)\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .build()
+
+# Generates an instance of transaction for deploying SCORE.
+transaction = DeployTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .content_type("application/zip")\
+    .content(b'D8\xe9...\xfc')\
+    .params(params)\
+    .build()
+
+# Generates an instance of transaction for calling method in SCORE.
+transaction = CallTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .method("transfer")\
+    .params(params)\
+    .build()
+
+# Generates an instance of transaction for sending a message.
+transaction = MessageTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .data("0x74657374")\
+    .build()
+
+# Returns the signed transaction object having a signature
+signed_transaction = SignedTransaction(transaction, wallet)
+
+# Sends the transaction
+tx_hash = icon_service.send_transaction(signed_transaction)
+```
+
+#### Sign a transaction
+
+Before sending a transaction, the transaction should be signed by using SignedTransaction class. The SignedTransaction class is used to sign the transaction by returning an instance of the signed transaction as demonstrated in the example below. The instance of the signed transaction has the property of a signature.
+
+```python
+# Returns the signed transaction object having a signature
+signed_transaction = SignedTransaction(transaction, wallet)
+```
+
+#### Send a transaction
+
+Finally, you can send a transaction with the signed transaction object as follows.
+
+```python
+# Sends the transaction
+tx_hash = icon_service.send_transaction(signed_transaction)
+```
+
+#### Estimate step
+
+It is important to set a proper `step_limit` value in your transaction to make the submitted transaction executed successfully.
+
+`estimate_step` API provides a way to **estimate** the Step usage of a given transaction. Using the method, you can get an estimated Step usage before sending your transaction then make a `SignedTransaction` with the `step_limit` based on the estimation.
+
+```python
+# Generates a raw transaction without the stepLimit
+transaction = TransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(150000000)\
+    .nid(3)\
+    .nonce(100)\
+    .build()
+    
+# Returns an estimated step value
+estimate_step = icon_service.estimate_step(transaction)
+
+# Adds some margin to the estimated step 
+estimate_step += 10000
+
+# Returns the signed transaction object having a signature with the same raw transaction and the estimated step
+signed_transaction = SignedTransaction(transaction, wallet, estimate_step)
+
+# Sends the transaction
+tx_hash = icon_service.send_transaction(signed_transaction)
+```
+
+Note that the estimation can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimation when you set the `step_limit` of the `SignedTransaction`.
+
+#### 
+
+## Code Examples
+
+### Wallet
 
 This example shows how to create a wallet object by using a method of `create` and load it with a private key or a keystore file by using a method of `load`.
 
-### Create
+#### Create a wallet
 
 Create new EOA by calling `create` method. After creation, the address and private key can be looked up.
 
@@ -36,11 +255,9 @@ address:  hx684c9791784c10c419eaf9322ef42792e4979712
 private key:  39765c71ed1884ce08010900ed817119f4227a8b3ee7a36c906c0ae9b5b11cae
 ```
 
-### Load
+#### Load a wallet
 
-You can load an existing EOA by calling a `load` method.
-
-After creation, the address and private key can be looked up.
+You can load an existing EOA by calling a `load` method. After creation, the address and private key can be looked up.
 
 ```python
 # Loads a wallet from a private key in bytes
@@ -49,7 +266,7 @@ print("address: ", wallet.get_address()) # Returns an address
 print("private key: ", wallet.get_private_key()) # Returns a private key
 ```
 
-### Store
+#### Store the wallet
 
 After creating a `Wallet` object, you can generate a keystore file on the file path by calling a `store` method. 
 
@@ -59,13 +276,13 @@ file_path = "./test/test_keystore"
 wallet.store(file_path, "abcd1234*")
 ```
 
-## IcxTransactionExample
+### ICX Transfer
 
 This example shows how to transfer ICX and check the result.
 
 *For the KeyWallet and IconService creation, please refer to the information above.* 
 
-### ICX Transfer
+#### ICX transfer transaction
 
 In this example, you can create two wallets for sending and receiving ICX to transfer 1ICX from `wallet1` to `wallet2`.
 
@@ -111,9 +328,7 @@ transaction = TransactionBuilder()\
 ```
 
 - `nid` is networkId; 1: mainnet, 2-: etc. 
-
 - `step_limit` is recommended by using 'default' step cost in the response of getStepCosts API.
-
 - `timestamp` is used to prevent the identical transactions. Only current time is required (Standard unit : us). If the timestamp is considerably different from the current time, the transaction will be rejected.
 
 Generate SignedTransaction to add signature of the transaction. 
@@ -138,7 +353,7 @@ print("txHash: ", tx_hash)
 txHash:  0x243438ff59561f403bac4e7b193c00d803c3aabf79249e0246451b0db7751a59
 ```
 
-### Checking the Transaction Result
+#### Check the transaction result
 
 After transaction is sent, the result can be looked up with the returned hash value.
 
@@ -170,14 +385,14 @@ You can check the following information using the TransactionResult.
 - eventLogs :  Occurred EventLog’s list during execution of the transaction.
 - logsBloom : Indexed Data’s Bloom Filter value from the occurred Eventlog’s Data
 
-### Checking the Balance
+#### Check the ICX balance
 
 In this example, you can check the ICX balance by looking up the transaction before and after the transaction.
 
 ICX balance can be checked with calling the `getBalance` method of `IconService`.
 
 ```python
-# Returns balance
+# Gets balance
 balance = icon_service.get_balance(wallet2.get_address())
 print("balance: ", balance)
     
@@ -185,138 +400,13 @@ print("balance: ", balance)
 balance:  10000 
 ```
 
-## TokenTransactionExample
+### Token Deploy and Transfer
 
-This example shows how to send token and check the balance.
+This example shows how to deploy token, transfer token and check the balance.
 
-*For KeyWallet and IconService generation, please refer to the information above.*
+For the KeyWallet and IconService generation, please refer to the information above.
 
-### Token Transfer
-
-You can send the token that have already generated.
-
-You can generate KeyWallet using `TEST_PRIVATE_KEY` just like in the case of  `icx_transaction_example`, then send 1 Token to the other wallet. You need token address to send your token.
-
-You can get the default step cost to send token as follows.
-
-```python
-# Returns a step cost  
-# GOVERNANCE_ADDRESS : cx0000000000000000000000000000000000000001
-def get_default_step_cost():
-    _call = CallBuilder()\
-        .from_(wallet1.get_address())\
-        .to(GOVERNANCE_ADDRESS)\
-        .method("getStepCosts")\
-        .build()
-    _result = icon_service.call(_call)
-    default_step_cost = convert_hex_str_to_int(_result["default"])
-    return default_step_cost
-```
-
-Generate Transaction with the given parameters as below. You have to add receiving address and value by entering the given key name('_to', '_value')  to send the token. Otherwise, the transaction will be rejected.
-
-- `nid` is networkId; 1: mainnet, 2-: etc. 
-
-- `step_limit` is recommended by using 'default' step cost multiplied by 2 in the response of getStepCosts API.
-
-- `timestamp` is used to prevent the identical transactions. Only current time is required (Standard unit : us). If the timestamp is considerably different from the current time, the transaction will be rejected.
-
-- `method` is 'transfer' in this case.
-
-- `params` You must enter the given key name('\_to', '\_value'). Otherwise, the transaction will be rejected.
-
-```python
-# You must enter the given key name("_to", "_value"). Otherwise, the transaction will be rejected.
-params = {"_to": wallet2.get_address(), "_value": 10}
-
-# Enters transaction information.
-call_transaction = CallTransactionBuilder()\
-    .from_(wallet1.get_address())\
-    .to(SCORE_ADDRESS) \
-    .step_limit(get_default_step_cost()*2)\
-    .nid(3) \
-    .nonce(4) \
-    .method("transfer")\
-    .params(params)\
-    .build()
-```
-
-Generate `SignedTransaction` to add signature to your transaction.
-
-```python
-# Returns the signed transaction object having a signature
-signed_transaction = SignedTransaction(call_transaction, wallet1)
-
-# Reads params to transfer to nodes
-print(signed_transaction.signed_transaction_dict)
-```
-
- Call `sendTransaction` of `IconService` to check the transaction hash. Token transaction is sent.
-
-```python
-# Sends the transaction
-tx_hash = icon_service.send_transaction(signed_transaction)
-
-# Prints transaction hash
-print("txHash: ", tx_hash)
-
-# Output
-txHash: 0x6b17886de346655d96373f2e0de494cb8d7f36ce9086cb15a57d3dcf24523c8f
-```
-
-### Checking the Transaction Result
-
-You can check the result with the returned hash value of the transaction.
-
-In this example, you can check your transaction result in every 2 seconds because of the block confirmation time. Checking the result is as follows:
-
-```python
-# Returns the result of a transaction by transaction hash
-tx_result = icon_service.get_transaction_result(tx_hash)
-print("transaction status(1:success, 0:failure): ", tx_result["status"])
-
-# Output
-transaction status(1:success, 0:failure):  1
-```
-
-*For the TransactionResult, please refer to the `icx_transaction_example`.*
-
-### Checking the Token Balance
-
-In this example, you can check the token balance before and after the transaction.
-
-You can check the token balance by calling `balanceOf` from the token SCORE.
-
-- `method` is 'balanceOf' in this case 
-
-- `params` should be put with '_owner' data. Otherwise, your transaction will be rejected.
-
-```python
-params = {
-    "_owner": wallet2.get_address()
-}
-
-call = CallBuilder()\
-    .from_(wallet1.get_address())\
-    .to(SCORE_ADDRESS)\
-    .method("balanceOf")\
-    .params(params)\
-    .build()
-
-result = icon_service.call(call)
-print("balance: ", convert_hex_str_to_int(result))
-
-# Output
-balance:  1000000000000000000000
-```
-
-## DeployTokenExample
-
-This example shows how to deploy token and check the result.
-
-*For the KeyWallet and IconService generation, please refer to the information above.*
-
-### Token Deploy
+#### Token deploy transaction
 
 You need the SCORE Project to deploy token.
 
@@ -358,9 +448,7 @@ def get_max_step_limit():
 Generate transaction with the given values.
 
 - `SCORE_INSTALL_ADDRESS` uses cx0 to deploy SCORE.
-
 - `step_limit` is put by max step limit for sending transaction.
-
 - `params` enters the basic information of the token you want to deploy. It must enter the given values, 'initialSupply' data. Otherwise, your transaction will be rejected. 
 
 ```python
@@ -395,7 +483,7 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 print("txHash: ", tx_hash)
 ```
 
-### Checking the Transaction Result
+##### Check the deploy transaction result
 
 After sending the transaction, you can check the result with the returned hash value.
 
@@ -418,15 +506,131 @@ score address:  cx8c5ea60f73aafe10f9debfe2e3140b56335f5cfc
 waiting a second for accepting score...
 ```
 
-*For the 'TransactionResult', please refer to the `icx_transaction_example`.*
+For the 'TransactionResult', please refer to the `icx_transaction_example`.
 
-## SyncBlockExample
+#### Token transfer transaction
+
+You can send the token that have already generated.
+
+You can generate KeyWallet using `TEST_PRIVATE_KEY` just like in the case of  `icx_transaction_example`, then send 1 Token to the other wallet. You need token address to send your token.
+
+You can get the default step cost to send token as follows.
+
+```python
+# Returns a step cost  
+# GOVERNANCE_ADDRESS : cx0000000000000000000000000000000000000001
+def get_default_step_cost():
+    _call = CallBuilder()\
+        .from_(wallet1.get_address())\
+        .to(GOVERNANCE_ADDRESS)\
+        .method("getStepCosts")\
+        .build()
+    _result = icon_service.call(_call)
+    default_step_cost = convert_hex_str_to_int(_result["default"])
+    return default_step_cost
+```
+
+Generate Transaction with the given parameters as below. You have to add receiving address and value by entering the given key name('_to', '_value')  to send the token. Otherwise, the transaction will be rejected.
+
+- `nid` is networkId; 1: mainnet, 2-: etc. 
+- `step_limit` is recommended by using 'default' step cost multiplied by 2 in the response of getStepCosts API.
+- `timestamp` is used to prevent the identical transactions. Only current time is required (Standard unit : us). If the timestamp is considerably different from the current time, the transaction will be rejected.
+- `method` is 'transfer' in this case.
+- `params` You must enter the given key name('\_to', '\_value'). Otherwise, the transaction will be rejected.
+
+```python
+# You must enter the given key name("_to", "_value"). Otherwise, the transaction will be rejected.
+params = {"_to": wallet2.get_address(), "_value": 10}
+
+# Enters transaction information.
+call_transaction = CallTransactionBuilder()\
+    .from_(wallet1.get_address())\
+    .to(SCORE_ADDRESS) \
+    .step_limit(get_default_step_cost()*2)\
+    .nid(3) \
+    .nonce(4) \
+    .method("transfer")\
+    .params(params)\
+    .build()
+```
+
+Generate `SignedTransaction` to add signature to your transaction.
+
+```python
+# Returns the signed transaction object having a signature
+signed_transaction = SignedTransaction(call_transaction, wallet1)
+
+# Reads params to transfer to nodes
+print(signed_transaction.signed_transaction_dict)
+```
+
+ Call `sendTransaction` of `IconService` to check the transaction hash. Token transaction is sent.
+
+```python
+# Sends the transaction
+tx_hash = icon_service.send_transaction(signed_transaction)
+
+# Prints transaction hash
+print("txHash: ", tx_hash)
+
+# Output
+txHash: 0x6b17886de346655d96373f2e0de494cb8d7f36ce9086cb15a57d3dcf24523c8f
+```
+
+##### Check the transfer transaction result
+
+You can check the result with the returned hash value of the transaction.
+
+In this example, you can check your transaction result in every 2 seconds because of the block confirmation time. Checking the result is as follows:
+
+```python
+# Returns the result of a transaction by transaction hash
+tx_result = icon_service.get_transaction_result(tx_hash)
+print("transaction status(1:success, 0:failure): ", tx_result["status"])
+
+# Output
+transaction status(1:success, 0:failure):  1
+```
+
+*For the TransactionResult, please refer to the `icx_transaction_example`.*
+
+#### Check the token balance
+
+In this example, you can check the token balance before and after the transaction.
+
+You can check the token balance by calling `balanceOf` from the token SCORE.
+
+- `method` is 'balanceOf' in this case 
+- `params` should be put with '_owner' data. Otherwise, your transaction will be rejected.
+
+```python
+params = {
+    "_owner": wallet2.get_address()
+}
+
+call = CallBuilder()\
+    .from_(wallet1.get_address())\
+    .to(SCORE_ADDRESS)\
+    .method("balanceOf")\
+    .params(params)\
+    .build()
+
+result = icon_service.call(call)
+print("balance: ", convert_hex_str_to_int(result))
+
+# Output
+balance:  1000000000000000000000
+```
+
+
+
+### Sync Block
 
 This example shows how to read block information and print the transaction result for every block creation.
 
 *Please refer to above for KeyWallet and IconService creation.*
 
-### Reading the Block Information
+#### Read the block information
 
 In this example, 'getLastBlock' is called periodically in order to check the new blocks, by updating the transaction information for every block creation.
 
@@ -457,7 +661,7 @@ If a new block has been created, get the transaction list. You can check the fol
 - dataType: A value indicating the type of the data item (call, deploy, message)
 - data: Various types of data are included according to dataType.
 
-### Transaction Output
+#### Transaction output
 
 After reading the transaction result, you can check history having sent ICX or tokens. Transaction output is as follows:
 
@@ -490,7 +694,7 @@ if len(tx_list) > 0:
 
 ```
 
-### Checking the Token Name & Symbol
+#### Check the token name & symbol
 
 You can check the token SCORE by calling the `name` and` symbol` functions.
 
@@ -514,7 +718,3 @@ def get_token_symbol(token_address: str):
     return icon_service.call(call)
 ```
 
-## References
-
-- [ICON JSON-RPC API v3](https://icondev.readme.io/docs/json-rpc-specification) 
-- [IRC2 Specification](https://github.com/icon-project/IIPs/blob/master/IIPS/iip-2.md)
