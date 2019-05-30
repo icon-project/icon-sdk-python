@@ -44,7 +44,7 @@ class TestHTTPProvider(TestCase):
         for invalid_url in invalid_urls:
             self.assertRaises(URLException, HTTPProvider, invalid_url)
 
-    def test_set_http_provider_py_previous_initializer_with_valid_url(self):
+    def test_set_http_provider_by_previous_initializer_with_valid_url(self):
         valid_url1 = "http://localhost:9000/api/v3"
 
         # When request kwargs is None
