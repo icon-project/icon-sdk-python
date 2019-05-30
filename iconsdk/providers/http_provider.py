@@ -14,8 +14,8 @@
 # limitations under the License.
 
 import json
+import os
 from logging import getLogger
-from os.path import join
 from urllib.parse import urlparse
 from warnings import warn
 
@@ -73,7 +73,7 @@ class HTTPProvider(Provider):
     @dispatch(str, dict=None)
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
         """
-        The previous initializer to be set with full path url which is only as like <scheme>://<host>/api/v3 without version.
+        The initializer to be set with full path url which is only as like <scheme>://<host>/api/v3 without version.
 
         :param full_path_url: full path URL as like <scheme>://<host>:<port>/api/v3
         :param request_kwargs: kwargs for setting to head of request
@@ -107,11 +107,11 @@ class HTTPProvider(Provider):
     def _get_full_path_url(self, method: str) -> str:
         url_components = urlparse(self._base_domain_url)
         if method in CONFIG_API_PATH:
-            path = join(CONFIG_API_PATH[method], 'v' + str(self._version))
+            path = os.path.join(CONFIG_API_PATH[method], 'v' + str(self._version))
         else:
-            path = join("api", "v" + str(self._version))
+            path = os.path.join("api", "v" + str(self._version))
         if self._channel is not None:
-            path = join(path, self._channel)
+            path = os.path.join(path, self._channel)
         url_components = url_components._replace(path=path)
         return url_components.geturl()
 

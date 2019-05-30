@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import join
+import os
 from unittest import TestCase, main
 
 from iconsdk.exception import URLException
@@ -34,16 +34,10 @@ class TestHTTPProvider(TestCase):
         self.assertTrue(http_provider.is_connected())
 
     def test_set_http_provider_by_previous_initializer_with_invalid_url(self):
-        invalid_url0 = "http://localhost:9000/api/v2"
-        invalid_url1 = "http://localhost:9000/api/v"
-        invalid_url2 = "http://localhost:9000/api/"
-        invalid_url3 = "http://localhost:9000"
-        invalid_url4 = "http://localhost:9000/api/debug/v3"
-        self.assertRaises(URLException, HTTPProvider, invalid_url0)
-        self.assertRaises(URLException, HTTPProvider, invalid_url1)
-        self.assertRaises(URLException, HTTPProvider, invalid_url2)
-        self.assertRaises(URLException, HTTPProvider, invalid_url3)
-        self.assertRaises(URLException, HTTPProvider, invalid_url4)
+        invalid_urls = ["http://localhost:9000/api/v2", "http://localhost:9000/api/v", "http://localhost:9000/api/",
+                        "http://localhost:9000", "http://localhost:9000/api/debug/v3"]
+        for invalid_url in invalid_urls:
+            self.assertRaises(URLException, HTTPProvider, invalid_url)
 
     def test_set_http_provider_py_previous_initializer_with_valid_url(self):
         valid_url1 = "http://localhost:9000/api/v3"
@@ -100,15 +94,17 @@ class TestHTTPProvider(TestCase):
 
         # set channel
         http_provider.set_channel(channel)
-        self.assertEqual(join(full_path_url_for_main_api, channel), http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(join(full_path_url_for_debug_api, channel),
+        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
+                         http_provider._get_full_path_url("icx_call"))
+        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
                          http_provider._get_full_path_url("debug_estimateStep"))
 
         # set the other channel
         channel = "icon_dex2"
         http_provider.set_channel(channel)
-        self.assertEqual(join(full_path_url_for_main_api, channel), http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(join(full_path_url_for_debug_api, channel),
+        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
+                         http_provider._get_full_path_url("icx_call"))
+        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
                          http_provider._get_full_path_url("debug_estimateStep"))
 
     def test_set_http_provider_by_new_initializer_with_channel(self):
@@ -127,15 +123,17 @@ class TestHTTPProvider(TestCase):
 
         # set channel
         http_provider.set_channel(channel)
-        self.assertEqual(join(full_path_url_for_main_api, channel), http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(join(full_path_url_for_debug_api, channel),
+        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
+                         http_provider._get_full_path_url("icx_call"))
+        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
                          http_provider._get_full_path_url("debug_estimateStep"))
 
         # set the other channel
         channel = "icon_dex2"
         http_provider.set_channel(channel)
-        self.assertEqual(join(full_path_url_for_main_api, channel), http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(join(full_path_url_for_debug_api, channel),
+        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
+                         http_provider._get_full_path_url("icx_call"))
+        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
                          http_provider._get_full_path_url("debug_estimateStep"))
 
 
