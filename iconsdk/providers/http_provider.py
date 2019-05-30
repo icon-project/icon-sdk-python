@@ -15,6 +15,7 @@
 
 import json
 from logging import getLogger
+from os.path import join
 from urllib.parse import urlparse
 from warnings import warn
 
@@ -32,16 +33,13 @@ class HTTPProvider(Provider):
     The HTTPProvider takes the full URI where the server can be found.
     For local development this would be something like 'http://localhost:9000'.
     """
-    endpoint_uri = None
-    _request_kwargs = None
-
-    logger = getLogger("HTTPProvider")
+    _logger = getLogger("HTTPProvider")
 
     # No need to use logging, remove the line.
     # set_logger(logger, 'DEBUG')
 
     @staticmethod
-    def validate_base_domain_url(base_domain_url) -> bool:
+    def _validate_base_domain_url(base_domain_url) -> bool:
         """
         Validates if input base domain url is valid or not.
 
@@ -64,12 +62,13 @@ class HTTPProvider(Provider):
         :param version: version for RPC server
         :param request_kwargs: kwargs for setting to head of request
         """
-        if not self.validate_base_domain_url(base_domain_url):
+        if not self._validate_base_domain_url(base_domain_url):
             raise URLException("Invalid base domain URL. "
                                "Valid base domain URL format is as like <scheme>://<host>:<port>.")
-        self.base_domain_url = base_domain_url
-        self.version = version
+        self._base_domain_url = base_domain_url
+        self._version = version
         self._request_kwargs = request_kwargs or {}
+        self._channel: str = None
 
     @dispatch(str, dict=None)
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
@@ -86,34 +85,41 @@ class HTTPProvider(Provider):
             raise URLException("Invalid full path URL. "
                                "The only valid full path for the previous initializer is "
                                "'<scheme>://<host>:<port>/api/v3'.")
-        self.__init__(url_components.geturl(), int(url_components.path[-1:]))
-        self._request_kwargs = request_kwargs or {}
+        self.__init__(url_components.geturl(), int(url_components.path[-1:]), request_kwargs=request_kwargs)
 
     def __str__(self):
-        return "RPC connection {0}".format(self.base_domain_url)
+        return "RPC connection {0}".format(self._base_domain_url)
 
     @to_dict
-    def get_request_kwargs(self):
+    def _get_request_kwargs(self):
         if 'headers' not in self._request_kwargs:
             yield 'headers', {'Content-Type': 'application/json'}
         for key, value in self._request_kwargs.items():
             yield key, value
 
     @staticmethod
-    def make_post_request(full_path_url, data, **kwargs):
+    def _make_post_request(full_path_url, data, **kwargs):
         kwargs.setdefault('timeout', 10)
         with requests.Session() as session:
             response = session.post(url=full_path_url, data=json.dumps(data), **kwargs)
         return json.loads(response.content)
 
-    def get_full_path_url(self, method: str) -> str:
-        url_components = urlparse(self.base_domain_url)
+    def _get_full_path_url(self, method: str) -> str:
+        url_components = urlparse(self._base_domain_url)
         if method in CONFIG_API_PATH:
-            path = CONFIG_API_PATH[method] + '/v' + str(self.version)
+            path = join(CONFIG_API_PATH[method], 'v' + str(self._version))
         else:
-            path = "/api/v" + str(self.version)
+            path = join("api", "v" + str(self._version))
+        if self._channel is not None:
+            path = join(path, self._channel)
         url_components = url_components._replace(path=path)
         return url_components.geturl()
+
+    def get_channel(self) -> str:
+        return self._channel
+
+    def set_channel(self, channel: str):
+        self._channel = channel
 
     def make_request(self, method, params=None):
         rpc_dict = {
@@ -125,15 +131,15 @@ class HTTPProvider(Provider):
         if params:
             rpc_dict['params'] = params
 
-        self.logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s",
-                          self.base_domain_url, method, rpc_dict)
+        self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s",
+                           self._get_full_path_url(method), method, rpc_dict)
 
-        response = self.make_post_request(self.get_full_path_url(method), rpc_dict, **self.get_request_kwargs())
-        self.logger.debug("response HTTP\nResponse:%s", response)
-        return self.return_customed_response(response)
+        response = self._make_post_request(self._get_full_path_url(method), rpc_dict, **self._get_request_kwargs())
+        self._logger.debug("response HTTP\nResponse:%s", response)
+        return self._return_customed_response(response)
 
     @staticmethod
-    def return_customed_response(response):
+    def _return_customed_response(response):
         try:
             return response["result"]
         except KeyError:
@@ -141,7 +147,7 @@ class HTTPProvider(Provider):
 
     def is_connected(self):
         try:
-            self.logger.debug("Connected")
+            self._logger.debug("Connected")
             self.make_request('icx_getLastBlock', [])
         except IOError:
             return False
