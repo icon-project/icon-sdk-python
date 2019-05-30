@@ -34,8 +34,13 @@ class TestHTTPProvider(TestCase):
         self.assertTrue(http_provider.is_connected())
 
     def test_set_http_provider_by_previous_initializer_with_invalid_url(self):
-        invalid_urls = ["http://localhost:9000/api/v2", "http://localhost:9000/api/v", "http://localhost:9000/api/",
-                        "http://localhost:9000", "http://localhost:9000/api/debug/v3"]
+        invalid_urls = [
+            "http://localhost:9000/api/v2",
+            "http://localhost:9000/api/v",
+            "http://localhost:9000/api/",
+            "http://localhost:9000",
+            "http://localhost:9000/api/debug/v3"
+        ]
         for invalid_url in invalid_urls:
             self.assertRaises(URLException, HTTPProvider, invalid_url)
 
