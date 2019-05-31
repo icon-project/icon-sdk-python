@@ -5,7 +5,7 @@ excerpt: ""
 
 ---
 
-ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples. It is reference to [ICON JSON-RPC API **v3**](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md).
+ICON SDK for Python is a collection of libraries which allows you to interact with a local or remote ICON node using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python, and provide API reference documentation examples. It is reference to [ICON JSON-RPC API **v3**](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md).
 
 
 ## Table of Contents
@@ -124,7 +124,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
 
 ### Requirements
 
-ICON SDK for Python development and execution requires following environments.
+ICON SDK for Python development and execution requires the following environments.
 
 - Python
     - Version: Python 3.6+
@@ -141,7 +141,7 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Installation
 
-At first, you need to get ICON SDK for Python into your project. It can be installed using pip as follows:
+First, you need to get ICON SDK for Python into your project. It can be installed using pip as follows:
 
 ``````shell
 $ pip install iconsdk
@@ -149,15 +149,15 @@ $ pip install iconsdk
 
 ### Creating an IconService Instance and Setting a Provider
 
-After that, you need to create an IconService instance and set a provider.
+Next, you need to create an IconService instance and set a provider.
 
 - The **IconService** class contains a set of API methods. It accepts a HTTPProvider which serves the purpose of connecting to HTTP and HTTPS based JSON-RPC servers.
 
-- A **provider** defines how the IconService connects to Loopchain.
+- A **provider** defines how the IconService connects to ICON node.
 
-- The **HTTPProvider** takes a base domain URL where the server can be found. For local development, this would be something like http://localhost:9000.
+- The **HTTPProvider** takes a base domain URL where the server can be found. For local development, this would be something like `http://localhost:9000`.
 
-Here is an example of calling a simple API method to get a block by its height :
+Here is an example of calling a simple API method to get a block by its height:
 
 ```python
 from iconsdk.icon_service import IconService
@@ -210,7 +210,7 @@ call = CallBuilder().from_(wallet.get_address())\
                     .params({"address": "hx000...1"})\
                     .build()
 
-# Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction on Loopchain
+# Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction
 result = icon_service.call(call)
 
 ```
@@ -219,7 +219,7 @@ result = icon_service.call(call)
 
 ### Error Cases
 
-There are different types of error cases as below.  The exception is raised with the specific message. You can get more information about the exception from the message.   
+There are different types of error cases as shown below.  The exception is raised with the specific message. You can get more information about the exception from the message.
 
 - **KeyStoreException** 
   - It is raised when making or loading a key store file.  
@@ -231,7 +231,8 @@ There are different types of error cases as below.  The exception is raised with
 
 - **BalanceException**
   - It is raised when the balance is invalid.
-  - Error code for the exception is 3. 
+  - Error code for the exception is 3.
+
 - **DataTypeException**
   - It is raised when the data type is invalid.
   - Error code for the exception is 4. 
@@ -253,8 +254,8 @@ get_block(value)
 ``````
 
 * Function A
-  -  Returns block information by block height
-  -  Delegates to **icx_getBlockByHeight** RPC method
+  * Returns block information by block height
+  * Delegates to **icx_getBlockByHeight** RPC method
 
 * Function B
   * Returns block information by block hash
@@ -514,7 +515,7 @@ tx_result = icon_service.get_transaction_result("0x000...000")
 call(call: Call)
 ```
 
-Calls SCORE's external function which is read-only without creating a transaction on Loopchain
+Calls SCORE's external function which is read-only without creating a transaction.
 
 Delegates to **icx_call** RPC method
 
@@ -549,7 +550,7 @@ call = CallBuilder().from_(wallet.get_address())\
                     .params({"address": "hx000...1"})\
                     .build()
 
-# Calls SCORE's external function which is read-only without creating a transaction on Loopchain
+# Calls SCORE's external function which is read-only without creating a transaction
 result = icon_service.call(call)
 ```
 
@@ -793,7 +794,7 @@ signature = wallet.sign(b'D8\xe9...\xfc')
 
 ### Generating a Transaction
 
-After then, you should create an instance of the transaction using different types of **transaction builders** as follows.  
+Next, you should create an instance of the transaction using different types of **transaction builders** as follows:
 
 ### Signing a Transaction
 
@@ -801,7 +802,7 @@ Before sending a transaction, the transaction should be signed by using **Signed
 
 ### Sending a Transaction
 
-Finally, you can send a transaction with the signed transaction object as follows.
+Finally, you can send a transaction with the signed transaction object as follows:
 
 ### Examples
 
@@ -1056,7 +1057,7 @@ Sends the transaction
 
 Delegates to **icx_sendTransaction** RPC method
 
-Need to wait for a while after sending the transaction. Because it takes time to make a consensus among nodes. We recommend 0.3 second at least.
+Need to wait for a while after sending the transaction. Because it takes time to create consensus among nodes. We recommend 0.3 seconds at least.
 
 #### Parameters
 
@@ -1084,7 +1085,7 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 
 It is important to set a proper `step_limit` value in your transaction to make the submitted transaction executed successfully.
 
-`estimate_step` API provides a way to **estimate** the Step usage of a given transaction. Using the method, you can get an estimated Step usage before sending your transaction then make a `SignedTransaction` with the `step_limit` based on the estimation.
+`estimate_step` API provides a way to **estimate** the Step usage of a given transaction. Using the method, you can get an estimated Step usage before sending your transaction then make a `SignedTransaction` with the `step_limit` based on the estimate.
 
 ### Examples
 
@@ -1111,7 +1112,7 @@ signed_transaction = SignedTransaction(transaction, wallet, estimate_step)
 tx_hash = icon_service.send_transaction(signed_transaction)
 ```
 
-Note that the estimation can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimation when you set the `step_limit` of the `SignedTransaction`.
+Note that the estimate can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimate when you set the `step_limit` of the `SignedTransaction`.
 
 
 
