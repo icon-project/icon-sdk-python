@@ -16,17 +16,17 @@
 from unittest import main
 
 from iconsdk.builder.transaction_builder import TransactionBuilder, MessageTransactionBuilder, \
-    CallTransactionBuilder, DeployTransactionBuilder
+    CallTransactionBuilder, DeployTransactionBuilder, DepositTransactionBuilder, DepositTransaction
 from iconsdk.exception import DataTypeException
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_icx_transaction, is_call_transaction, is_message_transaction, \
-    is_deploy_transaction, is_T_HASH
+    is_deploy_transaction, is_T_HASH, is_deposit_transaction
 from tests.api_send.test_send_super import TestSendSuper
 
 
 class TestSignedTransaction(TestSendSuper):
 
-    def test_to_dict(self):
+    def test_convert_tx_to_jsonrpc_request_for_icx_transaction(self):
         # Transfer
         # When having an optional property, nonce
         icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
@@ -45,6 +45,7 @@ class TestSignedTransaction(TestSendSuper):
         tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
         self.assertFalse(is_icx_transaction(tx_dict))
 
+    def test_convert_tx_to_jsonrpc_request_for_deploy_transaction(self):
         # Update SCORE
         deploy_transaction = DeployTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).content_type(self.setting["content_type"]) \
@@ -60,6 +61,7 @@ class TestSignedTransaction(TestSendSuper):
         tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(deploy_transaction)
         self.assertTrue(is_deploy_transaction(tx_dict))
 
+    def test_convert_tx_to_jsonrpc_request_for_call_transaction(self):
         # SCORE method call
         call_transaction = CallTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).nonce(self.setting["nonce"]) \
@@ -67,11 +69,40 @@ class TestSignedTransaction(TestSendSuper):
         tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(call_transaction)
         self.assertTrue(is_call_transaction(tx_dict))
 
+    def test_convert_tx_to_jsonrpc_request_for_message_transaction(self):
         # Message send
         msg_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
         tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(msg_transaction)
         self.assertTrue(is_message_transaction(tx_dict))
+
+    def test_convert_tx_to_jsonrpc_request_for_add_deposit_transaction(self):
+        # Add deposit
+        add_deposit_transaction: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .value(self.setting["value"]) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .action("add") \
+            .build()
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(add_deposit_transaction)
+        self.assertTrue(is_deposit_transaction(tx_dict, "add"))
+
+    def test_convert_tx_to_jsonrpc_request_for_withdraw_deposit_transaction(self):
+        # Withdraw deposit
+        withdraw_deposit_transaction: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .id(self.setting["id"]) \
+            .action("withdraw") \
+            .build()
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(withdraw_deposit_transaction)
+        self.assertTrue(is_deposit_transaction(tx_dict, "withdraw"))
 
     def test_signed_transaction_transfer(self):
         icx_transaction = TransactionBuilder().from_(self.wallet.get_address()).to(self.setting["to"]) \
@@ -137,6 +168,44 @@ class TestSignedTransaction(TestSendSuper):
 
         # success with param of step limit
         signed_transaction_dict = SignedTransaction(msg_transaction_without_step_limit, self.wallet,
+                                                    self.setting["step_limit"])
+        result = self.icon_service.send_transaction(signed_transaction_dict)
+        self.assertTrue(is_T_HASH(result))
+
+    def test_signed_transaction_with_deposit_transaction_of_add_action_without_step_limit(self):
+        deposit_transaction_without_step_limit: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .value(self.setting["value"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .action("add") \
+            .build()
+
+        # fail without step limit
+        self.assertRaises(DataTypeException, SignedTransaction, deposit_transaction_without_step_limit, self.wallet)
+
+        # success with param of step limit
+        signed_transaction_dict = SignedTransaction(deposit_transaction_without_step_limit, self.wallet,
+                                                    self.setting["step_limit"])
+        result = self.icon_service.send_transaction(signed_transaction_dict)
+        self.assertTrue(is_T_HASH(result))
+
+    def test_signed_transaction_with_deposit_transaction_of_deposit_action_without_step_limit(self):
+        deposit_transaction_without_step_limit: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .action("withdraw") \
+            .id(self.setting["id"]) \
+            .build()
+
+        # fail without step limit
+        self.assertRaises(DataTypeException, SignedTransaction, deposit_transaction_without_step_limit, self.wallet)
+
+        # success with param of step limit
+        signed_transaction_dict = SignedTransaction(deposit_transaction_without_step_limit, self.wallet,
                                                     self.setting["step_limit"])
         result = self.icon_service.send_transaction(signed_transaction_dict)
         self.assertTrue(is_T_HASH(result))

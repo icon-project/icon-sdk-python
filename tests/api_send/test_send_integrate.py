@@ -16,7 +16,8 @@
 from time import sleep
 
 from iconsdk.builder.call_builder import CallBuilder
-from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder
+from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder, DepositTransaction, \
+    DepositTransactionBuilder
 from iconsdk.exception import JSONRPCException, DataTypeException
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_deploy_transaction, is_T_HASH, is_call_transaction
@@ -181,3 +182,65 @@ class TestSendDeploy(TestSendSuper):
             .build()
         signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+
+    def test_deposit_add_and_withdraw(self):
+        # Test install SCORE : Checks if making an instance of deploy transaction correctly
+        param = {"init_supply": 10000}
+        deploy_transaction = DeployTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to_install"]) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .content_type(self.setting["content_type"]) \
+            .content(self.setting["content_install"]) \
+            .params(param) \
+            .version(3) \
+            .build()
+        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(deploy_transaction)
+        self.assertTrue(is_deploy_transaction(tx_dict))
+
+        # Test install SCORE : Sends transaction which makes the SCORE install correctly
+        signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
+        result_install = self.icon_service.send_transaction(signed_transaction_dict)
+        self.assertTrue(is_T_HASH(result_install))
+
+        sleep(2)
+        installed_score_address = self.icon_service.get_transaction_result(result_install)["scoreAddress"]
+
+        _DEPOSIT_AMOUNT = 5000 * (10 ** 18)
+        deposit_transaction_of_add_0: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(installed_score_address) \
+            .value(_DEPOSIT_AMOUNT) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .action("add") \
+            .build()
+
+        # Checks if sending transaction correctly
+        signed_transaction_dict = SignedTransaction(deposit_transaction_of_add_0, self.wallet)
+        result = self.icon_service.send_transaction(signed_transaction_dict)
+        self.assertTrue(is_T_HASH(result))
+
+        sleep(2)
+        self.assertEqual(self.icon_service.get_transaction_result(result)["status"], 1)
+
+        # transaction instance for withdraw action
+        deposit_transaction_of_withdraw: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(installed_score_address) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .id(result) \
+            .action("withdraw") \
+            .build()
+
+        signed_transaction_dict = SignedTransaction(deposit_transaction_of_withdraw, self.wallet)
+        result = self.icon_service.send_transaction(signed_transaction_dict)
+        self.assertTrue(is_T_HASH(result))
+
+        sleep(2)
+        self.assertEqual(self.icon_service.get_transaction_result(result)["status"], 1)
