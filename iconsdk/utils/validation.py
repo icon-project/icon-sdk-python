@@ -244,3 +244,24 @@ def is_message_transaction(params: dict) -> bool:
            and has_keys(params, inner_key_of_params) \
            and is_0x_prefixed(params["data"]) \
            and params["dataType"] == "message"
+
+
+def is_deposit_transaction(params: dict, deposit_type: str) -> bool:
+    """Checks an instance of `DepositTransaction` has right format.
+
+    :param params:
+    :param deposit_type: add or withdraw
+    :return: bool
+    """
+    inner_key_of_params = ['dataType', 'data']
+    inner_key_of_data_for_add_action = ["action"]
+    inner_key_of_data_for_withdraw_action = ["action", "id"]
+
+    checked: bool = has_keys(params, inner_key_of_params) and params["dataType"] == "deposit"
+
+    if deposit_type == "withdraw":
+        return has_keys(params["data"], inner_key_of_data_for_withdraw_action) \
+               and is_0x_prefixed(params["data"]["id"]) and params["data"]["action"] == "withdraw" and checked
+    else:
+        return has_keys(params["data"], inner_key_of_data_for_add_action) \
+               and params["data"]["action"] == "add" and checked
