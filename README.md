@@ -1050,7 +1050,7 @@ Builder for **DepositTransaction** object
 - to : SCORE address to receive a transaction
 - value : The amount of ICX to be deposited. It is used only for 'add' action. (Optional)
 - action : "add" or "withdraw".
-- Id : Transaction hash prefixed with '0x'. It is used only for 'withdraw' action. (Optional)
+- id : Transaction hash prefixed with '0x'. It is used only for 'withdraw' action. (Optional)
 - stepLimit : The maximum step value for processing a transaction.
 - nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
 - nonce :  An arbitrary number used to prevent transaction hash collision.
