@@ -396,14 +396,14 @@ class DepositTransactionBuilder(TransactionBuilder):
 
     def build(self) -> DepositTransaction:
         if not self._action:
-            raise DataTypeException("'action' should be required. Available values for it are 'add' or 'withdraw'.")
+            raise DataTypeException("'action' should be provided. Available values are 'add' or 'withdraw'.")
         if self._action == "withdraw":
             if not self._id:
-                raise DataTypeException("When action is 'withdraw', 'id' should be required.")
+                raise DataTypeException("When action is 'withdraw', 'id' should be provided.")
             if self._value:
-                raise DataTypeException("When action is 'withdraw'. 'value' should not be required.")
+                raise DataTypeException("When action is 'withdraw'. 'value' should not be provided.")
         if self._action == "add" and not self._value:
-            raise DataTypeException("When action is 'add', 'value' should be required.")
+            raise DataTypeException("When action is 'add', 'value' should be provided.")
         return DepositTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce,
                                   self._version, self._timestamp, self._action, self._id)
 
