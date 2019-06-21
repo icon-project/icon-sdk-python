@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from unittest import TestCase, main
 
 from iconsdk.icon_service import IconService
@@ -26,6 +27,7 @@ class TestSendSuper(TestCase):
     A super class of other send test class, it is for unit tests of sending transaction.
     All of sup classes for testing sending transaction extends this super class.
     """
+
     @classmethod
     def setUpClass(cls):
         """
@@ -74,7 +76,8 @@ class TestSendSuper(TestCase):
                 "init_supply": 10000
             },
             # It is used to send message only.
-            "data": "0x" + "test".encode().hex()
+            "data": "0x" + "test".encode().hex(),
+            "id": "0x" + os.urandom(32).hex()
         }
 
 

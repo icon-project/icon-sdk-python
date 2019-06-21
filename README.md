@@ -137,7 +137,7 @@ ICON SDK for Python development and execution requires the following environment
 
 ### Version
 
-1.0.9 beta
+1.1.0 beta
 
 ### Installation
 
@@ -811,7 +811,8 @@ from iconsdk.builder.transaction_builder import (
     TransactionBuilder,
     DeployTransactionBuilder,
     CallTransactionBuilder,
-    MessageTransactionBuilder
+    MessageTransactionBuilder,
+    DepositTransactionBuilder
 )
 from iconsdk.signed_transaction import SignedTransaction
 
@@ -856,6 +857,29 @@ transaction = MessageTransactionBuilder()\
     .nid(3)\
     .nonce(100)\
     .data("0x74657374")\
+    .build()
+    
+# Generates an instance of transaction for adding or withdrawing a deposit.
+# Case0: Adding a deposit 
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(5000*(10**18))\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("add") \
+    .build()
+    
+# Case1: Withdrawing the deposit
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("withdraw") \
+    .id(tx_hash) \
     .build()
 
 # Returns the signed transaction object having a signature
@@ -1012,6 +1036,57 @@ transaction = MessageTransactionBuilder()\
     .nid(3)\
     .nonce(100)\
     .data("0x74657374")\
+    .build()
+```
+
+
+
+### DepositTransactionBuilder
+
+Builder for **DepositTransaction** object
+
+#### Methods
+
+- from_ : The wallet address making a transaction. The default address is your account address.
+- to : SCORE address to receive a transaction
+- value : The amount of ICX to be deposited. It is used only for 'add' action. (Optional)
+- action : "add" or "withdraw".
+- id : Transaction hash prefixed with '0x'. It is used only for 'withdraw' action. (Optional)
+- stepLimit : The maximum step value for processing a transaction.
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
+- nonce :  An arbitrary number used to prevent transaction hash collision.
+- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
+- timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
+- build : Returns a deposit transaction object.
+
+#### Returns
+
+A deposit transaction object  
+
+#### Example
+
+```python
+# Generates an instance of transaction for adding or withdrawing a deposit.
+# Case0: Adding a deposit 
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(5000*(10**18))\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("add") \
+    .build()
+    
+# Case1: Withdrawing the deposit
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("withdraw") \
+    .id(tx_hash) \
     .build()
 ```
 

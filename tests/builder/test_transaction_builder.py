@@ -20,7 +20,9 @@ from iconsdk.builder.transaction_builder import (
     TransactionBuilder,
     CallTransactionBuilder,
     MessageTransactionBuilder,
-    DeployTransactionBuilder
+    DeployTransactionBuilder,
+    DepositTransactionBuilder,
+    DepositTransaction
 )
 from iconsdk.exception import DataTypeException
 from iconsdk.utils import get_timestamp
@@ -71,7 +73,8 @@ class TestTransactionBuilder(TestCase):
             # It is used to send message only.
             "data": "0x" + "test".encode().hex(),
             "version": 3,
-            "timestamp": get_timestamp()
+            "timestamp": get_timestamp(),
+            "id": "0x" + "1" * 64
         }
 
     def _is_basic_transaction(self, params: dict) -> bool:
@@ -112,6 +115,19 @@ class TestTransactionBuilder(TestCase):
                and isinstance(params["data"], str) \
                and is_0x_prefixed(params["data"]) \
                and params["data_type"] == "message"
+
+    def _is_deposit_transaction(self, params: dict) -> bool:
+        """Checks `DepositTransaction` in dict has right format."""
+        inner_key_of_params = ['action']
+        try:
+            if params['action'] == 'withdraw':
+                inner_key_of_params.append('id')
+            return self._is_basic_transaction(params) \
+                   and has_keys(params, inner_key_of_params) \
+                   and params["action"] in ('add', 'withdraw') \
+                   and params['data_type'] == "deposit"
+        except KeyError:
+            return False
 
     def test_transaction_builder_from_dict(self):
         """Test for all kind of transaction builders to support for making each transaction from dict"""
@@ -195,6 +211,102 @@ class TestTransactionBuilder(TestCase):
         self.assertTrue(
             isinstance(DeployTransactionBuilder.from_dict(input_deploy_transaction_as_dict), DeployTransactionBuilder))
         self.assertTrue(self._is_deploy_transaction(deploy_transaction_as_dict))
+
+    def test_deposit_transaction_to_dict_for_add_action(self):
+        """Test for converting deposit transaction object to dict by using 'to_dict' method"""
+
+        # transaction instance for add action
+        deposit_transaction_of_add_0: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.transaction_as_setting["from_"]) \
+            .to(self.transaction_as_setting["to"]) \
+            .value(self.transaction_as_setting["value"]) \
+            .step_limit(self.transaction_as_setting["step_limit"]) \
+            .nid(self.transaction_as_setting["nid"]) \
+            .nonce(self.transaction_as_setting["nonce"]) \
+            .version(self.transaction_as_setting["version"]) \
+            .timestamp(self.transaction_as_setting["timestamp"]) \
+            .action("add") \
+            .build()
+
+        # convert transaction into dict correctly
+        # check 0 : check if it is deposit transaction
+        deposit_transaction_of_add_as_dict = deposit_transaction_of_add_0.to_dict()
+        self.assertTrue(self._is_deposit_transaction(deposit_transaction_of_add_as_dict))
+
+        # check 1 : check if converted deposit transaction from dict is same as an origin deposit transaction
+        deposit_transaction_of_add_as_dict = deposit_transaction_of_add_0.to_dict()
+        deposit_transaction_of_add_1: DepositTransaction = DepositTransactionBuilder \
+            .from_dict(deposit_transaction_of_add_as_dict) \
+            .build()
+        self.assertEqual(deposit_transaction_of_add_0.to_dict(), deposit_transaction_of_add_1.to_dict())
+
+        # case 0 when action is 'add' : without action
+        tmp_deposit_transaction_of_add_as_dict = deepcopy(deposit_transaction_of_add_as_dict)
+        del tmp_deposit_transaction_of_add_as_dict["action"]
+        self.assertFalse(self._is_deposit_transaction(tmp_deposit_transaction_of_add_as_dict))
+
+        # case 1 when action is 'add' : without value
+        tmp_deposit_transaction_of_add_as_dict = deepcopy(deposit_transaction_of_add_as_dict)
+        del tmp_deposit_transaction_of_add_as_dict["value"]
+        self.assertFalse(self._is_deposit_transaction(tmp_deposit_transaction_of_add_as_dict))
+
+        # case 2 when action is 'add' : without value
+        try:
+            deposit_transaction_of_add_with_id: DepositTransaction = DepositTransactionBuilder() \
+                .from_(self.transaction_as_setting["from_"]) \
+                .to(self.transaction_as_setting["to"]) \
+                .step_limit(self.transaction_as_setting["step_limit"]) \
+                .nid(self.transaction_as_setting["nid"]) \
+                .nonce(self.transaction_as_setting["nonce"]) \
+                .version(self.transaction_as_setting["version"]) \
+                .timestamp(self.transaction_as_setting["timestamp"]) \
+                .action("add") \
+                .id(self.transaction_as_setting["id"]) \
+                .build()
+        except DataTypeException:
+            self.assertTrue(True)
+
+    def test_deposit_transaction_to_dict_for_withdraw_action(self):
+
+        # transaction instance for withdraw action
+        deposit_transaction_of_withdraw_0: DepositTransaction = DepositTransactionBuilder() \
+            .from_(self.transaction_as_setting["from_"]) \
+            .to(self.transaction_as_setting["to"]) \
+            .step_limit(self.transaction_as_setting["step_limit"]) \
+            .nid(self.transaction_as_setting["nid"]) \
+            .nonce(self.transaction_as_setting["nonce"]) \
+            .version(self.transaction_as_setting["version"]) \
+            .timestamp(self.transaction_as_setting["timestamp"]) \
+            .id(self.transaction_as_setting["id"]) \
+            .action("withdraw") \
+            .build()
+
+        # convert transaction into dict correctly
+        # check 0 : check if it is deposit transaction
+        deposit_transaction_of_withdraw_as_dict = deposit_transaction_of_withdraw_0.to_dict()
+        self.assertTrue(self._is_deposit_transaction(deposit_transaction_of_withdraw_as_dict))
+
+        # check 1 : check if converted deposit transaction from dict is same as an origin deposit transaction
+        deposit_transaction_of_withdraw_as_dict = deposit_transaction_of_withdraw_0.to_dict()
+        deposit_transaction_of_withdraw_1: DepositTransaction = DepositTransactionBuilder \
+            .from_dict(deposit_transaction_of_withdraw_as_dict) \
+            .build()
+        self.assertEqual(deposit_transaction_of_withdraw_0.to_dict(), deposit_transaction_of_withdraw_1.to_dict())
+
+        # case 0 when action is 'withdraw' : without id
+        try:
+            deposit_transaction_of_add_with_id: DepositTransaction = DepositTransactionBuilder() \
+                .from_(self.transaction_as_setting["from_"]) \
+                .to(self.transaction_as_setting["to"]) \
+                .step_limit(self.transaction_as_setting["step_limit"]) \
+                .nid(self.transaction_as_setting["nid"]) \
+                .nonce(self.transaction_as_setting["nonce"]) \
+                .version(self.transaction_as_setting["version"]) \
+                .timestamp(self.transaction_as_setting["timestamp"]) \
+                .action("withdraw") \
+                .build()
+        except DataTypeException:
+            self.assertTrue(True)
 
 
 if __name__ == "__main__":
