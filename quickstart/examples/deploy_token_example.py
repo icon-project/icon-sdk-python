@@ -24,10 +24,11 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.convert_type import convert_hex_str_to_int
 from iconsdk.wallet.wallet import KeyWallet
 from quickstart.examples.test.constant import (
-    TEST_HTTP_ENDPOINT_URI_V3,
-    TEST_PRIVATE_KEY,
+    BASE_DOMAIN_URL_V3_FOR_TEST,
+    PRIVATE_KEY_FOR_TEST,
     SCORE_INSTALL_ADDRESS,
-    GOVERNANCE_ADDRESS
+    GOVERNANCE_ADDRESS,
+    VERSION_FOR_TEST
 )
 from quickstart.examples.util.repeater import retry
 
@@ -35,7 +36,7 @@ current_dir_path = path.abspath(path.dirname(__file__))
 score_path_standard_token = path.join(current_dir_path, 'sample_data/standard_token.zip')
 score_path_sample_token = path.join(current_dir_path, 'sample_data/sample_token.zip')
 score_paths = [score_path_sample_token, score_path_standard_token]
-icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
 
 # Returns the max step limit
@@ -57,7 +58,7 @@ for score_path in score_paths:
     # Reads the zip file 'standard_token.zip' and returns bytes of the file
     install_content_bytes = gen_deploy_data_content(score_path)
     # Loads a wallet from a key store file
-    wallet1 = KeyWallet.load(TEST_PRIVATE_KEY)
+    wallet1 = KeyWallet.load(PRIVATE_KEY_FOR_TEST)
     print("="*100)
     print("[wallet1] address: ", wallet1.get_address(), " private key: ", wallet1.get_private_key())
 

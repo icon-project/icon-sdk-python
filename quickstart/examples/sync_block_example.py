@@ -19,10 +19,10 @@ from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.utils.convert_type import convert_hex_str_to_int
 from iconsdk.wallet.wallet import KeyWallet
-from quickstart.examples.test.constant import TEST_HTTP_ENDPOINT_URI_V3
+from quickstart.examples.test.constant import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 from quickstart.examples.util.repeater import RepeatedTimer
 
-icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 wallet = KeyWallet.load("./test/test_keystore", "abcd1234*")
 
 

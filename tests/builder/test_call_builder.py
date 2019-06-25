@@ -23,11 +23,11 @@ class TestCallBuilder(TestCase):
     def test_make_call_builder(self):
         """Testing for making a couple of call builders successfully"""
 
-        call_1 = CallBuilder()          \
-            .from_("1_FROM")            \
-            .to("1_TO")                 \
-            .method("1_METHOD")         \
-            .params({"test": 123})      \
+        call_1 = CallBuilder() \
+            .from_("1_FROM") \
+            .to("1_TO") \
+            .method("1_METHOD") \
+            .params({"test": 123}) \
             .build()
 
         call_2 = CallBuilder().from_("2_FROM").to("2_TO").method("2_METHOD").params({"test": 123}).build()
@@ -41,14 +41,27 @@ class TestCallBuilder(TestCase):
             self.assertEqual(getattr(call_1, property), values_call_1[idx])
             self.assertEqual(getattr(call_2, property), values_call_2[idx])
 
+    def test_make_call_builder_from_dict_to_dict(self):
+        """Testing for from dict and to dict method."""
+        call_1 = CallBuilder() \
+            .to("1_TO") \
+            .method("1_METHOD") \
+            .params({"test": 123}) \
+            .build()
+
+        call_1_as_dict = call_1.to_dict()
+        call_2 = CallBuilder.from_dict(call_1_as_dict).build()
+        call_2_as_dict = call_2.to_dict()
+        self.assertEqual(call_1_as_dict, call_2_as_dict)
+
     def test_make_call_builder_changed(self):
         """Testing for making a call builder changed, it should not work."""
 
-        call_1 = CallBuilder()       \
-            .from_("1_FROM")         \
-            .to("1_TO")              \
-            .method("1_METHOD")      \
-            .params("1_PARAMS")      \
+        call_1 = CallBuilder() \
+            .from_("1_FROM") \
+            .to("1_TO") \
+            .method("1_METHOD") \
+            .params("1_PARAMS") \
             .build()
 
         def test_set_call_builder():

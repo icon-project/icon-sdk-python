@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0] -  June, 25, 2019
+### Added
+- DepositTransaction and DepositTransactionBuilder for deposit and withdraw
+
+### Changed
+- `From` field of call became optional  
+
+### Removed
+- Set and get channel method on provider
+
 ## [1.0.9] -  May, 22, 2019
 ### Added
 - Add the method of `estimate_step`

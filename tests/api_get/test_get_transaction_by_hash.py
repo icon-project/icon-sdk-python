@@ -13,22 +13,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest import TestCase, main
-from iconsdk.icon_service import IconService
-from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from iconsdk.exception import DataTypeException, JSONRPCException
+from time import sleep
+from unittest import main
+
+from iconsdk.builder.transaction_builder import TransactionBuilder
+from iconsdk.exception import JSONRPCException, DataTypeException
+from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.hexadecimal import remove_0x_prefix, add_cx_prefix
 from iconsdk.utils.validation import is_transaction
+from tests.api_send.test_send_super import TestSendSuper
 
 
-class TestGetTransactionByHash(TestCase):
+class TestGetTransactionByHash(TestSendSuper):
 
     @classmethod
     def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
-        result = cls.icon_service.get_block("latest")
-        cls.tx_hash = result["confirmed_transaction_list"][0]["txHash"]
+        super().setUpClass()
+
+        # When having an optional property, nonce
+        icx_transaction = TransactionBuilder() \
+            .from_(cls.setting["from"]) \
+            .to(cls.setting["to"]) \
+            .value(cls.setting["value"]) \
+            .step_limit(cls.setting["step_limit"]) \
+            .nid(3) \
+            .nonce(cls.setting["nonce"]) \
+            .version(3) \
+            .build()
+
+        signed_transaction_dict = SignedTransaction(icx_transaction, cls.wallet)
+        tx_result = cls.icon_service.send_transaction(signed_transaction_dict)
+        sleep(2)
+        cls.tx_hash = tx_result
         cls.tx_hash_invalid = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"
 
     def test_get_transaction_by_hash(self):

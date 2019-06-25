@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from unittest import TestCase, main
 
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.wallet.wallet import KeyWallet
-from tests.example_config import TEST_PRIVATE_KEY, TEST_HTTP_ENDPOINT_URI_V3
+from tests.example_config import PRIVATE_KEY_FOR_TEST, BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestSendSuper(TestCase):
@@ -26,15 +27,16 @@ class TestSendSuper(TestCase):
     A super class of other send test class, it is for unit tests of sending transaction.
     All of sup classes for testing sending transaction extends this super class.
     """
+
     @classmethod
     def setUpClass(cls):
         """
         Sets needed data like an instance of a wallet and iconsdk
         and default values used to make 4 types of transactions. (transfer, call, deploy, message)
         """
-        cls.wallet = KeyWallet.load(TEST_PRIVATE_KEY)
-        cls.version = 3
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3, cls.version))
+        cls.wallet = KeyWallet.load(PRIVATE_KEY_FOR_TEST)
+        cls.version = VERSION_FOR_TEST
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, cls.version))
 
         # bytes of sample_token's content
         # current_dir_path = path.abspath(path.dirname(__file__))
@@ -74,7 +76,8 @@ class TestSendSuper(TestCase):
                 "init_supply": 10000
             },
             # It is used to send message only.
-            "data": "0x" + "test".encode().hex()
+            "data": "0x" + "test".encode().hex(),
+            "id": "0x" + os.urandom(32).hex()
         }
 
 

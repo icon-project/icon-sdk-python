@@ -5,7 +5,7 @@ excerpt: ""
 
 ---
 
-ICON SDK for Python is a collection of libraries which allow you to interact with a local or remote Loopchain node, using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python as well as providing an API reference documentation examples. It is reference to [ICON JSON-RPC API **v3**](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md).
+ICON SDK for Python is a collection of libraries which allows you to interact with a local or remote ICON node using an HTTP connection. The following documentation will guide you through installing and running ICON SDK for Python, and provide API reference documentation examples. It is reference to [ICON JSON-RPC API **v3**](https://github.com/icon-project/icon-rpc-server/blob/master/docs/icon-json-rpc-v3.md).
 
 
 ## Table of Contents
@@ -18,7 +18,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
   - [Version](#version)
   - [Installation](#installation)
   - [Creating an IconService Instance and Setting a Provider](#creating-an-iconservice-instance-and-setting-a-provider)
-- [Querying API Methods](#querying-api-methods)
+- [Queries](#queries)
   - [Examples](#examples)
   - [Error Cases](#error-cases)
   - [get_block](#get_block)
@@ -80,7 +80,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
     - [Parameters](#parameters-13)
     - [Returns](#returns-13)
     - [Example](#example-13)
-- [Signing and Sending Transaction](#signing-and-sending-transaction)
+- [Transactions](#transactions)
   - [Generating a Transaction](#generating-a-transaction)
   - [Signing a Transaction](#signing-a-transaction)
   - [Sending a Transaction](#sending-a-transaction)
@@ -101,20 +101,24 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
     - [methods](#methods-2)
     - [Returns](#returns-17)
     - [Example](#example-17)
-  - [SignedTransaction](#signedtransaction)
-    - [Parameters](#parameters-14)
+  - [DepositTransactionBuilder](#deposittransactionbuilder)
+    - [methods](#methods-3)
     - [Returns](#returns-18)
     - [Example](#example-18)
-  - [send_transaction](#send_transaction)
-    - [Parameters](#parameters-15)
+  - [SignedTransaction](#signedtransaction)
+    - [Parameters](#parameters-14)
     - [Returns](#returns-19)
     - [Example](#example-19)
+  - [send_transaction](#send_transaction)
+    - [Parameters](#parameters-15)
+    - [Returns](#returns-20)
+    - [Example](#example-20)
 - [Estimating step](#estimating-step)
   - [Examples](#examples-3)
   - [estimate_step](#estimate_step)
     - [Parameters](#parameters-16)
-    - [Returns](#returns-20)
-    - [Example](#example-20)
+    - [Returns](#returns-21)
+    - [Example](#example-21)
 
 <!-- /TOC -->
 
@@ -124,7 +128,7 @@ ICON SDK for Python is a collection of libraries which allow you to interact wit
 
 ### Requirements
 
-ICON SDK for Python development and execution requires following environments.
+ICON SDK for Python development and execution requires the following environments.
 
 - Python
     - Version: Python 3.6+
@@ -137,11 +141,11 @@ ICON SDK for Python development and execution requires following environments.
 
 ### Version
 
-1.0.9 beta
+1.1.0 beta
 
 ### Installation
 
-At first, you need to get ICON SDK for Python into your project. It can be installed using pip as follows:
+First, you need to get ICON SDK for Python into your project. It can be installed using pip as follows:
 
 ``````shell
 $ pip install iconsdk
@@ -149,15 +153,15 @@ $ pip install iconsdk
 
 ### Creating an IconService Instance and Setting a Provider
 
-After that, you need to create an IconService instance and set a provider.
+Next, you need to create an IconService instance and set a provider.
 
 - The **IconService** class contains a set of API methods. It accepts a HTTPProvider which serves the purpose of connecting to HTTP and HTTPS based JSON-RPC servers.
 
-- A **provider** defines how the IconService connects to Loopchain.
+- A **provider** defines how the IconService connects to ICON node.
 
-- The **HTTPProvider** takes the full URI where the server can be found. For local development, this would be something like http://localhost:9000.
+- The **HTTPProvider** takes a base domain URL where the server can be found. For local development, this would be something like `http://localhost:9000`.
 
-Here is an example of calling a simple API method to get a block by its height :
+Here is an example of calling a simple API method to get a block by its height:
 
 ```python
 from iconsdk.icon_service import IconService
@@ -172,7 +176,7 @@ block = icon_service.get_block(1209)
 
 
 
-## Querying API Methods
+## Queries
 
 ### Examples
 
@@ -180,13 +184,13 @@ block = icon_service.get_block(1209)
 from iconsdk.builder.call_builder import CallBuilder
 
 # Returns block information by block height
-block = icon_service.get_block(1000)    		 
+block = icon_service.get_block(1000)
 
 # Returns block information by block hash
 block = icon_service.get_block("0x000...000")
 
 # Returns the last block information
-block = icon_service.get_block("latest")    	
+block = icon_service.get_block("latest")
 
 # Returns the balance of the account of given address
 balance = icon_service.get_balance("hx000...1")
@@ -210,7 +214,7 @@ call = CallBuilder().from_(wallet.get_address())\
                     .params({"address": "hx000...1"})\
                     .build()
 
-# Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction on Loopchain
+# Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction
 result = icon_service.call(call)
 
 ```
@@ -219,30 +223,31 @@ result = icon_service.call(call)
 
 ### Error Cases
 
-There are different types of error cases as below.  The exception is raised with the specific message. You can get more information about the exception from the message.   
+There are different types of error cases as shown below.  The exception is raised with the specific message. You can get more information about the exception from the message.
 
-- **KeyStoreException** 
-  - It is raised when making or loading a key store file.  
-  - Error code for the exception is 1. 
+- **KeyStoreException**
+  - It is raised when making or loading a key store file.
+  - Error code for the exception is 1.
 
 - **AddressException**
-  - It is raised when the address is invalid. 
-  - Error code for the exception is 2. 
+  - It is raised when the address is invalid.
+  - Error code for the exception is 2.
 
 - **BalanceException**
   - It is raised when the balance is invalid.
-  - Error code for the exception is 3. 
+  - Error code for the exception is 3.
+
 - **DataTypeException**
   - It is raised when the data type is invalid.
-  - Error code for the exception is 4. 
+  - Error code for the exception is 4.
 
 - **JSONRPCException**
-  - It is raised when JSON-RPC response is an error.  
-  - Error code for the exception is 5. 
+  - It is raised when JSON-RPC response is an error.
+  - Error code for the exception is 5.
 
 - **ZipException**
   - It is raised while writing zip in memory.
-  - Error code for the exception is 6. 
+  - Error code for the exception is 6.
 
 
 
@@ -253,8 +258,8 @@ get_block(value)
 ``````
 
 * Function A
-  -  Returns block information by block height
-  -  Delegates to **icx_getBlockByHeight** RPC method
+  * Returns block information by block height
+  * Delegates to **icx_getBlockByHeight** RPC method
 
 * Function B
   * Returns block information by block hash
@@ -281,20 +286,20 @@ Block data
 
 #### Error Cases
 
-* DataTypeException : Data type is invalid. 
+* DataTypeException : Data type is invalid.
 * JSONRPCException :  JSON-RPC Response is error.
 
 #### Example
 
 ```python
 # Returns block information by block height
-block = icon_service.get_block(1000)    		 
+block = icon_service.get_block(1000)
 
 # Returns block information by block hash
 block = icon_service.get_block("0x000...000")
 
 # Returns the last block information
-block = icon_service.get_block("latest")  
+block = icon_service.get_block("latest")
 ```
 
 
@@ -319,7 +324,7 @@ Number of ICX coins
 
 #### Error Cases
 
-* AddressException : Address is invalid. 
+* AddressException : Address is invalid.
 * DataTypeException : Data type is invalid.
 * JSONRPCException :  JSON-RPC Response is error.
 
@@ -491,7 +496,7 @@ Field :
 * stepUsed : The amount of step used by this transaction
 * stepPrice: The step price used by this transaction
 * scoreAddress : A SCORE address if the transaction created a new SCORE. (optional)
-* eventLogs : Array of eventlogs generated by this transaction 
+* eventLogs : Array of eventlogs generated by this transaction
 * logsBloom : Bloom filter to quickly retrieve related eventlogs
 
 #### Error Cases
@@ -514,7 +519,7 @@ tx_result = icon_service.get_transaction_result("0x000...000")
 call(call: Call)
 ```
 
-Calls SCORE's external function which is read-only without creating a transaction on Loopchain
+Calls SCORE's external function which is read-only without creating a transaction.
 
 Delegates to **icx_call** RPC method
 
@@ -524,7 +529,7 @@ Call object made by **CallBuilder**
 
 Fields :
 
-* from : Message sender's address
+* from : Message sender's address (optional)
 * to : A SCORE address that will handle the message
 * method : name of an external function
 * params : Parameters to be passed to the function (optional). A data type of params should be **dict**.
@@ -549,7 +554,7 @@ call = CallBuilder().from_(wallet.get_address())\
                     .params({"address": "hx000...1"})\
                     .build()
 
-# Calls SCORE's external function which is read-only without creating a transaction on Loopchain
+# Calls SCORE's external function which is read-only without creating a transaction
 result = icon_service.call(call)
 ```
 
@@ -557,7 +562,7 @@ result = icon_service.call(call)
 
 ## Loading a Wallet and Storing the Keystore
 
-To send transactions, first, you should make an instance of your wallet.  
+To send transactions, first, you should make an instance of your wallet.
 
 You can make an instance of the wallet using bytes of the private key or from a keystore file.
 
@@ -749,7 +754,7 @@ None
 
 #### Returns
 
-Hex string of the private key 
+Hex string of the private key
 
 #### Example
 
@@ -789,19 +794,19 @@ signature = wallet.sign(b'D8\xe9...\xfc')
 
 
 
-## Signing and Sending Transaction
+## Transactions
 
 ### Generating a Transaction
 
-After then, you should create an instance of the transaction using different types of **transaction builders** as follows.  
+Next, you should create an instance of the transaction using different types of **transaction builders** as follows:
 
 ### Signing a Transaction
 
-Before sending a transaction, the transaction should be signed by using **SignedTransaction** class. The SignedTransaction class is used to sign the transaction by returning an instance of the signed transaction as demonstrated in the example below. The instance of the signed transaction has the property of a signature.  
+Before sending a transaction, the transaction should be signed by using **SignedTransaction** class. The SignedTransaction class is used to sign the transaction by returning an instance of the signed transaction as demonstrated in the example below. The instance of the signed transaction has the property of a signature.
 
 ### Sending a Transaction
 
-Finally, you can send a transaction with the signed transaction object as follows.
+Finally, you can send a transaction with the signed transaction object as follows:
 
 ### Examples
 
@@ -810,7 +815,8 @@ from iconsdk.builder.transaction_builder import (
     TransactionBuilder,
     DeployTransactionBuilder,
     CallTransactionBuilder,
-    MessageTransactionBuilder
+    MessageTransactionBuilder,
+    DepositTransactionBuilder
 )
 from iconsdk.signed_transaction import SignedTransaction
 
@@ -856,6 +862,29 @@ transaction = MessageTransactionBuilder()\
     .nonce(100)\
     .data("0x74657374")\
     .build()
+    
+# Generates an instance of transaction for adding or withdrawing a deposit.
+# Case0: Adding a deposit 
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(5000*(10**18))\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("add") \
+    .build()
+    
+# Case1: Withdrawing the deposit
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("withdraw") \
+    .id(tx_hash) \
+    .build()
 
 # Returns the signed transaction object having a signature
 signed_transaction = SignedTransaction(transaction, wallet)
@@ -884,7 +913,7 @@ Builder for a **Transaction** object
 
 #### Returns
 
-A transaction object  
+A transaction object
 
 #### Example
 
@@ -922,7 +951,7 @@ Builder for **DeployTransaction** object
 
 #### Returns
 
-A deploy transaction object  
+A deploy transaction object
 
 #### Example
 
@@ -954,14 +983,14 @@ Builder for **CallTransaction** object
 - nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
 - nonce :  An arbitrary number used to prevent transaction hash collision
 - method : Methods in the SCORE
-- params : Parameters passed on the SCORE methods. Data type of the params should be **dict**. (optional) 
+- params : Parameters passed on the SCORE methods. Data type of the params should be **dict**. (optional)
 - version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
 - timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
-- Build : Returns a call transaction object  
+- Build : Returns a call transaction object
 
 #### Returns
 
-A call transaction object  
+A call transaction object
 
 #### Example
 
@@ -994,11 +1023,11 @@ Builder for **MessageTransaction** object
 - data : Data by the dataType. Data type of the data should be **lowercase hex string** prefixed with '0x'.
 - version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
 - timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
-- build : Returns a message transaction object  
+- build : Returns a message transaction object
 
 #### Returns
 
-A message transaction object  
+A message transaction object
 
 #### Example
 
@@ -1011,6 +1040,57 @@ transaction = MessageTransactionBuilder()\
     .nid(3)\
     .nonce(100)\
     .data("0x74657374")\
+    .build()
+```
+
+
+
+### DepositTransactionBuilder
+
+Builder for **DepositTransaction** object
+
+#### Methods
+
+- from_ : The wallet address making a transaction. The default address is your account address.
+- to : SCORE address to receive a transaction
+- value : The amount of ICX to be deposited. It is used only for 'add' action. (Optional)
+- action : "add" or "withdraw".
+- id : Transaction hash prefixed with '0x'. It is used only for 'withdraw' action. (Optional)
+- stepLimit : The maximum step value for processing a transaction.
+- nid : Network ID. Default nid is 1 if you didn't set the value. (1 for Main net, etc)
+- nonce :  An arbitrary number used to prevent transaction hash collision.
+- version : Protocol version (3 for V3). The default version is 3 if you didn't set the value.
+- timestamp : Transaction creation time. Timestamp is in microseconds. Default timestamp is set, if you didn't set the value.
+- build : Returns a deposit transaction object.
+
+#### Returns
+
+A deposit transaction object  
+
+#### Example
+
+```python
+# Generates an instance of transaction for adding or withdrawing a deposit.
+# Case0: Adding a deposit 
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .value(5000*(10**18))\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("add") \
+    .build()
+    
+# Case1: Withdrawing the deposit
+transaction = DepositTransactionBuilder()\
+    .from_(wallet.get_address())\
+    .to("cx00...02")\
+    .step_limit(1000000)\
+    .nid(3)\
+    .nonce(100)\
+    .action("withdraw") \
+    .id(tx_hash) \
     .build()
 ```
 
@@ -1056,7 +1136,7 @@ Sends the transaction
 
 Delegates to **icx_sendTransaction** RPC method
 
-Need to wait for a while after sending the transaction. Because it takes time to make a consensus among nodes. We recommend 0.3 second at least.
+Need to wait for a while after sending the transaction. Because it takes time to create consensus among nodes. We recommend 0.3 seconds at least.
 
 #### Parameters
 
@@ -1084,7 +1164,7 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 
 It is important to set a proper `step_limit` value in your transaction to make the submitted transaction executed successfully.
 
-`estimate_step` API provides a way to **estimate** the Step usage of a given transaction. Using the method, you can get an estimated Step usage before sending your transaction then make a `SignedTransaction` with the `step_limit` based on the estimation.
+`estimate_step` API provides a way to **estimate** the Step usage of a given transaction. Using the method, you can get an estimated Step usage before sending your transaction then make a `SignedTransaction` with the `step_limit` based on the estimate.
 
 ### Examples
 
@@ -1097,11 +1177,11 @@ transaction = TransactionBuilder()\
     .nid(3)\
     .nonce(100)\
     .build()
-    
+
 # Returns an estimated step value
 estimate_step = icon_service.estimate_step(transaction)
 
-# Adds some margin to the estimated step 
+# Adds some margin to the estimated step
 estimate_step += 10000
 
 # Returns the signed transaction object having a signature with the same raw transaction and the estimated step
@@ -1111,7 +1191,7 @@ signed_transaction = SignedTransaction(transaction, wallet, estimate_step)
 tx_hash = icon_service.send_transaction(signed_transaction)
 ```
 
-Note that the estimation can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimation when you set the `step_limit` of the `SignedTransaction`.
+Note that the estimate can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimate when you set the `step_limit` of the `SignedTransaction`.
 
 
 
@@ -1149,7 +1229,7 @@ transaction = TransactionBuilder()\
     .nid(3)\
     .nonce(100)\
     .build()
-    
+
 # Returns an estimated step value
 estimate_step = icon_service.estimate_step(transaction)
 ```

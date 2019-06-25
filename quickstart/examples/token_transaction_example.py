@@ -23,29 +23,30 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.convert_type import convert_hex_str_to_int
 from iconsdk.wallet.wallet import KeyWallet
 from quickstart.examples.test.constant import (
-    TEST_HTTP_ENDPOINT_URI_V3,
-    TEST_PRIVATE_KEY,
+    BASE_DOMAIN_URL_V3_FOR_TEST,
+    PRIVATE_KEY_FOR_TEST,
     GOVERNANCE_ADDRESS,
-    SCORE_ADDRESS
+    SCORE_ADDRESS,
+    VERSION_FOR_TEST
 )
 from quickstart.examples.util.repeater import retry
 
 
 # Returns a step cost. You can use it for getting the recommended value of 'step limit'.
 def get_default_step_cost():
-    _call = CallBuilder()\
-        .from_(wallet1.get_address())\
-        .to(GOVERNANCE_ADDRESS)\
-        .method("getStepCosts")\
+    _call = CallBuilder() \
+        .from_(wallet1.get_address()) \
+        .to(GOVERNANCE_ADDRESS) \
+        .method("getStepCosts") \
         .build()
     _result = icon_service.call(_call)
     default_step_cost = convert_hex_str_to_int(_result["default"])
     return default_step_cost
 
 
-icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
-wallet1 = KeyWallet.load(TEST_PRIVATE_KEY)
+wallet1 = KeyWallet.load(PRIVATE_KEY_FOR_TEST)
 
 # Loads a wallet from a key store file.
 wallet2 = KeyWallet.load("./test/test_keystore", "abcd1234*")
@@ -54,14 +55,14 @@ print("[wallet1] address: ", wallet1.get_address(), " private key: ", wallet1.ge
 params = {"_to": wallet2.get_address(), "_value": 10}
 
 # Enters transaction information.
-call_transaction = CallTransactionBuilder()\
-    .from_(wallet1.get_address())\
+call_transaction = CallTransactionBuilder() \
+    .from_(wallet1.get_address()) \
     .to(SCORE_ADDRESS) \
-    .step_limit(get_default_step_cost()*2)\
+    .step_limit(get_default_step_cost() * 2) \
     .nid(3) \
     .nonce(4) \
-    .method("transfer")\
-    .params(params)\
+    .method("transfer") \
+    .params(params) \
     .build()
 
 # Returns the signed transaction object having a signature
@@ -89,11 +90,11 @@ params = {
     "_owner": wallet2.get_address()
 }
 
-call = CallBuilder()\
-    .from_(wallet1.get_address())\
-    .to(SCORE_ADDRESS)\
-    .method("balanceOf")\
-    .params(params)\
+call = CallBuilder() \
+    .from_(wallet1.get_address()) \
+    .to(SCORE_ADDRESS) \
+    .method("balanceOf") \
+    .params(params) \
     .build()
 
 result = icon_service.call(call)

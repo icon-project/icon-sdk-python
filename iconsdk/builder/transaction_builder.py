@@ -171,6 +171,33 @@ class MessageTransaction(Transaction):
         return transaction_as_dict
 
 
+class DepositTransaction(Transaction):
+    """Subclass `DepositTransaction`, making a transaction object for depositing  and withdrawing"""
+
+    def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
+                 timestamp: int, action: str, id: str):
+        Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
+        self.__action = action
+        self.__id = id
+
+    @property
+    def data_type(self):
+        return "deposit"
+
+    @property
+    def action(self):
+        return self.__action
+
+    @property
+    def id(self):
+        return self.__id
+
+    def to_dict(self):
+        transaction_as_dict = super().to_dict()
+        transaction_as_dict.update({"data_type": self.data_type, "action": self.action, "id": self.id})
+        return transaction_as_dict
+
+
 class TransactionBuilder:
     """Builder for `Transaction` object"""
 
@@ -345,6 +372,48 @@ class MessageTransactionBuilder(TransactionBuilder):
         try:
             cls = super().from_dict(transaction_as_dict)
             cls.data(transaction_as_dict["data"])
+            return cls
+        except KeyError:
+            raise DataTypeException("The input data invalid. Mapping key not found.")
+
+
+class DepositTransactionBuilder(TransactionBuilder):
+    """Builder for `DepositTransaction` object"""
+
+    def __init__(self, from_: str = None, to: str = None, value: int = None, step_limit: int = None, nid: int = None,
+                 nonce: int = None, version: int = None, timestamp: int = None, action: str = None, id: str = None):
+        TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
+        self._action = action
+        self._id = id
+
+    def action(self, action: str):
+        self._action = action
+        return self
+
+    def id(self, id: str):
+        self._id = id
+        return self
+
+    def build(self) -> DepositTransaction:
+        if not self._action:
+            raise DataTypeException("'action' should be provided. Available values are 'add' or 'withdraw'.")
+        if self._action == "withdraw":
+            if not self._id:
+                raise DataTypeException("When action is 'withdraw', 'id' should be provided.")
+            if self._value:
+                raise DataTypeException("When action is 'withdraw'. 'value' should not be provided.")
+        if self._action == "add" and not self._value:
+            raise DataTypeException("When action is 'add', 'value' should be provided.")
+        return DepositTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce,
+                                  self._version, self._timestamp, self._action, self._id)
+
+    @classmethod
+    def from_dict(cls, transaction_as_dict: dict) -> 'DepositTransactionBuilder':
+        """Returns a DepositTransactionBuilder made from dict"""
+        try:
+            cls = super().from_dict(transaction_as_dict)
+            cls.action(transaction_as_dict["action"])
+            cls.id(transaction_as_dict["id"] if "id" in transaction_as_dict else None)
             return cls
         except KeyError:
             raise DataTypeException("The input data invalid. Mapping key not found.")

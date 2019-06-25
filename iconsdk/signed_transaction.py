@@ -48,7 +48,7 @@ class SignedTransaction:
         return self.__signed_transaction_dict
 
     @staticmethod
-    def convert_tx_to_jsonrpc_request(transaction, wallet: Wallet = None) -> dict:
+    def convert_tx_to_jsonrpc_request(transaction: Transaction, wallet: Wallet = None) -> dict:
         """Converts an instance of the transaction into JSON RPC request in dict"""
         dict_tx = {
             "version": convert_int_to_hex_str(transaction.version) if transaction.version else "0x3",
@@ -72,5 +72,9 @@ class SignedTransaction:
             dict_tx["data"] = generate_data_value(transaction)
         elif transaction.data_type == 'message':
             dict_tx["data"] = transaction.data
+        elif transaction.data_type == "deposit":
+            dict_tx["data"] = {"action": transaction.action}
+            if transaction.action == "withdraw" and transaction.id:
+                dict_tx["data"]["id"] = transaction.id
 
         return dict_tx

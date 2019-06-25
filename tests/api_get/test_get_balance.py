@@ -14,17 +14,18 @@
 # limitations under the License.
 
 from unittest import TestCase, main
+
+from iconsdk.exception import AddressException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from iconsdk.exception import AddressException
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestGetBalance(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
         result = cls.icon_service.get_block("latest")
         cls.from_ = result["confirmed_transaction_list"][0]["from"]
         cls.to_ = result["confirmed_transaction_list"][0]["to"]

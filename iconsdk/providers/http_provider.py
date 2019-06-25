@@ -14,9 +14,10 @@
 # limitations under the License.
 
 import json
+import os
+from json.decoder import JSONDecodeError
 from logging import getLogger
 from urllib.parse import urlparse
-from warnings import warn
 
 import requests
 from multipledispatch import dispatch
@@ -32,16 +33,14 @@ class HTTPProvider(Provider):
     The HTTPProvider takes the full URI where the server can be found.
     For local development this would be something like 'http://localhost:9000'.
     """
-    endpoint_uri = None
-    _request_kwargs = None
 
-    logger = getLogger("HTTPProvider")
+    _logger = getLogger("HTTPProvider")
 
     # No need to use logging, remove the line.
     # set_logger(logger, 'DEBUG')
 
     @staticmethod
-    def validate_base_domain_url(base_domain_url) -> bool:
+    def _validate_base_domain_url(base_domain_url) -> bool:
         """
         Validates if input base domain url is valid or not.
 
@@ -53,65 +52,63 @@ class HTTPProvider(Provider):
         :return: True or False
         """
         url_components = urlparse(base_domain_url)
-        return True if all([url_components.scheme, url_components.netloc]) else False
+        if all([url_components.scheme, url_components.netloc]) and url_components.path in ('', '/'):
+            return True
+        else:
+            return False
 
     @dispatch(str, int, dict=None)
     def __init__(self, base_domain_url: str, version: int, request_kwargs: dict = None):
         """
-        The new initializer to be set with base domain URL and version.
+        The initializer to be set with base domain URL and version.
 
         :param base_domain_url: base domain URL as like <scheme>://<host>:<port>
         :param version: version for RPC server
         :param request_kwargs: kwargs for setting to head of request
         """
-        if not self.validate_base_domain_url(base_domain_url):
+        if not self._validate_base_domain_url(base_domain_url):
             raise URLException("Invalid base domain URL. "
                                "Valid base domain URL format is as like <scheme>://<host>:<port>.")
-        self.base_domain_url = base_domain_url
-        self.version = version
+        self._full_path_url = None
+        self._base_domain_url = base_domain_url
+        self._version = version
         self._request_kwargs = request_kwargs or {}
 
     @dispatch(str, dict=None)
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
         """
-        The previous initializer to be set with full path url which is only as like <scheme>://<host>/api/v3 without version.
+        The initializer to be set with full path url as like <scheme>://<host>:<port>/api/v3.
+        If you need to use a channel, you can use it such as <scheme>://<host>:<port>/api/v3/{channel}.
 
         :param full_path_url: full path URL as like <scheme>://<host>:<port>/api/v3
         :param request_kwargs: kwargs for setting to head of request
         """
-        warn('This initializer is deprecated and replaced with new initializer '
-             'where parameters are not only endpoint but also version.')
-        url_components = urlparse(full_path_url)
-        if url_components.path != '/api/v3':
-            raise URLException("Invalid full path URL. "
-                               "The only valid full path for the previous initializer is "
-                               "'<scheme>://<host>:<port>/api/v3'.")
-        self.__init__(url_components.geturl(), int(url_components.path[-1:]))
+        self._full_path_url = full_path_url
         self._request_kwargs = request_kwargs or {}
 
     def __str__(self):
-        return "RPC connection {0}".format(self.base_domain_url)
+        return "RPC connection {0}".format(self._base_domain_url)
 
     @to_dict
-    def get_request_kwargs(self):
+    def _get_request_kwargs(self):
         if 'headers' not in self._request_kwargs:
             yield 'headers', {'Content-Type': 'application/json'}
         for key, value in self._request_kwargs.items():
             yield key, value
 
     @staticmethod
-    def make_post_request(full_path_url, data, **kwargs):
+    def _make_post_request(full_path_url, data, **kwargs):
         kwargs.setdefault('timeout', 10)
         with requests.Session() as session:
             response = session.post(url=full_path_url, data=json.dumps(data), **kwargs)
-        return json.loads(response.content)
+        return response
 
-    def get_full_path_url(self, method: str) -> str:
-        url_components = urlparse(self.base_domain_url)
+    def _get_full_path_url(self, method: str) -> str:
+        url_components = urlparse(self._base_domain_url)
         if method in CONFIG_API_PATH:
-            path = CONFIG_API_PATH[method] + '/v' + str(self.version)
+            path = os.path.join(CONFIG_API_PATH[method], 'v' + str(self._version))
         else:
-            path = "/api/v" + str(self.version)
+            path = os.path.join("api", "v" + str(self._version))
         url_components = url_components._replace(path=path)
         return url_components.geturl()
 
@@ -125,25 +122,32 @@ class HTTPProvider(Provider):
         if params:
             rpc_dict['params'] = params
 
-        self.logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s",
-                          self.base_domain_url, method, rpc_dict)
+        full_path_url = self._full_path_url if self._full_path_url else self._get_full_path_url(method)
+        response = self._make_post_request(full_path_url, rpc_dict, **self._get_request_kwargs())
 
-        response = self.make_post_request(self.get_full_path_url(method), rpc_dict, **self.get_request_kwargs())
-        self.logger.debug("response HTTP\nResponse:%s", response)
-        return self.return_customed_response(response)
+        # self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s", full_path_url, method, rpc_dict)
+        # self._logger.debug("response HTTP\nResponse:%s", response)
+
+        return self._return_customed_response(response)
 
     @staticmethod
-    def return_customed_response(response):
-        try:
-            return response["result"]
-        except KeyError:
-            raise JSONRPCException(response["error"])
+    def _return_customed_response(response):
+        if response.ok:
+            content_as_dict = json.loads(response.content)
+            return content_as_dict["result"]
+        else:
+            try:
+                content_as_dict = json.loads(response.content)
+            except (JSONDecodeError, KeyError):
+                raise URLException(response.content.decode("utf-8"))
+            else:
+                raise JSONRPCException(content_as_dict["error"])
 
     def is_connected(self):
         try:
-            self.logger.debug("Connected")
-            self.make_request('icx_getLastBlock', [])
-        except IOError:
+            # self._logger.debug("Connected")
+            last_block = self.make_request('icx_getLastBlock', [])
+        except (IOError, URLException, JSONRPCException):
             return False
         else:
             return True

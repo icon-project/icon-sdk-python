@@ -14,16 +14,17 @@
 # limitations under the License.
 
 from unittest import TestCase, main
+
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestGetTotalSupply(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
     def test_get_total_supply(self):
         # case 0: when calling the method successfully
@@ -33,5 +34,3 @@ class TestGetTotalSupply(TestCase):
 
 if __name__ == "__main__":
     main()
-
-

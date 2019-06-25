@@ -23,12 +23,12 @@ from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.convert_type import convert_hex_str_to_int
 from iconsdk.wallet.wallet import KeyWallet
-from quickstart.examples.test.constant import TEST_HTTP_ENDPOINT_URI_V3, TEST_PRIVATE_KEY, GOVERNANCE_ADDRESS
+from quickstart.examples.test.constant import BASE_DOMAIN_URL_V3_FOR_TEST, PRIVATE_KEY_FOR_TEST, GOVERNANCE_ADDRESS, VERSION_FOR_TEST
 from quickstart.examples.util.repeater import retry
 
 # Loads a wallet from a key store file
 # Wallet for sending ICX
-wallet1 = KeyWallet.load(TEST_PRIVATE_KEY)
+wallet1 = KeyWallet.load(PRIVATE_KEY_FOR_TEST)
 print("[wallet1] address: ", wallet1.get_address(), " private key: ", wallet1.get_private_key())
 
 # Generates a wallet
@@ -36,7 +36,7 @@ print("[wallet1] address: ", wallet1.get_address(), " private key: ", wallet1.ge
 wallet2 = KeyWallet.create()
 print("[wallet2] address: ", wallet2.get_address(), " private key: ", wallet2.get_private_key())
 
-icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
 
 # Returns a step cost. You can use it for getting the recommended value of 'step limit'.

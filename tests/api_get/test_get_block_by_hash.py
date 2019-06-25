@@ -14,19 +14,20 @@
 # limitations under the License.
 
 from unittest import TestCase, main
+
+from iconsdk.exception import DataTypeException, JSONRPCException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
 from iconsdk.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
-from iconsdk.exception import DataTypeException, JSONRPCException
 from iconsdk.utils.validation import is_block
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestGetBlockByHash(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
         result = cls.icon_service.get_block("latest")
         cls.valid_hash = add_0x_prefix(result["block_hash"])
 

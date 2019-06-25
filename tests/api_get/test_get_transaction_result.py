@@ -12,42 +12,52 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+from time import sleep
+from unittest import main
 
-from unittest import TestCase, main
-from iconsdk.icon_service import IconService
-from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
+from iconsdk.builder.transaction_builder import DeployTransactionBuilder
 from iconsdk.exception import DataTypeException, JSONRPCException
-from iconsdk.utils.hexadecimal import remove_0x_prefix, add_cx_prefix
+from iconsdk.signed_transaction import SignedTransaction
+from iconsdk.utils.hexadecimal import remove_0x_prefix, add_cx_prefix, add_0x_prefix
 from iconsdk.utils.validation import is_transaction_result
+from tests.api_send.test_send_super import TestSendSuper
 
 
-class TestGetTransactionResult(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
-        result = cls.icon_service.get_block(1)
-        cls.tx_hash = result["confirmed_transaction_list"][0]["txHash"]
-        cls.tx_hash_invalid = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"
+class TestGetTransactionResult(TestSendSuper):
 
     def test_validate_transaction(self):
-        result = self.icon_service.get_transaction_result(self.tx_hash)
+        param = {"init_supply": 10000}
+        deploy_transaction = DeployTransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to_install"]) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .content_type(self.setting["content_type"]) \
+            .content(self.setting["content_install"]) \
+            .params(param) \
+            .version(3) \
+            .build()
+
+        # Test install SCORE : Sends transaction which makes the SCORE install correctly
+        signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
+        tx_hash = self.icon_service.send_transaction(signed_transaction_dict)
+
+        sleep(2)
+        result = self.icon_service.get_transaction_result(tx_hash)
         self.assertTrue(is_transaction_result(result))
 
-    def test_get_transaction_result(self):
-        # case 0: when tx_hash is valid
-        result = self.icon_service.get_transaction_result(self.tx_hash)
-        self.assertTrue(result)
         # case 1: when tx_hash is invalid - no prefixed
-        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, remove_0x_prefix(self.tx_hash))
+        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, remove_0x_prefix(tx_hash))
         # case 2: when tx_hash is invalid - wrong prefixed
         self.assertRaises(DataTypeException, self.icon_service.get_transaction_result,
-                          add_cx_prefix(remove_0x_prefix(self.tx_hash)))
+                          add_cx_prefix(remove_0x_prefix(tx_hash)))
         # case 3: when tx_hash is invalid - too short
-        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, self.tx_hash[:15])
+        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, tx_hash[:15])
         # case 4: when tx_hash is invalid - not exist
-        self.assertRaises(JSONRPCException, self.icon_service.get_transaction_result, self.tx_hash_invalid)
+        tx_hash_invalid = add_0x_prefix(os.urandom(32).hex())
+        self.assertRaises(JSONRPCException, self.icon_service.get_transaction_result, tx_hash_invalid)
 
 
 if __name__ == "__main__":

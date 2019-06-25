@@ -20,7 +20,7 @@ from iconsdk.exception import KeyStoreException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.wallet.wallet import KeyWallet
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestWalletLoadFromKeystoreFile(TestCase):
@@ -57,7 +57,7 @@ class TestWalletLoadFromKeystoreFile(TestCase):
         self.assertEqual(wallet.get_address(), "hxfd7e4560ba363f5aabd32caac7317feeee70ea57")
 
         # Calls an api.
-        icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
         balance = icon_service.get_balance(wallet.get_address())
         self.assertEqual(balance, 0)
 
