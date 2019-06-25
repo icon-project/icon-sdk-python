@@ -181,7 +181,10 @@ class TestSendDeploy(TestSendSuper):
             .content_type(self.setting["content_type"]).content(self.setting["content_install"]) \
             .build()
         signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+        try:
+            tx_result = self.icon_service.send_transaction(signed_transaction_dict)
+        except JSONRPCException:
+            self.assertTrue(True)
 
     def test_deposit_add_and_withdraw(self):
         # Test install SCORE : Checks if making an instance of deploy transaction correctly

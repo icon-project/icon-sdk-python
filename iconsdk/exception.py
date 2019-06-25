@@ -55,41 +55,48 @@ class IconServiceBaseException(BaseException):
 
 class KeyStoreException(IconServiceBaseException):
     """"Error when making or loading a keystore file."""
+
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.KEY_STORE_ERROR)
 
 
 class AddressException(IconServiceBaseException):
     """Error when having an invalid address."""
+
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.ADDRESS_ERROR)
 
 
 class BalanceException(IconServiceBaseException):
     """Error when having an invalid balance."""
+
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.BALANCE_ERROR)
 
 
 class DataTypeException(IconServiceBaseException):
     """Error when data type is invalid."""
+
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.DATA_TYPE_ERROR)
 
 
 class JSONRPCException(IconServiceBaseException):
     """Error when get JSON-RPC Error Response."""
+
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.JSON_RPC_ERROR)
 
 
 class ZipException(IconServiceBaseException):
     """"Error while write zip in memory"""
+
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.ZIP_MEMORY_ERROR)
 
 
 class URLException(IconServiceBaseException):
     """Error regarding invalid URL"""
+
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.URL_ERROR)

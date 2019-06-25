@@ -26,7 +26,7 @@ from tests.converter.example_transactions import transaction_v2_1, transaction_v
     transaction_v3_3
 from tests.converter.example_tx_results import tx_result_v2_1, tx_result_v2_2, tx_result_v3_1, tx_result_v3_2, \
     tx_result_v3_3
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestConverter(TestCase):
@@ -58,7 +58,6 @@ class TestConverter(TestCase):
         """
         for tx_result in self.tx_results:
             convert_transaction_result(tx_result)
-            print(tx_result)
             self.assertTrue(validate_transaction_result(tx_result))
 
     def test_integrate_converter(self):
@@ -82,7 +81,7 @@ class TestConverter(TestCase):
 
         logger.debug("TEST CONVERTER START")
 
-        icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
         # Scenario 1: Get the last block data and validate the block data.
         last_block_height = icon_service.get_block("latest")["height"]

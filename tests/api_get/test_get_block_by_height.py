@@ -14,18 +14,19 @@
 # limitations under the License.
 
 from unittest import TestCase, main
+
+from iconsdk.exception import DataTypeException, JSONRPCException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from iconsdk.exception import DataTypeException, JSONRPCException
 from iconsdk.utils.validation import is_block
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestGetBlockByHeight(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
         result = cls.icon_service.get_block("latest")
         cls.height_of_latest_block = result["height"]
 
@@ -35,7 +36,7 @@ class TestGetBlockByHeight(TestCase):
         self.assertTrue(result)
 
         # case 1: when a block of that height does not exist
-        self.assertRaises(JSONRPCException, self.icon_service.get_block, self.height_of_latest_block+1)
+        self.assertRaises(JSONRPCException, self.icon_service.get_block, self.height_of_latest_block + 1)
 
         # case 2: when height is wrong
         self.assertRaises(DataTypeException, self.icon_service.get_block, "1")

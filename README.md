@@ -529,7 +529,7 @@ Call object made by **CallBuilder**
 
 Fields :
 
-* from : Message sender's address
+* from : Message sender's address (optional)
 * to : A SCORE address that will handle the message
 * method : name of an external function
 * params : Parameters to be passed to the function (optional). A data type of params should be **dict**.

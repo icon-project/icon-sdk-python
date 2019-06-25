@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from tests.example_config import TEST_PRIVATE_KEY
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, PRIVATE_KEY_FOR_TEST, VERSION_FOR_TEST
 
 GOVERNANCE_ADDRESS = "cx0000000000000000000000000000000000000001"
 SCORE_INSTALL_ADDRESS = "cx0000000000000000000000000000000000000000"

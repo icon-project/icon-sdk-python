@@ -14,18 +14,19 @@
 # limitations under the License.
 
 from unittest import TestCase, main
+
+from iconsdk.exception import AddressException, JSONRPCException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from iconsdk.exception import AddressException, JSONRPCException
 from iconsdk.utils.validation import is_score_apis
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestGetScoreApi(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
         # Because governance always has score apis, it is proper for the test.
         cls.governance_address = "cx0000000000000000000000000000000000000001"
 

@@ -15,13 +15,13 @@
 from os import path, remove
 
 from iconsdk.wallet.wallet import KeyWallet
-from quickstart.examples.test.constant import TEST_PRIVATE_KEY
+from quickstart.examples.test.constant import PRIVATE_KEY_FOR_TEST
 
 # Generates a wallet
 wallet1 = KeyWallet.create()
 print("[wallet1] address: ", wallet1.get_address(), " private key: ", wallet1.get_private_key())
 
-wallet2 = KeyWallet.load(TEST_PRIVATE_KEY)
+wallet2 = KeyWallet.load(PRIVATE_KEY_FOR_TEST)
 print("[wallet2] address: ", wallet2.get_address(), " private key: ", wallet2.get_private_key())
 
 # Removes the file if exists
