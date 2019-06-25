@@ -13,133 +13,145 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-from unittest import TestCase, main
+from unittest import main
 
-from iconsdk.exception import URLException
+from iconsdk.builder.transaction_builder import TransactionBuilder
+from iconsdk.exception import URLException, JSONRPCException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
+from tests.api_send.test_send_super import TestSendSuper
 
 
-class TestHTTPProvider(TestCase):
+class TestHTTPProvider(TestSendSuper):
+    FULL_PATH_URL = "http://localhost:9000/api/v3"
+    DEBUG_FULL_PATH_URL = "http://localhost:9000/api/debug/v3"
+    BASE_PATH_URL = "http://localhost:9000"
+    VERSION = 3
 
     def test_set_http_provider_with_param(self):
-        icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        # the initializer
+        icon_service = IconService(HTTPProvider(self.FULL_PATH_URL))
+        self.assertEqual(type(icon_service.get_block("latest")), dict)
+
+        # the new initializer
+        icon_service = IconService(HTTPProvider(self.BASE_PATH_URL, self.VERSION))
         self.assertEqual(type(icon_service.get_block("latest")), dict)
 
     def test_set_http_provider_with_request_kwargs(self):
-        http_provider = HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3,
+        # the initializer
+        http_provider = HTTPProvider(self.FULL_PATH_URL,
                                      request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
         self.assertTrue(http_provider.is_connected())
 
-    def test_set_http_provider_by_previous_initializer_with_invalid_url(self):
-        invalid_urls = [
+        # the new initializer to be failed
+        http_provider = HTTPProvider(self.BASE_PATH_URL,
+                                     request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
+        self.assertFalse(http_provider.is_connected())
+
+        # the new initializer to be success
+        http_provider = HTTPProvider(self.BASE_PATH_URL, 3,
+                                     request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
+        self.assertTrue(http_provider.is_connected())
+
+    def test_set_http_provider_by_the_initializer_with_valid_url(self):
+        """The initializer should pass all kind of URLs"""
+        valid_urls = [
             "http://localhost:9000/api/v2",
             "http://localhost:9000/api/v",
             "http://localhost:9000/api/",
             "http://localhost:9000",
             "http://localhost:9000/api/debug/v3"
         ]
-        for invalid_url in invalid_urls:
-            self.assertRaises(URLException, HTTPProvider, invalid_url)
+        for valid_url in valid_urls:
+            icon_service = IconService(HTTPProvider(valid_url))
 
-    def test_set_http_provider_by_previous_initializer_with_valid_url(self):
-        valid_url1 = "http://localhost:9000/api/v3"
+    def test_call_api_by_the_initializer_with_valid_url(self):
+        http_provider = HTTPProvider(self.FULL_PATH_URL)
+        self.assertIsNotNone(http_provider._full_path_url)
+        try:
+            http_provider._base_domain_url
+        except AttributeError:
+            self.assertTrue(True)
 
-        # When request kwargs is None
-        with self.assertWarns(Warning):
-            http_provider = HTTPProvider(valid_url1)
-        self.assertEqual({}, http_provider._request_kwargs)
-
-        # Checks full path url correctly
-        full_path_url_for_main_api = "http://localhost:9000/api/v3"
-        full_path_url_for_debug_api = "http://localhost:9000/api/debug/v3"
-        self.assertEqual(full_path_url_for_main_api, http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(full_path_url_for_debug_api, http_provider._get_full_path_url("debug_estimateStep"))
-
-        # When request kwargs is
-        request_kwargs = {'timeout': 60, 'allow_redirects': False, 'verify': True}
-        with self.assertWarns(Warning):
-            http_provider = HTTPProvider(valid_url1, request_kwargs=request_kwargs)
-        self.assertEqual(request_kwargs, http_provider._request_kwargs)
-
-    def test_set_http_provider_by_new_initializer_with_invalid_url(self):
-        invalid_url0 = "localhost:9000"
-        invalid_url1 = "localhost"
-        version = 3
-        self.assertRaises(URLException, HTTPProvider, invalid_url0, version)
-        self.assertRaises(URLException, HTTPProvider, invalid_url1, version)
-
-    def test_set_http_provider_by_new_initializer_with_valid_url(self):
-        valid_url = "http://localhost:9000"
-        version = 3
-        http_provider = HTTPProvider(valid_url, version)
-        self.assertTrue(http_provider.is_connected())
-
-        icon_service = IconService(HTTPProvider(valid_url, version))
-        self.assertEqual(type(icon_service.get_block("latest")), dict)
-
-        http_provider = HTTPProvider(valid_url, version,
-                                     request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
-        self.assertTrue(http_provider.is_connected())
         icon_service = IconService(http_provider)
         self.assertEqual(type(icon_service.get_block("latest")), dict)
 
-    def test_set_http_provider_by_previous_initializer_with_channel(self):
-        full_path_url = "http://localhost:9000/api/v3/icon_dex"
-        self.assertRaises(URLException, HTTPProvider, full_path_url)
+    def test_call_api_by_the_initializer_with_invalid_url(self):
+        http_provider = HTTPProvider(self.DEBUG_FULL_PATH_URL)  # invalid URL
+        self.assertIsNotNone(http_provider._full_path_url)
 
-        full_path_url_for_main_api = "http://localhost:9000/api/v3"
-        full_path_url_for_debug_api = "http://localhost:9000/api/debug/v3"
-        channel = "icon_dex"
+        icon_service = IconService(http_provider)
+        self.assertRaises(JSONRPCException, icon_service.get_block, "latest")
 
-        http_provider = HTTPProvider(full_path_url_for_main_api)
-        self.assertTrue(http_provider.is_connected())
+    def test_call_debug_api_by_initializer_with_valid_url(self):
+        http_provider = HTTPProvider(self.DEBUG_FULL_PATH_URL)
+        self.assertIsNotNone(http_provider._full_path_url)
+        try:
+            http_provider._base_domain_url
+        except AttributeError:
+            self.assertTrue(True)
 
-        # set channel
-        http_provider.set_channel(channel)
-        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
-                         http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
-                         http_provider._get_full_path_url("debug_estimateStep"))
+        icon_service = IconService(http_provider)
 
-        # set the other channel
-        channel = "icon_dex2"
-        http_provider.set_channel(channel)
-        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
-                         http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
-                         http_provider._get_full_path_url("debug_estimateStep"))
+        # When having an optional property, nonce
+        icx_transaction = TransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .value(self.setting["value"]) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(3) \
+            .nonce(self.setting["nonce"]) \
+            .version(self.VERSION) \
+            .build()
 
-    def test_set_http_provider_by_new_initializer_with_channel(self):
-        base_domain_url = "http://localhost:9000"
-        version = 3
-        channel = "icon_dex"
-        http_provider = HTTPProvider(base_domain_url, version)
-        self.assertTrue(http_provider.is_connected())
+        self.assertEqual(100000, icon_service.estimate_step(icx_transaction))
 
-        full_path_url_for_main_api = "http://localhost:9000/api/v3"
-        full_path_url_for_debug_api = "http://localhost:9000/api/debug/v3"
+    def test_call_debug_api_by_initializer_with_invalid_url(self):
+        http_provider = HTTPProvider(self.FULL_PATH_URL)
+        self.assertIsNotNone(http_provider._full_path_url)
+        try:
+            http_provider._base_domain_url
+        except AttributeError:
+            self.assertTrue(True)
 
-        self.assertEqual(full_path_url_for_main_api, http_provider._get_full_path_url("icx_getTransactionByHash"))
-        self.assertEqual(full_path_url_for_main_api, http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(full_path_url_for_debug_api, http_provider._get_full_path_url("debug_estimateStep"))
+        icon_service = IconService(http_provider)
 
-        # set channel
-        http_provider.set_channel(channel)
-        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
-                         http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
-                         http_provider._get_full_path_url("debug_estimateStep"))
+        # When having an optional property, nonce
+        icx_transaction = TransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .value(self.setting["value"]) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(3) \
+            .nonce(self.setting["nonce"]) \
+            .version(self.VERSION) \
+            .build()
 
-        # set the other channel
-        channel = "icon_dex2"
-        http_provider.set_channel(channel)
-        self.assertEqual(os.path.join(full_path_url_for_main_api, channel),
-                         http_provider._get_full_path_url("icx_call"))
-        self.assertEqual(os.path.join(full_path_url_for_debug_api, channel),
-                         http_provider._get_full_path_url("debug_estimateStep"))
+        self.assertRaises(JSONRPCException, icon_service.estimate_step, icx_transaction)
+
+    def test_set_http_provider_by_new_initializer_with_invalid_url(self):
+        invalid_urls = [
+            "http://localhost:9000/api/v3/channel",
+            "localhost",
+            "http://localhost:9000/api/v3"
+        ]
+        for invalid_url in invalid_urls:
+            try:
+                http_provider = HTTPProvider(invalid_url, self.VERSION)
+                icon_service = IconService(http_provider)
+            except URLException:
+                self.assertTrue(True)
+            else:
+                self.assertFalse(True)
+
+    def test_set_http_provider_by_initializer_with_channel(self):
+        full_path_url_with_channel = "http://localhost:9000/api/v3/icon_dex"
+        http_provider = HTTPProvider(full_path_url_with_channel)
+        self.assertEqual(http_provider._full_path_url, full_path_url_with_channel)
+        try:
+            http_provider._base_domain_url
+        except AttributeError:
+            self.assertTrue(True)
 
 
 if __name__ == "__main__":

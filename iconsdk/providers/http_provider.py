@@ -15,9 +15,9 @@
 
 import json
 import os
+from json.decoder import JSONDecodeError
 from logging import getLogger
 from urllib.parse import urlparse
-from warnings import warn
 
 import requests
 from multipledispatch import dispatch
@@ -33,6 +33,7 @@ class HTTPProvider(Provider):
     The HTTPProvider takes the full URI where the server can be found.
     For local development this would be something like 'http://localhost:9000'.
     """
+
     _logger = getLogger("HTTPProvider")
 
     # No need to use logging, remove the line.
@@ -51,12 +52,15 @@ class HTTPProvider(Provider):
         :return: True or False
         """
         url_components = urlparse(base_domain_url)
-        return True if all([url_components.scheme, url_components.netloc]) else False
+        if all([url_components.scheme, url_components.netloc]) and url_components.path in ('', '/'):
+            return True
+        else:
+            return False
 
     @dispatch(str, int, dict=None)
     def __init__(self, base_domain_url: str, version: int, request_kwargs: dict = None):
         """
-        The new initializer to be set with base domain URL and version.
+        The initializer to be set with base domain URL and version.
 
         :param base_domain_url: base domain URL as like <scheme>://<host>:<port>
         :param version: version for RPC server
@@ -65,27 +69,22 @@ class HTTPProvider(Provider):
         if not self._validate_base_domain_url(base_domain_url):
             raise URLException("Invalid base domain URL. "
                                "Valid base domain URL format is as like <scheme>://<host>:<port>.")
+        self._full_path_url = None
         self._base_domain_url = base_domain_url
         self._version = version
         self._request_kwargs = request_kwargs or {}
-        self._channel: str = None
 
     @dispatch(str, dict=None)
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
         """
-        The initializer to be set with full path url which is only as like <scheme>://<host>/api/v3 without version.
+        The initializer to be set with full path url as like <scheme>://<host>:<port>/api/v3.
+        If you need to use a channel, you can use it such as <scheme>://<host>:<port>/api/v3/{channel}.
 
         :param full_path_url: full path URL as like <scheme>://<host>:<port>/api/v3
         :param request_kwargs: kwargs for setting to head of request
         """
-        warn('This initializer is deprecated and replaced with new initializer '
-             'where parameters are not only endpoint but also version.')
-        url_components = urlparse(full_path_url)
-        if url_components.path != '/api/v3':
-            raise URLException("Invalid full path URL. "
-                               "The only valid full path for the previous initializer is "
-                               "'<scheme>://<host>:<port>/api/v3'.")
-        self.__init__(url_components.geturl(), int(url_components.path[-1:]), request_kwargs=request_kwargs)
+        self._full_path_url = full_path_url
+        self._request_kwargs = request_kwargs or {}
 
     def __str__(self):
         return "RPC connection {0}".format(self._base_domain_url)
@@ -102,7 +101,7 @@ class HTTPProvider(Provider):
         kwargs.setdefault('timeout', 10)
         with requests.Session() as session:
             response = session.post(url=full_path_url, data=json.dumps(data), **kwargs)
-        return json.loads(response.content)
+        return response
 
     def _get_full_path_url(self, method: str) -> str:
         url_components = urlparse(self._base_domain_url)
@@ -110,16 +109,8 @@ class HTTPProvider(Provider):
             path = os.path.join(CONFIG_API_PATH[method], 'v' + str(self._version))
         else:
             path = os.path.join("api", "v" + str(self._version))
-        if self._channel is not None:
-            path = os.path.join(path, self._channel)
         url_components = url_components._replace(path=path)
         return url_components.geturl()
-
-    def get_channel(self) -> str:
-        return self._channel
-
-    def set_channel(self, channel: str):
-        self._channel = channel
 
     def make_request(self, method, params=None):
         rpc_dict = {
@@ -131,25 +122,32 @@ class HTTPProvider(Provider):
         if params:
             rpc_dict['params'] = params
 
-        self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s",
-                           self._get_full_path_url(method), method, rpc_dict)
+        full_path_url = self._full_path_url if self._full_path_url else self._get_full_path_url(method)
+        response = self._make_post_request(full_path_url, rpc_dict, **self._get_request_kwargs())
 
-        response = self._make_post_request(self._get_full_path_url(method), rpc_dict, **self._get_request_kwargs())
-        self._logger.debug("response HTTP\nResponse:%s", response)
+        # self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s", full_path_url, method, rpc_dict)
+        # self._logger.debug("response HTTP\nResponse:%s", response)
+
         return self._return_customed_response(response)
 
     @staticmethod
     def _return_customed_response(response):
-        try:
-            return response["result"]
-        except KeyError:
-            raise JSONRPCException(response["error"])
+        if response.ok:
+            content_as_dict = json.loads(response.content)
+            return content_as_dict["result"]
+        else:
+            try:
+                content_as_dict = json.loads(response.content)
+            except (JSONDecodeError, KeyError):
+                raise URLException(response.content.decode("utf-8"))
+            else:
+                raise JSONRPCException(content_as_dict["error"])
 
     def is_connected(self):
         try:
-            self._logger.debug("Connected")
-            self.make_request('icx_getLastBlock', [])
-        except IOError:
+            # self._logger.debug("Connected")
+            last_block = self.make_request('icx_getLastBlock', [])
+        except (IOError, URLException, JSONRPCException):
             return False
         else:
             return True
