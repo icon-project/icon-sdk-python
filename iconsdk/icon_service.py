@@ -163,13 +163,15 @@ class IconService:
             raise DataTypeException("Call object is unrecognized.")
 
         params = {
-            "from": call.from_,
             "to": call.to,
             "dataType": "call",
             "data": {
                 "method": call.method
             }
         }
+
+        if call.from_ is not None:
+            params["from"] = call.from_
 
         if isinstance(call.params, dict):
             params["data"]["params"] = call.params

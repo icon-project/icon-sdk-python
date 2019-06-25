@@ -21,6 +21,7 @@ class Call:
     """
     Class `Call` for calling a SCORE API.
     Once an instance generated, it is read-only."""
+
     def __init__(self, from_: str, to: str, method: str, params: dict):
         self.__from = from_
         self.__to = to
@@ -52,7 +53,8 @@ class CallBuilder:
     Builder for a `Call` object.
     Once setting it, a value of any property can't be changed forever.
     """
-    def __init__(self, from_: str=None, to: str=None, method: str=None, params: dict=None) -> Call:
+
+    def __init__(self, from_: str = None, to: str = None, method: str = None, params: dict = None) -> Call:
         self._from_ = from_
         self._to = to
         self._method = method
@@ -82,7 +84,7 @@ class CallBuilder:
         """Returns a CallBuilder made from dict"""
         try:
             return cls(
-                from_=call_as_dict['from_'],
+                from_=call_as_dict['from_'] if "from_" in call_as_dict else None,
                 to=call_as_dict['to'],
                 method=call_as_dict['method'],
                 params=call_as_dict['params'] if "params" in call_as_dict else None

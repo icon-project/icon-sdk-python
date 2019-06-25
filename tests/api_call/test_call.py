@@ -32,13 +32,19 @@ class TestCall(TestCase):
         cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
     def test_call(self):
+        # with from
         test_call = CallBuilder().from_(self.address).to(self.to).method("getStepCosts").params("").build()
         result = self.icon_service.call(test_call)
-        self.assertTrue(result)
+        self.assertEqual(type(result), dict)
 
         test_call = CallBuilder().from_(self.address).to(self.to).method("getStepCosts").build()
         result = self.icon_service.call(test_call)
-        self.assertTrue(result)
+        self.assertTrue(type(result), dict)
+
+        # without from
+        test_call = CallBuilder().to(self.to).method("getStepCosts").params("").build()
+        result = self.icon_service.call(test_call)
+        self.assertEqual(type(result), dict)
 
 
 if __name__ == "__main__":
