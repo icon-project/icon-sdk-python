@@ -14,19 +14,20 @@
 # limitations under the License.
 
 from unittest import TestCase, main
+
+from iconsdk.exception import DataTypeException, JSONRPCException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
-from iconsdk.exception import DataTypeException, JSONRPCException
 from iconsdk.utils.hexadecimal import remove_0x_prefix, add_cx_prefix
 from iconsdk.utils.validation import is_transaction
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestGetTransactionByHash(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
         result = cls.icon_service.get_block("latest")
         cls.tx_hash = result["confirmed_transaction_list"][0]["txHash"]
         cls.tx_hash_invalid = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"

@@ -28,7 +28,7 @@ from iconsdk.exception import DataTypeException
 from iconsdk.utils import get_timestamp
 from iconsdk.utils.validation import has_keys, is_0x_prefixed
 from iconsdk.wallet.wallet import KeyWallet
-from tests.example_config import TEST_PRIVATE_KEY
+from tests.example_config import PRIVATE_KEY_FOR_TEST
 
 
 class TestTransactionBuilder(TestCase):
@@ -39,7 +39,7 @@ class TestTransactionBuilder(TestCase):
         Sets needed data like an instance of a wallet and iconsdk
         and default values used to make 4 types of transactions. (transfer, call, deploy, message)
         """
-        cls.wallet = KeyWallet.load(TEST_PRIVATE_KEY)
+        cls.wallet = KeyWallet.load(PRIVATE_KEY_FOR_TEST)
 
         install_content_bytes = b'install_test'
         update_content_bytes = b'update_test'

@@ -145,6 +145,3 @@ def convert_transaction_result(data: dict):
 
     if "logsBloom" in data:
         data["logsBloom"] = convert_hex_str_to_bytes(data["logsBloom"])
-
-
-

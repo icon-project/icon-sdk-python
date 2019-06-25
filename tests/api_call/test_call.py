@@ -19,7 +19,7 @@ from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from iconsdk.wallet.wallet import KeyWallet
-from tests.example_config import TEST_HTTP_ENDPOINT_URI_V3
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestCall(TestCase):
@@ -29,7 +29,7 @@ class TestCall(TestCase):
         cls.wallet = KeyWallet.create()
         cls.address = cls.wallet.get_address()
         cls.to = "cx0000000000000000000000000000000000000001"
-        cls.icon_service = IconService(HTTPProvider(TEST_HTTP_ENDPOINT_URI_V3))
+        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
     def test_call(self):
         test_call = CallBuilder().from_(self.address).to(self.to).method("getStepCosts").params("").build()

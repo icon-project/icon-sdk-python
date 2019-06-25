@@ -18,6 +18,7 @@ from abc import ABCMeta, abstractmethod
 
 class Provider(metaclass=ABCMeta):
     """The provider defines how the IconService connects to Loopchain."""
+
     @abstractmethod
     def make_request(self, method, params=None):
         raise NotImplementedError("Providers must implement this method")
