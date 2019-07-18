@@ -43,7 +43,7 @@ class IconService:
     def __init__(self, provider: Provider):
         self.__provider = provider
 
-    def get_block(self, value):
+    def get_block(self, value, full_response: bool = False):
         """
         If param is height,
             1. Returns block information by block height
@@ -66,31 +66,38 @@ class IconService:
         # by height
         if is_block_height(value):
             params = {'height': add_0x_prefix(hex(value))}
-            result = self.__provider.make_request('icx_getBlockByHeight', params)
+            result = self.__provider.make_request('icx_getBlockByHeight', params, full_response)
         # by hash
         elif is_hex_block_hash(value):
             params = {'hash': value}
-            result = self.__provider.make_request('icx_getBlockByHash', params)
+            result = self.__provider.make_request('icx_getBlockByHash', params, full_response)
         # by value
         elif is_predefined_block_value(value):
-            result = self.__provider.make_request('icx_getLastBlock')
+            result = self.__provider.make_request('icx_getLastBlock', full_response=full_response)
         else:
             raise DataTypeException("It's unrecognized block reference:{0!r}.".format(value))
 
-        convert_block(result)
+        if not full_response:
+            convert_block(result)
+
         return result
 
-    def get_total_supply(self):
+    def get_total_supply(self, full_response: bool = False):
         """
         Returns total ICX coin supply that has been issued
         Delegates to icx_getTotalSupply RPC method
 
         :return: Total number of ICX coins issued
         """
-        result = self.__provider.make_request('icx_getTotalSupply')
-        return int(remove_0x_prefix(result), 16)
 
-    def get_balance(self, address: str):
+        result = self.__provider.make_request('icx_getTotalSupply', full_response=full_response)
+
+        if full_response:
+            return result
+        else:
+            return int(remove_0x_prefix(result), 16)
+
+    def get_balance(self, address: str, full_response: bool = False):
         """
         Returns the ICX balance of the given EOA or SCORE.
         Delegates to icx_getBalance RPC method.
@@ -100,12 +107,17 @@ class IconService:
         """
         if is_score_address(address) or is_wallet_address(address):
             params = {'address': address}
-            result = self.__provider.make_request('icx_getBalance', params)
-            return int(remove_0x_prefix(result), 16)
+
+            result = self.__provider.make_request('icx_getBalance', params, full_response)
+
+            if full_response:
+                return result
+            else:
+                return int(remove_0x_prefix(result), 16)
         else:
             raise AddressException("Address is wrong.")
 
-    def get_score_api(self, address: str):
+    def get_score_api(self, address: str, full_response: bool = False):
         """
         Returns SCORE's external API list.
         Delegates to icx_getScoreApi RPC method.
@@ -117,9 +129,9 @@ class IconService:
             raise AddressException("SCORE Address is wrong.")
 
         params = {'address': address}
-        return self.__provider.make_request('icx_getScoreApi', params)
+        return self.__provider.make_request('icx_getScoreApi', params, full_response)
 
-    def get_transaction_result(self, tx_hash: str):
+    def get_transaction_result(self, tx_hash: str, full_response: bool = False):
         """
         Returns the transaction result requested by transaction hash.
         Delegates to icx_getTransactionResult RPC method.
@@ -131,11 +143,14 @@ class IconService:
             raise DataTypeException("This hash value is unrecognized.")
 
         params = {'txHash': tx_hash}
-        result = self.__provider.make_request('icx_getTransactionResult', params)
-        convert_transaction_result(result)
+        result = self.__provider.make_request('icx_getTransactionResult', params, full_response)
+
+        if not full_response:
+            convert_transaction_result(result)
+
         return result
 
-    def get_transaction(self, tx_hash: str):
+    def get_transaction(self, tx_hash: str, full_response: bool = False):
         """
         Returns the transaction information requested by transaction hash.
         Delegates to icx_getTransactionByHash RPC method.
@@ -147,11 +162,14 @@ class IconService:
             raise DataTypeException("This hash value is unrecognized.")
 
         params = {'txHash': tx_hash}
-        result = self.__provider.make_request('icx_getTransactionByHash', params)
-        convert_transaction(result)
+        result = self.__provider.make_request('icx_getTransactionByHash', params, full_response)
+
+        if not full_response:
+            convert_transaction(result)
+
         return result
 
-    def call(self, call: object):
+    def call(self, call: object, full_response: bool = False):
         """
         Calls SCORE's external function which is read-only without creating a transaction on Loopchain.
         Delegates to icx_call RPC method.
@@ -176,9 +194,9 @@ class IconService:
         if isinstance(call.params, dict):
             params["data"]["params"] = call.params
 
-        return self.__provider.make_request('icx_call', params)
+        return self.__provider.make_request('icx_call', params, full_response)
 
-    def send_transaction(self, signed_transaction: SignedTransaction):
+    def send_transaction(self, signed_transaction: SignedTransaction, full_response: bool = False):
         """
         Sends the transaction.
         Delegates to icx_sendTransaction RPC method.
@@ -187,7 +205,7 @@ class IconService:
         :return: Transaction hash prefixed with '0x'
         """
         params = signed_transaction.signed_transaction_dict
-        return self.__provider.make_request('icx_sendTransaction', params)
+        return self.__provider.make_request('icx_sendTransaction', params, full_response)
 
     def estimate_step(self, transaction: Transaction) -> int:
         """

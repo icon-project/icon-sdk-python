@@ -112,7 +112,7 @@ class HTTPProvider(Provider):
         url_components = url_components._replace(path=path)
         return url_components.geturl()
 
-    def make_request(self, method, params=None):
+    def make_request(self, method, params=None, full_response: bool = False):
         rpc_dict = {
             'jsonrpc': '2.0',
             'method': method,
@@ -128,10 +128,13 @@ class HTTPProvider(Provider):
         # self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s", full_path_url, method, rpc_dict)
         # self._logger.debug("response HTTP\nResponse:%s", response)
 
-        return self._return_customed_response(response)
+        return self._return_customed_response(response, full_response)
 
     @staticmethod
-    def _return_customed_response(response):
+    def _return_customed_response(response, full_response: bool = False):
+        if full_response:
+            return json.loads(response.content)
+
         if response.ok:
             content_as_dict = json.loads(response.content)
             return content_as_dict["result"]
