@@ -92,3 +92,5 @@ class TestSendMessage(TestSendSuper):
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
         signed_transaction_dict = SignedTransaction(message_transaction, self.wallet)
         self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+
+

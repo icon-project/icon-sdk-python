@@ -3,7 +3,6 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_T_HASH
 from tests.api_send.test_send_super import TestSendSuper
 
-
 class TestSendDeposit(TestSendSuper):
 
     def test_add_deposit(self):
