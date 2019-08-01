@@ -39,16 +39,16 @@ class TestSendMessage(TestSendSuper):
         self.assertTrue(is_message_transaction(tx_dict))
 
         # Checks if sending transaction correctly
-        signed_transaction_dict = SignedTransaction(message_transaction, self.wallet)
-        result = self.icon_service.send_transaction(signed_transaction_dict)
+        signed_transaction = SignedTransaction(message_transaction, self.wallet)
+        result = self.icon_service.send_transaction(signed_transaction)
         self.assertTrue(is_T_HASH(result))
 
         # When having an optional property, nonce
         sleep(sleep_time)
         message_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
-        signed_transaction_dict = SignedTransaction(message_transaction, self.wallet)
-        result = self.icon_service.send_transaction(signed_transaction_dict)
+        signed_transaction = SignedTransaction(message_transaction, self.wallet)
+        result = self.icon_service.send_transaction(signed_transaction)
         self.assertTrue(is_T_HASH(result))
 
         # When the data is hex string
@@ -78,19 +78,19 @@ class TestSendMessage(TestSendSuper):
         # When address is wrong
         message_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"][2:]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
-        signed_transaction_dict = SignedTransaction(message_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+        signed_transaction = SignedTransaction(message_transaction, self.wallet)
+        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction)
 
         # When not having a required property, nid
         message_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"][2:]) \
             .step_limit(self.setting["step_limit"]).data(self.setting["data"]).build()
-        signed_transaction_dict = SignedTransaction(message_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+        signed_transaction = SignedTransaction(message_transaction, self.wallet)
+        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction)
 
         # When a sending address is wrong - not the wallet's address
         message_transaction = MessageTransactionBuilder().from_(self.setting["to"]).to(self.setting["to"]) \
             .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
-        signed_transaction_dict = SignedTransaction(message_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+        signed_transaction = SignedTransaction(message_transaction, self.wallet)
+        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction)
 
 

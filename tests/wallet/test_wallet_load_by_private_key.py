@@ -15,9 +15,8 @@
 
 from unittest import TestCase, main
 
-from secp256k1 import PrivateKey
+from coincurve import PrivateKey
 
-from iconsdk.exception import DataTypeException
 from iconsdk.utils.validation import is_wallet_address
 from iconsdk.wallet.wallet import KeyWallet
 
@@ -29,7 +28,7 @@ class TestWalletLoadByPrivateKey(TestCase):
 
         # Creates a wallet.
         private_key_object = PrivateKey()
-        private_key = private_key_object.private_key
+        private_key: bytes = private_key_object.secret
         wallet1 = KeyWallet.load(private_key)
 
         # Checks a private key as same.
@@ -40,7 +39,7 @@ class TestWalletLoadByPrivateKey(TestCase):
 
         # Creates the other wallet.
         private_key_object2 = PrivateKey()
-        private_key2 = private_key_object2.private_key
+        private_key2: bytes = private_key_object2.secret
         wallet2 = KeyWallet.load(private_key2)
 
         # Checks a private key as same.
@@ -50,11 +49,6 @@ class TestWalletLoadByPrivateKey(TestCase):
         self.assertTrue(is_wallet_address(wallet2.get_address()))
 
         self.assertNotEqual(private_key2, private_key)
-
-    def test_wallet_load_by_invalid_private_key(self):
-        """A wallet loads by a wrong private key. It will fail."""
-        self.assertRaises(DataTypeException, KeyWallet.load,
-                          bytes.fromhex("71fc378d3a3fb92b57474af156f9d277c9b60a923a1db75575b1cc"))
 
 
 if __name__ == "__main__":

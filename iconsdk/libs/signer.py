@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from secp256k1 import PrivateKey
+from coincurve import PrivateKey
 
 
 def sign(data: bytes, private_key: bytes) -> bytes:
@@ -25,8 +25,5 @@ def sign(data: bytes, private_key: bytes) -> bytes:
     :param private_key: private key
     :return signature: signature made from input data
     """
-    private_key_object = PrivateKey(private_key, raw=True)
-    recoverable_sign = private_key_object.ecdsa_sign_recoverable(data, raw=True)
-    sign_bytes, sign_recovery = private_key_object.ecdsa_recoverable_serialize(recoverable_sign)
-    return sign_bytes + sign_recovery.to_bytes(1, 'big')
-
+    private_key_object = PrivateKey(private_key)
+    return private_key_object.sign_recoverable(data, hasher=None)

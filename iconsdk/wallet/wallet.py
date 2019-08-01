@@ -17,9 +17,9 @@ import json
 from abc import ABCMeta, abstractmethod
 from hashlib import sha3_256
 
+from coincurve import PrivateKey
 from eth_keyfile import create_keyfile_json, extract_key_from_keyfile
 from multipledispatch import dispatch
-from secp256k1 import PrivateKey
 
 from iconsdk.exception import KeyStoreException, DataTypeException
 from iconsdk.libs.signer import sign
@@ -39,7 +39,7 @@ class Wallet(metaclass=ABCMeta):
         raise NotImplementedError("Wallet must implement this method")
 
     @abstractmethod
-    def sign(self, data: bytes) -> str:
+    def sign(self, data: bytes) -> bytes:
         """Generates signature from input data which is transaction data
 
         :param data: data to be signed
@@ -51,10 +51,9 @@ class Wallet(metaclass=ABCMeta):
 class KeyWallet(Wallet):
     """KeyWallet class implements Wallet."""
 
-    def __init__(self, private_key_object):
-        self.__bytes_private_key = private_key_object.private_key
-        self.bytes_public_key = get_public_key(private_key_object)
-        self.address = get_address(self.bytes_public_key)
+    def __init__(self, private_key_object: PrivateKey):
+        self.__private_key: bytes = private_key_object.secret
+        self.public_key: bytes = private_key_object.public_key.format(compressed=False)
 
     @staticmethod
     def create():
@@ -94,8 +93,8 @@ class KeyWallet(Wallet):
         """
         try:
             with open(file_path, 'rb') as file:
-                bytes_private_key = extract_key_from_keyfile(file, bytes(password, 'utf-8'))
-                private_key_object = PrivateKey(bytes_private_key)
+                private_key: bytes = extract_key_from_keyfile(file, bytes(password, 'utf-8'))
+                private_key_object = PrivateKey(private_key)
                 wallet = KeyWallet(private_key_object)
                 return wallet
         except FileNotFoundError:
@@ -115,7 +114,7 @@ class KeyWallet(Wallet):
         """
         try:
             key_store_contents = create_keyfile_json(
-                self.__bytes_private_key,
+                self.__private_key,
                 bytes(password, 'utf-8'),
                 iterations=16384,
                 kdf="scrypt"
@@ -141,14 +140,14 @@ class KeyWallet(Wallet):
 
         :return a private_key in hexadecimal.
         """
-        return self.__bytes_private_key.hex()
+        return self.__private_key.hex()
 
     def get_address(self) -> str:
         """Returns an EOA address.
 
         :return address: An EOA address
         """
-        return self.address
+        return public_key_to_address(self.public_key)
 
     def sign(self, data: bytes) -> bytes:
         """Generates signature from input data which is transaction data
@@ -156,12 +155,8 @@ class KeyWallet(Wallet):
         :param data: data to be signed
         :return signature: signature made from input
         """
-        return sign(data, self.__bytes_private_key)
+        return sign(data, self.__private_key)
 
 
-def get_public_key(private_key_object):
-    return private_key_object.pubkey.serialize(compressed=False)
-
-
-def get_address(bytes_public_key):
-    return f'hx{sha3_256(bytes_public_key[1:]).digest()[-20:].hex()}'
+def public_key_to_address(public_key: bytes):
+    return f'hx{sha3_256(public_key[1:]).digest()[-20:].hex()}'
