@@ -25,7 +25,7 @@ from multipledispatch import dispatch
 from iconsdk.exception import JSONRPCException, URLException
 from iconsdk.providers.config_api_path import CONFIG_API_PATH
 from iconsdk.providers.provider import Provider
-from iconsdk.utils import to_dict
+from iconsdk.utils import to_dict, set_logger
 
 
 class HTTPProvider(Provider):
@@ -37,7 +37,7 @@ class HTTPProvider(Provider):
     _logger = getLogger("HTTPProvider")
 
     # No need to use logging, remove the line.
-    # set_logger(logger, 'DEBUG')
+    set_logger(_logger, 'DEBUG')
 
     @staticmethod
     def _validate_base_domain_url(base_domain_url) -> bool:
@@ -125,8 +125,8 @@ class HTTPProvider(Provider):
         full_path_url = self._full_path_url if self._full_path_url else self._get_full_path_url(method)
         response = self._make_post_request(full_path_url, rpc_dict, **self._get_request_kwargs())
 
-        # self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s", full_path_url, method, rpc_dict)
-        # self._logger.debug("response HTTP\nResponse:%s", response)
+        self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s", full_path_url, method, rpc_dict)
+        self._logger.debug("response HTTP\nResponse: %s\n", response)
 
         return self._return_customed_response(response, full_response)
 
@@ -148,7 +148,7 @@ class HTTPProvider(Provider):
 
     def is_connected(self):
         try:
-            # self._logger.debug("Connected")
+            self._logger.debug("Connected")
             last_block = self.make_request('icx_getLastBlock', [])
         except (IOError, URLException, JSONRPCException):
             return False
