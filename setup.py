@@ -43,9 +43,9 @@ setup(
     ],
     install_requires=[
         'eth-keyfile==0.5.1',
-        'coincurve==12.0.0',
+        'coincurve~=12.0',  # coincurve >= 12.0 and coincurve == 12.*
         'multipledispatch==0.5.0',
-        'requests>=2.20.0'
+        'requests==2.20.0'
     ],
     license='Apache License 2.0',
     classifiers=[
