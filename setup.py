@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import setup, find_packages
 from os import environ, path
+
+from setuptools import setup, find_packages
 
 version = environ.get('VERSION')
 
@@ -26,25 +27,28 @@ with open("README.md", 'r') as f:
     long_description = f.read()
 
 setup(
-   name='iconsdk',
-   version=version,
-   description='ICON SDK for Python is a collection of libraries which allow you to interact '
-               'with a local or remote Loopchain node, using an HTTP connection. ',
-   long_description=long_description,
-   long_description_content_type='text/markdown',
-   author='ICON foundation',
-   author_email='foo@icon.foundation',
-   url='https://github.com/icon-project/icon-sdk-python',
-   packages=find_packages(exclude=['tests*']),
-   test_suite='tests',
-   install_requires=[
+    name='iconsdk',
+    version=version,
+    description='ICON SDK for Python is a collection of libraries which allow you to interact '
+                'with a local or remote Loopchain node, using an HTTP connection. ',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    author='ICON foundation',
+    author_email='foo@icon.foundation',
+    url='https://github.com/icon-project/icon-sdk-python',
+    packages=find_packages(exclude=['tests*']),
+    test_suite='tests',
+    tests_require=[
+        'secp256k1==0.13.2'
+    ],
+    install_requires=[
         'eth-keyfile==0.5.1',
-        'secp256k1==0.13.2',
+        'coincurve~=12.0',  # coincurve >= 12.0 and coincurve == 12.*
         'multipledispatch==0.5.0',
-        'requests>=2.20.0'
-   ],
-   license='Apache License 2.0',
-   classifiers=[
+        'requests==2.20.0'
+    ],
+    license='Apache License 2.0',
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',

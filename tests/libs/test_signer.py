@@ -16,13 +16,17 @@
 from hashlib import sha3_256
 from unittest import TestCase, main
 
-from secp256k1 import PrivateKey
+from coincurve import PrivateKey, PublicKey
 
 from iconsdk.libs.serializer import serialize
 from iconsdk.libs.signer import sign
-from tests.example_tx_requests import TEST_REQUEST_SCORE_FUNCTION_CALL, \
-    TEST_REQUEST_SCORE_ISNTALL, TEST_REQUEST_SCORE_UPDATE, TEST_REQUEST_SEND_MESSAGE, \
-    TEST_REQUEST_TRANSFER_ICX
+from tests.example_tx_requests import (
+    TEST_REQUEST_TRANSFER_ICX,
+    TEST_REQUEST_SCORE_FUNCTION_CALL,
+    TEST_REQUEST_SEND_MESSAGE,
+    TEST_REQUEST_SCORE_UPDATE,
+    TEST_REQUEST_SCORE_ISNTALL
+)
 
 
 class TestIcxSigner(TestCase):
@@ -30,38 +34,26 @@ class TestIcxSigner(TestCase):
     def test_verify_recoverable_sign(self):
         """Verifies recovering a signature."""
 
-        test_requests = [TEST_REQUEST_TRANSFER_ICX, TEST_REQUEST_SCORE_FUNCTION_CALL,
-                         TEST_REQUEST_SEND_MESSAGE, TEST_REQUEST_SCORE_UPDATE, TEST_REQUEST_SCORE_ISNTALL]
+        test_requests = [
+            TEST_REQUEST_TRANSFER_ICX,
+            TEST_REQUEST_SCORE_FUNCTION_CALL,
+            TEST_REQUEST_SEND_MESSAGE,
+            TEST_REQUEST_SCORE_UPDATE,
+            TEST_REQUEST_SCORE_ISNTALL
+        ]
 
         for request in test_requests:
             # Serialize a signature
-            private_key_object = PrivateKey()
-            msg_hash_bytes = sha3_256(serialize(request["params"])).digest()
-            sign_bytes = sign(msg_hash_bytes, private_key_object.private_key)
+            private_key_object: PrivateKey = PrivateKey()
+            private_key_bytes: bytes = private_key_object.secret
 
-            # Deserialize a signature
-            recoverable_sign = private_key_object.ecdsa_recoverable_deserialize(sign_bytes[0:64], sign_bytes[64])
-            sign_ = private_key_object.ecdsa_recoverable_convert(recoverable_sign)
-            # Verify a signature with a public key
-            self.assertTrue(private_key_object.pubkey.ecdsa_verify(msg_hash_bytes, sign_, raw=True))
+            msg = serialize(request["params"])
+            message_hash = sha3_256(msg).digest()
+            sign_bytes = sign(message_hash, private_key_bytes)
 
-            # Verify a signature when an message is invalid
-            invalid_msg_hash = sha3_256(f'invalid message'.encode()).digest()
-            self.assertFalse(private_key_object.pubkey.ecdsa_verify(invalid_msg_hash, sign_, raw=True))
-
-            # Verify a signature when a private key is invalid
-            invalid_private_key = PrivateKey()
-            self.assertFalse(invalid_private_key.pubkey.ecdsa_verify(msg_hash_bytes, sign_, raw=True))
+            public_key = PublicKey.from_signature_and_message(sign_bytes, message_hash, hasher=None)
+            self.assertEqual(public_key.format(), private_key_object.public_key.format())
 
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
