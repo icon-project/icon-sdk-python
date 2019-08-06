@@ -22,17 +22,19 @@ from iconsdk.wallet.wallet import KeyWallet
 
 class TestWalletStore(TestCase):
 
-    TEST_DIR = path.abspath("tests/keystore_file")
-    TEST_KEYSTORE_FILE_NEW_PASSWORD = "Adas21312**"
-    TEST_KEYSTORE_FILE_WRONG_PASSWORD = "123456"
-    TEST_NEW_PATH = path.join(TEST_DIR, "test_new_keystore.txt")
-    TEST_WRONG_PATH = path.join(TEST_DIR, "unknown_folder", "test_keystore.txt")
+    TEST_CUR_DIR = path.dirname(__file__)
+    TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE = path.abspath(
+        path.join(TEST_CUR_DIR, '../keystore_file/test_new_keystore.txt'))
+    TEST_WRONG_PATH_OF_KEYSTORE_FILE = path.abspath(path.join(TEST_CUR_DIR, "../unknown_folder", "test_keystore.txt"))
+
+    TEST_RIGHT_PASSWORD_OF_KEYSTORE_FILE = "Adas21312**"
+    TEST_WRONG_PASSWORD_OF_KEYSTORE_FILE = "123456"
 
     def test_wallet_store_successfully(self):
         """Creates a wallet and validate the wallet."""
         wallet = KeyWallet.create()
-        wallet.store(self.TEST_NEW_PATH, self.TEST_KEYSTORE_FILE_NEW_PASSWORD)
-        wallet2 = wallet.load(self.TEST_NEW_PATH, self.TEST_KEYSTORE_FILE_NEW_PASSWORD)
+        wallet.store(self.TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE, self.TEST_RIGHT_PASSWORD_OF_KEYSTORE_FILE)
+        wallet2 = wallet.load(self.TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE, self.TEST_RIGHT_PASSWORD_OF_KEYSTORE_FILE)
 
         self.assertEqual(wallet.get_address(), wallet2.get_address())
         self.assertEqual(wallet.get_private_key(), wallet2.get_private_key())
@@ -40,25 +42,27 @@ class TestWalletStore(TestCase):
     def test_wallet_store_on_the_wrong_path(self):
         """Case When storing a keystore file on a wrong path that does not exist."""
         wallet = KeyWallet.create()
-        self.assertRaises(KeyStoreException, wallet.store, self.TEST_WRONG_PATH, self.TEST_KEYSTORE_FILE_NEW_PASSWORD)
+        self.assertRaises(KeyStoreException, wallet.store, self.TEST_WRONG_PATH_OF_KEYSTORE_FILE,
+                          self.TEST_RIGHT_PASSWORD_OF_KEYSTORE_FILE)
 
     def test_wallet_store_with_wrong_password(self):
         """Successful Case to store wallet even though entering a invalid password."""
         wallet = KeyWallet.create()
-        wallet.store(self.TEST_NEW_PATH, self.TEST_KEYSTORE_FILE_WRONG_PASSWORD)
+        wallet.store(self.TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE, self.TEST_WRONG_PASSWORD_OF_KEYSTORE_FILE)
 
     def test_wallet_store_overwriting(self):
         """Case when overwriting the existing keystore file."""
         wallet = KeyWallet.create()
-        wallet.store(self.TEST_NEW_PATH, self.TEST_KEYSTORE_FILE_NEW_PASSWORD)
+        wallet.store(self.TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE, self.TEST_RIGHT_PASSWORD_OF_KEYSTORE_FILE)
 
         wallet2 = KeyWallet.create()
-        self.assertRaises(KeyStoreException, wallet2.store, self.TEST_NEW_PATH, self.TEST_KEYSTORE_FILE_NEW_PASSWORD)
+        self.assertRaises(KeyStoreException, wallet2.store, self.TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE,
+                          self.TEST_RIGHT_PASSWORD_OF_KEYSTORE_FILE)
 
     def tearDown(self):
         # Remove used file.
-        if path.isfile(self.TEST_NEW_PATH):
-            remove(self.TEST_NEW_PATH)
+        if path.isfile(self.TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE):
+            remove(self.TEST_RIGHT_PATH_OF_NEW_KEYSTORE_FILE)
 
 
 if __name__ == "__main__":

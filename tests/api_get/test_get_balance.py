@@ -13,33 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest import TestCase, main
+from unittest import main
 
 from iconsdk.exception import AddressException
-from iconsdk.icon_service import IconService
-from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
+from tests.api_send.test_send_super import TestSendSuper
 
 
-class TestGetBalance(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
-        result = cls.icon_service.get_block("latest")
-        cls.from_ = result["confirmed_transaction_list"][0]["from"]
-        cls.to_ = result["confirmed_transaction_list"][0]["to"]
+class TestGetBalance(TestSendSuper):
 
     def test_get_balance_from_wallet(self):
         # case 0: get balance from wallet or score successfully.
-        result = self.icon_service.get_balance(self.from_)
+        result = self.icon_service.get_balance(self.setting["from"])
         self.assertTrue(isinstance(result, int))
-        result = self.icon_service.get_balance(self.to_)
+        result = self.icon_service.get_balance(self.setting["to"])
         self.assertTrue(isinstance(result, int))
 
         # case 1: when a param is wrong.
-        self.assertRaises(AddressException, self.icon_service.get_balance, self.to_[2:])
-        self.assertRaises(AddressException, self.icon_service.get_balance, self.from_[2:])
+        self.assertRaises(AddressException, self.icon_service.get_balance, self.setting["to"][2:])
+        self.assertRaises(AddressException, self.icon_service.get_balance, self.setting["from"][2:])
         self.assertRaises(AddressException, self.icon_service.get_balance, "123")
         self.assertRaises(AddressException, self.icon_service.get_balance, 123)
         # when the address's length is short
