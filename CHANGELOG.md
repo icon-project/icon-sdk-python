@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0] -  Aug, 21, 2019
+### Added
+- Apply return value of full response to support T-bears
+
+### Changed
+- Substitute `coincurve` for `secp256k1`
+- Enable debug level logging on http provider
+
+### Removed
+N/A
+
+
 ## [1.1.0] -  June, 25, 2019
 ### Added
 - DepositTransaction and DepositTransactionBuilder for deposit and withdraw
