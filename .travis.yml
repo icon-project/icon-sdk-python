@@ -6,7 +6,7 @@ services:
   - docker
 
 install:
-- docker run -d -it --name tbears-container -p 9000:9000 iconloop/tbears:1.3.0-rc1
+- docker run -d -it --name tbears-container -p 9000:9000 iconloop/tbears:1.4.0
 
 script:
 - python setup.py test
