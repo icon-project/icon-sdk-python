@@ -147,7 +147,7 @@ class KeyWallet(Wallet):
 
         :return address: An EOA address
         """
-        return public_key_to_address(self.public_key)
+        return f'hx{sha3_256(self.public_key[1:]).digest()[-20:].hex()}'
 
     def sign(self, data: bytes) -> bytes:
         """Generates signature from input data which is transaction data
@@ -156,7 +156,3 @@ class KeyWallet(Wallet):
         :return signature: signature made from input
         """
         return sign(data, self.__private_key)
-
-
-def public_key_to_address(public_key: bytes):
-    return f'hx{sha3_256(public_key[1:]).digest()[-20:].hex()}'

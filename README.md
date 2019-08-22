@@ -174,6 +174,18 @@ icon_service = IconService(HTTPProvider("http://localhost:9000", 3))
 block = icon_service.get_block(1209)
 ```
 
+### Setting logger
+
+To set level in the logger, you can get log messages. Use `set_logger` function with log level like "DEBUG", "INFO", etc as shown below.
+
+```python
+from iconsdk import logger
+from iconsdk.utils import set_logger
+
+# Sets level in logger
+set_logger(logger, "DEBUG")
+```
+
 
 
 ## Queries

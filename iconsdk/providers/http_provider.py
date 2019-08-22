@@ -16,16 +16,16 @@
 import json
 import os
 from json.decoder import JSONDecodeError
-from logging import getLogger
 from urllib.parse import urlparse
 
 import requests
 from multipledispatch import dispatch
 
+from iconsdk import logger
 from iconsdk.exception import JSONRPCException, URLException
 from iconsdk.providers.config_api_path import CONFIG_API_PATH
 from iconsdk.providers.provider import Provider
-from iconsdk.utils import to_dict, set_logger
+from iconsdk.utils import to_dict
 
 
 class HTTPProvider(Provider):
@@ -33,11 +33,6 @@ class HTTPProvider(Provider):
     The HTTPProvider takes the full URI where the server can be found.
     For local development this would be something like 'http://localhost:9000'.
     """
-
-    _logger = getLogger("HTTPProvider")
-
-    # No need to use logging, remove the line.
-    set_logger(_logger, 'DEBUG')
 
     @staticmethod
     def _validate_base_domain_url(base_domain_url) -> bool:
@@ -124,14 +119,15 @@ class HTTPProvider(Provider):
 
         full_path_url = self._full_path_url if self._full_path_url else self._get_full_path_url(method)
         response = self._make_post_request(full_path_url, rpc_dict, **self._get_request_kwargs())
+        custom_response = self._return_custom_response(response, full_response)
 
-        self._logger.debug("request HTTP\nURI: %s\nMethod: %s\nData: %s", full_path_url, method, rpc_dict)
-        self._logger.debug("response HTTP\nResponse: %s\n", response)
+        logger.debug("\nrequest HTTP\nURI: %s\nMethod: %s\nrequest: %s", full_path_url, method, rpc_dict)
+        logger.debug("\nresponse HTTP\nResponse: %s\n", custom_response)
 
-        return self._return_customed_response(response, full_response)
+        return custom_response
 
     @staticmethod
-    def _return_customed_response(response, full_response: bool = False):
+    def _return_custom_response(response, full_response: bool = False):
         if full_response:
             return json.loads(response.content)
 
@@ -148,7 +144,7 @@ class HTTPProvider(Provider):
 
     def is_connected(self):
         try:
-            self._logger.debug("Connected")
+            logger.debug("Connected")
             last_block = self.make_request('icx_getLastBlock', [])
         except (IOError, URLException, JSONRPCException):
             return False

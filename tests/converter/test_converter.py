@@ -13,13 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from logging import getLogger
 from unittest import TestCase, main
 
 from iconsdk.converter import convert_block, convert_transaction, convert_transaction_result
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
-from iconsdk.utils import set_logger
 from iconsdk.utils.hexadecimal import is_0x_prefixed
 from tests.converter.example_blocks import block_v2_1, block_v2_2, block_v2_3, block_v3_1, block_v3_2, block_genesis
 from tests.converter.example_transactions import transaction_v2_1, transaction_v2_2, transaction_v3_1, transaction_v3_2, \
@@ -30,7 +28,6 @@ from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
 class TestConverter(TestCase):
-
     blocks = [block_v2_1, block_v2_2, block_v2_3, block_v3_1, block_v3_2, block_genesis]
     transactions = [transaction_v2_1, transaction_v2_2, transaction_v3_1, transaction_v3_2, transaction_v3_3]
     tx_results = [tx_result_v2_1, tx_result_v2_2, tx_result_v3_1, tx_result_v3_2, tx_result_v3_3]
@@ -74,13 +71,6 @@ class TestConverter(TestCase):
         3. Get all of the transaction result data on that transaction and validate the transaction result data.
         4. Repeatedly, get the other blocks from the last to the first and validate all of three kinds of the data.
         """
-        logger = getLogger("TEST CONVERTER")
-
-        # No need to use logging, remove the line.
-        set_logger(logger, 'DEBUG')
-
-        logger.debug("TEST CONVERTER START")
-
         icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
 
         # Scenario 1: Get the last block data and validate the block data.
@@ -175,5 +165,3 @@ def validate_transaction_result(data: dict):
 
 if __name__ == "__main__":
     main()
-
-
