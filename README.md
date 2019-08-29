@@ -18,6 +18,7 @@ ICON SDK for Python is a collection of libraries which allows you to interact wi
   - [Version](#version)
   - [Installation](#installation)
   - [Creating an IconService Instance and Setting a Provider](#creating-an-iconservice-instance-and-setting-a-provider)
+  - [Using logger](#using-logger)
 - [Queries](#queries)
   - [Examples](#examples)
   - [Error Cases](#error-cases)
@@ -174,16 +175,22 @@ icon_service = IconService(HTTPProvider("http://localhost:9000", 3))
 block = icon_service.get_block(1209)
 ```
 
-### Setting logger
+### Using logger
 
-To set level in the logger, you can get log messages. Use `set_logger` function with log level like "DEBUG", "INFO", etc as shown below.
+Set a logger named `ICON-SDK-PYTHON` if necessary. Use `set_logger` function to set log level like "DEBUG", "INFO", etc and with a specific handler like FileHandler or SteamHandler as shown below.
 
 ```python
-from iconsdk import logger
 from iconsdk.utils import set_logger
 
-# Sets level in logger
-set_logger(logger, "DEBUG")
+# Sets level in the logger. In this case, the handler is default StreamHandler which writes logging records, appropriately formatted, to a stream.
+set_logger("DEBUG")
+
+from logging import FileHandler
+
+# Sets level in the logger. In this case, the handler is FileHandler which writes formatted logging records to disk files.
+handler = FileHandler("./icon-sdk-python.log", mode='a', encoding=None, delay=False)
+set_logger("DEBUG", handler)
+
 ```
 
 

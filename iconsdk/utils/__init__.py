@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import path
 from functools import wraps
 from logging import StreamHandler, Formatter
+from os import path
 from time import time
+
+from iconsdk import logger
 from iconsdk.utils.hexadecimal import add_0x_prefix
 
 
@@ -40,16 +42,21 @@ def apply_to_return_value(callback):
             return callback(fn(*args, **kwargs))
 
         return inner
+
     return outer
 
 
 to_dict = apply_to_return_value(dict)
 
 
-def set_logger(logger, level):
-    handler = StreamHandler()
-    formatter = Formatter(
-        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+def set_logger(level, handler=StreamHandler()):
+    """ Set logger by setting level and handler
+
+    :param level: log level
+    :param handler: log handler
+    :return:
+    """
+    formatter = Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(level)
@@ -58,5 +65,3 @@ def set_logger(logger, level):
 def get_timestamp():
     """Get epoch time"""
     return add_0x_prefix(hex(int(time() * 10 ** 6)))
-
-

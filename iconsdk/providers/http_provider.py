@@ -62,12 +62,16 @@ class HTTPProvider(Provider):
         :param request_kwargs: kwargs for setting to head of request
         """
         if not self._validate_base_domain_url(base_domain_url):
+            logger.error(f"While setting HTTPProvider, raised URLException because the URL is invalid. "
+                         f"URL: {base_domain_url}")
             raise URLException("Invalid base domain URL. "
                                "Valid base domain URL format is as like <scheme>://<host>:<port>.")
         self._full_path_url = None
         self._base_domain_url = base_domain_url
         self._version = version
         self._request_kwargs = request_kwargs or {}
+        logger.info(f"Set HTTPProvider. "
+                    f"Base domain URL: {base_domain_url}, Version: {version}, Request kwargs: {self._request_kwargs}")
 
     @dispatch(str, dict=None)
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
@@ -80,6 +84,8 @@ class HTTPProvider(Provider):
         """
         self._full_path_url = full_path_url
         self._request_kwargs = request_kwargs or {}
+        logger.info(f"Set HTTPProvider. "
+                    f"Full path URL: {full_path_url}, Request kwargs: {self._request_kwargs}")
 
     def __str__(self):
         return "RPC connection {0}".format(self._base_domain_url)
@@ -121,8 +127,8 @@ class HTTPProvider(Provider):
         response = self._make_post_request(full_path_url, rpc_dict, **self._get_request_kwargs())
         custom_response = self._return_custom_response(response, full_response)
 
-        logger.debug("\nrequest HTTP\nURI: %s\nMethod: %s\nrequest: %s", full_path_url, method, rpc_dict)
-        logger.debug("\nresponse HTTP\nResponse: %s\n", custom_response)
+        logger.debug(f"Request: {rpc_dict}")
+        logger.debug(f"Response: {custom_response}")
 
         return custom_response
 
@@ -138,8 +144,12 @@ class HTTPProvider(Provider):
             try:
                 content_as_dict = json.loads(response.content)
             except (JSONDecodeError, KeyError):
+                logger.exception(f"Raised URLException while returning the custom response. "
+                                 f"Response content: {response.content.decode('utf-8')}")
                 raise URLException(response.content.decode("utf-8"))
             else:
+                logger.error(f"Raised JSONRPCException while returning the custom response. "
+                             f"Error message: {content_as_dict['error']}")
                 raise JSONRPCException(content_as_dict["error"])
 
     def is_connected(self):
