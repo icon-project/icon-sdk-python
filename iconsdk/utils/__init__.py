@@ -49,14 +49,17 @@ def apply_to_return_value(callback):
 to_dict = apply_to_return_value(dict)
 
 
-def set_logger(level, handler=StreamHandler()):
+def set_logger(level, handler=StreamHandler(),
+               format: str = '%(asctime)s %(name)-12s %(levelname)-5s '
+                             '%(filename)-12s %(lineno)-4s %(funcName)-12s %(message)s') -> None:
     """ Set logger by setting level and handler
 
-    :param level: log level
-    :param handler: log handler
-    :return:
+    :param level: the logging level of this logger. The level must be an int or a str.
+    :param handler: the specified handler to be added to this logger
+    :param format: the specified format strings which initialize the formatter with.
+    :return: None
     """
-    formatter = Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    formatter = Formatter(format)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(level)
