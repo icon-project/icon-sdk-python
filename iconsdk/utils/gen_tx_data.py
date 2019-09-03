@@ -1,10 +1,12 @@
+from typing import Optional
+
 from iconsdk.utils.convert_type import convert_params_value_to_hex_str
 from iconsdk.utils.hexadecimal import add_0x_prefix
 
 """Generator for transaction data"""
 
 
-def generate_data_value(transaction) -> dict:
+def generate_data_value(transaction) -> Optional[dict]:
     """
     Generates data value in transaction from the other data like content_type, content, method or params
     by data types such as deploy and call.

@@ -51,7 +51,7 @@ class InMemoryZip:
         self._in_memory.seek(0)
         return self._in_memory.read()
 
-    def zip_in_memory(self, _path):
+    def zip_in_memory(self, _path: str):
         """Compress zip data (bytes) in memory.
 
         :param _path: The path of the directory to be zipped.

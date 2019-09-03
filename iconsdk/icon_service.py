@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Union
 
 from iconsdk.builder.call_builder import Call
 from iconsdk.builder.transaction_builder import Transaction
@@ -43,7 +44,7 @@ class IconService:
     def __init__(self, provider: Provider):
         self.__provider = provider
 
-    def get_block(self, value, full_response: bool = False):
+    def get_block(self, value: Union[int, str], full_response: bool = False) -> dict:
         """
         If param is height,
             1. Returns block information by block height
@@ -61,6 +62,8 @@ class IconService:
             Integer of a block height
             or hash of a block prefixed with '0x'
             or `latest`
+        :param full_response:
+            Boolean to check whether get naive dict or refined data from server
         :return result: Block data
         """
         # by height
@@ -82,11 +85,12 @@ class IconService:
 
         return result
 
-    def get_total_supply(self, full_response: bool = False):
+    def get_total_supply(self, full_response: bool = False) -> Union[dict, int]:
         """
         Returns total ICX coin supply that has been issued
         Delegates to icx_getTotalSupply RPC method
 
+        :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: Total number of ICX coins issued
         """
 
@@ -97,12 +101,13 @@ class IconService:
         else:
             return int(remove_0x_prefix(result), 16)
 
-    def get_balance(self, address: str, full_response: bool = False):
+    def get_balance(self, address: str, full_response: bool = False) -> Union[dict, int]:
         """
         Returns the ICX balance of the given EOA or SCORE.
         Delegates to icx_getBalance RPC method.
 
         :param address: An address of EOA or SCORE. type(str)
+        :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: Number of ICX coins
         """
         if is_score_address(address) or is_wallet_address(address):
@@ -117,12 +122,13 @@ class IconService:
         else:
             raise AddressException("Address is wrong.")
 
-    def get_score_api(self, address: str, full_response: bool = False):
+    def get_score_api(self, address: str, full_response: bool = False) -> Union[dict, list]:
         """
         Returns SCORE's external API list.
         Delegates to icx_getScoreApi RPC method.
 
         :param address: A SCORE address to be examined
+        :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: A list of API methods of the SCORE and its information
         """
         if not is_score_address(address):
@@ -131,12 +137,13 @@ class IconService:
         params = {'address': address}
         return self.__provider.make_request('icx_getScoreApi', params, full_response)
 
-    def get_transaction_result(self, tx_hash: str, full_response: bool = False):
+    def get_transaction_result(self, tx_hash: str, full_response: bool = False) -> dict:
         """
         Returns the transaction result requested by transaction hash.
         Delegates to icx_getTransactionResult RPC method.
 
         :param tx_hash: Hash of a transaction prefixed with '0x'
+        :param full_response: Boolean to check whether get naive dict or refined data from server
         :return A transaction result object
         """
         if not is_T_HASH(tx_hash):
@@ -150,12 +157,13 @@ class IconService:
 
         return result
 
-    def get_transaction(self, tx_hash: str, full_response: bool = False):
+    def get_transaction(self, tx_hash: str, full_response: bool = False) -> dict:
         """
         Returns the transaction information requested by transaction hash.
         Delegates to icx_getTransactionByHash RPC method.
 
         :param tx_hash: Transaction hash prefixed with '0x'
+        :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: Information about a transaction
         """
         if not is_T_HASH(tx_hash):
@@ -169,12 +177,13 @@ class IconService:
 
         return result
 
-    def call(self, call: object, full_response: bool = False):
+    def call(self, call: object, full_response: bool = False) -> Union[dict, str]:
         """
         Calls SCORE's external function which is read-only without creating a transaction on Loopchain.
         Delegates to icx_call RPC method.
 
         :param call: Call object made by CallBuilder
+        :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: Values returned by the executed SCORE function
         """
         if not isinstance(call, Call):
@@ -196,12 +205,13 @@ class IconService:
 
         return self.__provider.make_request('icx_call', params, full_response)
 
-    def send_transaction(self, signed_transaction: SignedTransaction, full_response: bool = False):
+    def send_transaction(self, signed_transaction: SignedTransaction, full_response: bool = False) -> Union[dict, str]:
         """
         Sends the transaction.
         Delegates to icx_sendTransaction RPC method.
 
         :param signed_transaction: A signed transaction object
+        :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: Transaction hash prefixed with '0x'
         """
         params = signed_transaction.signed_transaction_dict
