@@ -134,7 +134,7 @@ class HTTPProvider(Provider):
         return custom_response
 
     @staticmethod
-    def _return_customed_response(response: requests.Response, full_response: bool = False) -> Union[str, list, dict]:
+    def _return_custom_response(response: requests.Response, full_response: bool = False) -> Union[str, list, dict]:
         if full_response:
             return json.loads(response.content)
 
