@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import json
+import warnings
 from abc import ABCMeta, abstractmethod
 from hashlib import sha3_256
 
@@ -21,6 +22,7 @@ from coincurve import PrivateKey
 from eth_keyfile import create_keyfile_json, extract_key_from_keyfile
 from multipledispatch import dispatch
 
+from iconsdk import logger
 from iconsdk.exception import KeyStoreException, DataTypeException
 from iconsdk.libs.signer import sign
 from iconsdk.utils import store_keystore_file_on_the_path
@@ -63,6 +65,7 @@ class KeyWallet(Wallet):
         """
         private_key_object = PrivateKey()
         wallet = KeyWallet(private_key_object)
+        logger.info(f"Created Wallet. Address: {wallet.get_address()}")
         return wallet
 
     @staticmethod
@@ -76,8 +79,11 @@ class KeyWallet(Wallet):
         try:
             private_key_object = PrivateKey(private_key)
             wallet = KeyWallet(private_key_object)
+            logger.info(f"Loaded Wallet by the private key. Address: {wallet.get_address()}")
             return wallet
         except TypeError:
+            logger.exception(
+                f"Raised DataTypeException while loading wallet by private key because the private key is invalid.")
             raise DataTypeException("Private key is invalid.")
 
     @staticmethod
@@ -96,12 +102,20 @@ class KeyWallet(Wallet):
                 private_key: bytes = extract_key_from_keyfile(file, bytes(password, 'utf-8'))
                 private_key_object = PrivateKey(private_key)
                 wallet = KeyWallet(private_key_object)
+                logger.info(
+                    f"Loaded Wallet by the keystore file. Address: {wallet.get_address()}, File path: {file_path}")
                 return wallet
         except FileNotFoundError:
+            logger.exception(
+                f"Raised KeyStoreException while loading the wallet by the keystore file because the file is not found.")
             raise KeyStoreException("File is not found.")
         except ValueError:
+            logger.exception(
+                f"Raised KeyStoreException while loading the wallet by the keystore file because the password is wrong.")
             raise KeyStoreException("Password is wrong.")
         except Exception as e:
+            logger.exception(
+                f"Raised KeyStoreException while loading the wallet by the keystore file. Error message: {e}")
             raise KeyStoreException(f'keystore file error.{e}')
 
     def store(self, file_path: str, password: str):
@@ -126,13 +140,26 @@ class KeyWallet(Wallet):
             if is_keystore_file(key_store_contents):
                 json_string_keystore_data = json.dumps(key_store_contents)
                 store_keystore_file_on_the_path(file_path, json_string_keystore_data)
+                logger.info(f"Stored Wallet. Address: {self.get_address()}, File path: {file_path}")
         except FileExistsError:
+            logger.exception(
+                f"Raised KeyStoreException while storing the wallet because the file already exists. "
+                f"File path: {file_path}")
             raise KeyStoreException("File already exists.")
         except PermissionError:
+            logger.exception(
+                f"Raised KeyStoreException while storing the wallet because permission is not enough"
+                f"File path: {file_path}")
             raise KeyStoreException("Not enough permission.")
         except FileNotFoundError:
+            logger.exception(
+                f"Raised KeyStoreException while storing the wallet because the file is not found."
+                f"File path: {file_path}")
             raise KeyStoreException("File not found.")
         except IsADirectoryError:
+            logger.exception(
+                f"Raised KeyStoreException while storing the wallet because the directory is invalid."
+                f"File path: {file_path}")
             raise KeyStoreException("Directory is invalid.")
 
     def get_private_key(self) -> str:
@@ -147,7 +174,7 @@ class KeyWallet(Wallet):
 
         :return address: An EOA address
         """
-        return public_key_to_address(self.public_key)
+        return f'hx{sha3_256(self.public_key[1:]).digest()[-20:].hex()}'
 
     def sign(self, data: bytes) -> bytes:
         """Generates signature from input data which is transaction data
@@ -158,5 +185,6 @@ class KeyWallet(Wallet):
         return sign(data, self.__private_key)
 
 
-def public_key_to_address(public_key: bytes) -> str:
-    return f'hx{sha3_256(public_key[1:]).digest()[-20:].hex()}'
+def get_public_key(private_key_object: PrivateKey):
+    warnings.warn("get_public_key is deprecated, use KeyWallet.public_key", DeprecationWarning)
+    return private_key_object.public_key.format(compressed=False)
