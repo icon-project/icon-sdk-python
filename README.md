@@ -177,20 +177,27 @@ block = icon_service.get_block(1209)
 
 ### Using logger
 
-Set a logger named `ICON-SDK-PYTHON` if necessary. Use `set_logger` function to set log level like "DEBUG", "INFO", etc and with a specific handler like FileHandler or SteamHandler as shown below.
+Set a logger named `ICON-SDK-PYTHON` if necessary. Use `set_logger` function to set log level like "DEBUG", "INFO", etc as shown below.
 
 ```python
 from iconsdk.utils import set_logger
 
 # Sets level in the logger. In this case, the handler is default StreamHandler which writes logging records, appropriately formatted, to a stream.
 set_logger("DEBUG")
+```
 
-from logging import FileHandler
+You can also set logger with a specific handler like FileHandler or SteamHandler and user own log format as shown below.
+
+```python 
+from logging import StreamHandler, Formatter
 
 # Sets level in the logger. In this case, the handler is FileHandler which writes formatted logging records to disk files.
 handler = FileHandler("./icon-sdk-python.log", mode='a', encoding=None, delay=False)
-set_logger("DEBUG", handler)
 
+# Sets user own log format.
+formatter = Formatter('%(asctime)s %(name)-12s %(levelname)-5s %(filename)-12s %(lineno)-4s %(funcName)-12s %(message)s')
+
+set_logger("DEBUG", handler, formatter)
 ```
 
 
