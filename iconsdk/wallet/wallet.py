@@ -58,7 +58,7 @@ class KeyWallet(Wallet):
         self.public_key: bytes = private_key_object.public_key.format(compressed=False)
 
     @staticmethod
-    def create():
+    def create() -> 'KeyWallet':
         """Generates an instance of Wallet without a specific private key.
 
         :return: An instance of Wallet class.
@@ -70,7 +70,7 @@ class KeyWallet(Wallet):
 
     @staticmethod
     @dispatch(bytes)
-    def load(private_key: bytes):
+    def load(private_key: bytes) -> 'KeyWallet':
         """Loads a wallet from a private key and generates an instance of Wallet.
 
         :param private_key: private key in bytes
@@ -88,7 +88,7 @@ class KeyWallet(Wallet):
 
     @staticmethod
     @dispatch(str, str)
-    def load(file_path, password):
+    def load(file_path: str, password: str) -> 'KeyWallet':
         """Loads a wallet from a keystore file with your password and generates an instance of Wallet.
 
         :param file_path: File path of the keystore file. type(str)
@@ -118,7 +118,7 @@ class KeyWallet(Wallet):
                 f"Raised KeyStoreException while loading the wallet by the keystore file. Error message: {e}")
             raise KeyStoreException(f'keystore file error.{e}')
 
-    def store(self, file_path, password):
+    def store(self, file_path: str, password: str):
         """Stores data of an instance of a derived wallet class on the file path with your password.
 
         :param file_path: File path of the keystore file. type(str)

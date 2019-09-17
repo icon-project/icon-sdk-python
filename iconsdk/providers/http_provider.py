@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Union
 import json
 import os
 from json.decoder import JSONDecodeError
@@ -35,7 +36,7 @@ class HTTPProvider(Provider):
     """
 
     @staticmethod
-    def _validate_base_domain_url(base_domain_url) -> bool:
+    def _validate_base_domain_url(base_domain_url: str) -> bool:
         """
         Validates if input base domain url is valid or not.
 
@@ -91,14 +92,14 @@ class HTTPProvider(Provider):
         return "RPC connection {0}".format(self._base_domain_url)
 
     @to_dict
-    def _get_request_kwargs(self):
+    def _get_request_kwargs(self) -> dict:
         if 'headers' not in self._request_kwargs:
             yield 'headers', {'Content-Type': 'application/json'}
         for key, value in self._request_kwargs.items():
             yield key, value
 
     @staticmethod
-    def _make_post_request(full_path_url, data, **kwargs):
+    def _make_post_request(full_path_url: str, data: dict, **kwargs) -> requests.Response:
         kwargs.setdefault('timeout', 10)
         with requests.Session() as session:
             response = session.post(url=full_path_url, data=json.dumps(data), **kwargs)
@@ -113,7 +114,7 @@ class HTTPProvider(Provider):
         url_components = url_components._replace(path=path)
         return url_components.geturl()
 
-    def make_request(self, method, params=None, full_response: bool = False):
+    def make_request(self, method: str, params=None, full_response: bool = False) -> Union[str, list, dict]:
         rpc_dict = {
             'jsonrpc': '2.0',
             'method': method,
@@ -133,7 +134,7 @@ class HTTPProvider(Provider):
         return custom_response
 
     @staticmethod
-    def _return_custom_response(response, full_response: bool = False):
+    def _return_custom_response(response: requests.Response, full_response: bool = False) -> Union[str, list, dict]:
         if full_response:
             return json.loads(response.content)
 
@@ -152,7 +153,7 @@ class HTTPProvider(Provider):
                              f"Error message: {content_as_dict['error']}")
                 raise JSONRPCException(content_as_dict["error"])
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         try:
             logger.debug("Connected")
             last_block = self.make_request('icx_getLastBlock', [])

@@ -27,57 +27,57 @@ from iconsdk.exception import DataTypeException
 from iconsdk.utils.type import is_str
 
 
-def is_0x_prefixed(value):
+def is_0x_prefixed(value: str) -> bool:
     if not is_str(value):
         raise DataTypeException("Value type must be str. Got: {0}".format(repr(value)))
     return value.startswith('0x')
 
 
-def remove_0x_prefix(value):
+def remove_0x_prefix(value: str) -> str:
     if is_0x_prefixed(value):
         return value[2:]
     return value
 
 
-def add_0x_prefix(value):
+def add_0x_prefix(value: str) -> str:
     if is_0x_prefixed(value):
         return value
     return '0x' + value
 
 
-def is_hx_prefixed(value):
+def is_hx_prefixed(value: str) -> bool:
     """Used for checking an address of a wallet."""
     if not is_str(value):
         raise DataTypeException("Value type must be str. Got: {0}.".format(repr(value)))
     return value.startswith('hx')
 
 
-def remove_hx_prefix(value):
+def remove_hx_prefix(value: str) -> str:
     if is_hx_prefixed(value):
         return value[2:]
     return value
 
 
-def add_hx_prefix(value):
+def add_hx_prefix(value: str) -> str:
     if is_hx_prefixed(value):
         return value
     return 'hx' + value
 
 
-def is_cx_prefixed(value):
+def is_cx_prefixed(value: str) -> bool:
     """Used for checking an address of SCORE."""
     if not is_str(value):
         raise DataTypeException("Value type must be str. Got: {0}.".format(repr(value)))
     return value.startswith("cx")
 
 
-def remove_cx_prefix(value):
+def remove_cx_prefix(value: str) -> str:
     if is_cx_prefixed(value):
         return value[2:]
     return value
 
 
-def add_cx_prefix(value):
+def add_cx_prefix(value: str) -> str:
     if is_cx_prefixed(value):
         return value
     return 'cx' + value

@@ -20,9 +20,9 @@ class Provider(metaclass=ABCMeta):
     """The provider defines how the IconService connects to Loopchain."""
 
     @abstractmethod
-    def make_request(self, method, params=None, full_response: bool = False):
+    def make_request(self, method: str, params=None, full_response: bool = False):
         raise NotImplementedError("Providers must implement this method")
 
     @abstractmethod
-    def is_connected(self):
+    def is_connected(self) -> bool:
         raise NotImplementedError("Providers must implement this method")

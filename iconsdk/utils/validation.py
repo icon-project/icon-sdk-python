@@ -46,7 +46,7 @@ def is_keystore_file(keystore: dict) -> bool:
         raise KeyStoreException("The keystore file is invalid.")
 
 
-def has_keys(target_data: dict, keys: list):
+def has_keys(target_data: dict, keys: list) -> bool:
     """Checks to a target data for having all of keys in list."""
     for key in keys:
         if key not in target_data.keys():
@@ -86,7 +86,7 @@ def is_score_address(value) -> bool:
     return is_str(value) and value.islower() and is_cx_prefixed(value) and len(remove_cx_prefix(value)) == 40
 
 
-def is_T_HASH(value):
+def is_T_HASH(value) -> bool:
     """T_HASH is data type which is 64-digit hexadecimal string prefixed with `0x`."""
     try:
         if is_0x_prefixed(value) and len(remove_0x_prefix(value)) == 64:
@@ -97,7 +97,7 @@ def is_T_HASH(value):
         raise DataTypeException("This hash value is unrecognized.")
 
 
-def is_T_BIN_DATA(value):
+def is_T_BIN_DATA(value) -> bool:
     """
     T_BIN_DATA is data type which is hexadeciamal string prefixed with `0x`
     and length is even.

@@ -32,39 +32,39 @@ class Transaction:
         self.__timestamp = timestamp
 
     @property
-    def from_(self):
+    def from_(self) -> str:
         return self.__from
 
     @property
-    def to(self):
+    def to(self) -> str:
         return self.__to
 
     @property
-    def value(self):
+    def value(self) -> int:
         return self.__value
 
     @property
-    def step_limit(self):
+    def step_limit(self) -> int:
         return self.__step_limit
 
     @step_limit.setter
-    def step_limit(self, step_limit):
+    def step_limit(self, step_limit: int):
         self.__step_limit = step_limit
 
     @property
-    def nid(self):
+    def nid(self) -> int:
         return self.__nid
 
     @property
-    def nonce(self):
+    def nonce(self) -> int:
         return self.__nonce
 
     @property
-    def version(self):
+    def version(self) -> int:
         return self.__version
 
     @property
-    def timestamp(self):
+    def timestamp(self) -> int:
         return self.__timestamp
 
     @property
@@ -75,7 +75,7 @@ class Transaction:
     def data(self):
         return None
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {"from_": self.from_, "to": self.to, "value": self.value, "step_limit": self.step_limit, "nid": self.nid,
                 "nonce": self.nonce, "version": self.version, "timestamp": self.timestamp}
 
@@ -96,22 +96,22 @@ class DeployTransaction(Transaction):
         self.__params = params
 
     @property
-    def content_type(self):
+    def content_type(self) -> str:
         return self.__content_type
 
     @property
-    def content(self):
+    def content(self) -> bytes:
         return self.__content
 
     @property
-    def data_type(self):
+    def data_type(self) -> str:
         return "deploy"
 
     @property
-    def params(self):
+    def params(self) -> dict:
         return self.__params
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         transaction_as_dict = super().to_dict()
         transaction_as_dict.update({"content_type": self.content_type, "content": self.content,
                                     "data_type": self.data_type, "params": self.params})
@@ -128,18 +128,18 @@ class CallTransaction(Transaction):
         self.__params = params
 
     @property
-    def method(self):
+    def method(self) -> str:
         return self.__method
 
     @property
-    def data_type(self):
+    def data_type(self) -> str:
         return "call"
 
     @property
-    def params(self):
+    def params(self) -> dict:
         return self.__params
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         transaction_as_dict = super().to_dict()
         transaction_as_dict.update({"method": self.method, "data_type": self.data_type, "params": self.params})
         return transaction_as_dict
@@ -158,14 +158,14 @@ class MessageTransaction(Transaction):
             raise DataTypeException("Message data should be hex string prefixed with '0x'.")
 
     @property
-    def data_type(self):
+    def data_type(self) -> str:
         return "message"
 
     @property
-    def data(self):
+    def data(self) -> str:
         return self.__data
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         transaction_as_dict = super().to_dict()
         transaction_as_dict.update({"data_type": self.data_type, "data": self.data})
         return transaction_as_dict
@@ -181,18 +181,18 @@ class DepositTransaction(Transaction):
         self.__id = id
 
     @property
-    def data_type(self):
+    def data_type(self) -> str:
         return "deposit"
 
     @property
-    def action(self):
+    def action(self) -> str:
         return self.__action
 
     @property
-    def id(self):
+    def id(self) -> str:
         return self.__id
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         transaction_as_dict = super().to_dict()
         transaction_as_dict.update({"data_type": self.data_type, "action": self.action, "id": self.id})
         return transaction_as_dict
@@ -212,35 +212,35 @@ class TransactionBuilder:
         self._version = version
         self._timestamp = timestamp
 
-    def from_(self, from_):
+    def from_(self, from_: str) -> 'TransactionBuilder':
         self._from_ = from_
         return self
 
-    def to(self, to):
+    def to(self, to: str) -> 'TransactionBuilder':
         self._to = to
         return self
 
-    def value(self, value):
+    def value(self, value: int) -> 'TransactionBuilder':
         self._value = value
         return self
 
-    def step_limit(self, step_limit):
+    def step_limit(self, step_limit: int) -> 'TransactionBuilder':
         self._step_limit = step_limit
         return self
 
-    def nid(self, nid):
+    def nid(self, nid: int) -> 'TransactionBuilder':
         self._nid = nid
         return self
 
-    def nonce(self, nonce):
+    def nonce(self, nonce: int) -> 'TransactionBuilder':
         self._nonce = nonce
         return self
 
-    def version(self, version):
+    def version(self, version: int) -> 'TransactionBuilder':
         self._version = version
         return self
 
-    def timestamp(self, timestamp):
+    def timestamp(self, timestamp: int) -> 'TransactionBuilder':
         self._timestamp = timestamp
         return self
 
@@ -280,15 +280,15 @@ class DeployTransactionBuilder(TransactionBuilder):
         self._content = content
         self._params = params
 
-    def content_type(self, content_type):
+    def content_type(self, content_type: str) -> 'DeployTransactionBuilder':
         self._content_type = content_type
         return self
 
-    def content(self, content):
+    def content(self, content: bytes) -> 'DeployTransactionBuilder':
         self._content = content
         return self
 
-    def params(self, params):
+    def params(self, params: dict) -> 'DeployTransactionBuilder':
         self._params = params
         return self
 
@@ -321,11 +321,11 @@ class CallTransactionBuilder(TransactionBuilder):
         self._method = method
         self._params = params
 
-    def method(self, method):
+    def method(self, method: str) -> 'CallTransactionBuilder':
         self._method = method
         return self
 
-    def params(self, params):
+    def params(self, params: dict) -> 'CallTransactionBuilder':
         self._params = params
         return self
 
@@ -355,7 +355,7 @@ class MessageTransactionBuilder(TransactionBuilder):
         TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._data = data
 
-    def data(self, data):
+    def data(self, data: str) -> 'MessageTransactionBuilder':
         self._data = data
         return self
 
@@ -386,11 +386,11 @@ class DepositTransactionBuilder(TransactionBuilder):
         self._action = action
         self._id = id
 
-    def action(self, action: str):
+    def action(self, action: str) -> 'DepositTransactionBuilder':
         self._action = action
         return self
 
-    def id(self, id: str):
+    def id(self, id: str) -> 'DepositTransactionBuilder':
         self._id = id
         return self
 
