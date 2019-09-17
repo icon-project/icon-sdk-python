@@ -14,14 +14,15 @@
 # limitations under the License.
 
 import json
+import warnings
 from abc import ABCMeta, abstractmethod
 from hashlib import sha3_256
-from iconsdk import logger
 
 from coincurve import PrivateKey
 from eth_keyfile import create_keyfile_json, extract_key_from_keyfile
 from multipledispatch import dispatch
 
+from iconsdk import logger
 from iconsdk.exception import KeyStoreException, DataTypeException
 from iconsdk.libs.signer import sign
 from iconsdk.utils import store_keystore_file_on_the_path
@@ -182,3 +183,8 @@ class KeyWallet(Wallet):
         :return signature: signature made from input
         """
         return sign(data, self.__private_key)
+
+
+def get_public_key(private_key_object: PrivateKey):
+    warnings.warn("get_public_key is deprecated, use KeyWallet.public_key", DeprecationWarning)
+    return private_key_object.public_key.format(compressed=False)
