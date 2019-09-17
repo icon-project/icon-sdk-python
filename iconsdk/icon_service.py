@@ -61,6 +61,7 @@ class IconService:
             Integer of a block height
             or hash of a block prefixed with '0x'
             or `latest`
+        :param full_response: True returns full response and False returns returning the custom response
         :return result: Block data
         """
         # by height
@@ -103,6 +104,7 @@ class IconService:
         Delegates to icx_getBalance RPC method.
 
         :param address: An address of EOA or SCORE. type(str)
+        :param full_response: True returns full response and False returns returning the custom response
         :return: Number of ICX coins
         """
         if is_score_address(address) or is_wallet_address(address):
@@ -123,6 +125,7 @@ class IconService:
         Delegates to icx_getScoreApi RPC method.
 
         :param address: A SCORE address to be examined
+        :param full_response: True returns full response and False returns returning the custom response
         :return: A list of API methods of the SCORE and its information
         """
         if not is_score_address(address):
@@ -137,6 +140,7 @@ class IconService:
         Delegates to icx_getTransactionResult RPC method.
 
         :param tx_hash: Hash of a transaction prefixed with '0x'
+        :param full_response: True returns full response and False returns returning the custom response
         :return A transaction result object
         """
         if not is_T_HASH(tx_hash):
@@ -156,6 +160,7 @@ class IconService:
         Delegates to icx_getTransactionByHash RPC method.
 
         :param tx_hash: Transaction hash prefixed with '0x'
+        :param full_response: True returns full response and False returns returning the custom response
         :return: Information about a transaction
         """
         if not is_T_HASH(tx_hash):
@@ -175,6 +180,7 @@ class IconService:
         Delegates to icx_call RPC method.
 
         :param call: Call object made by CallBuilder
+        :param full_response: True returns full response and False returns returning the custom response
         :return: Values returned by the executed SCORE function
         """
         if not isinstance(call, Call):
@@ -202,6 +208,7 @@ class IconService:
         Delegates to icx_sendTransaction RPC method.
 
         :param signed_transaction: A signed transaction object
+        :param full_response: True returns full response and False returns returning the custom response
         :return: Transaction hash prefixed with '0x'
         """
         params = signed_transaction.signed_transaction_dict
