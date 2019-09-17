@@ -1,12 +1,12 @@
 # Changelog
 
-## [1.2.0] -  Aug, 21, 2019
+## [1.2.0] -  Sep, 17, 2019
 ### Added
 - Apply return value of full response to support T-bears
 
 ### Changed
 - Substitute `coincurve` for `secp256k1`
-- Enable debug level logging on http provider
+- Support for setting logger function
 
 ### Removed
 N/A
