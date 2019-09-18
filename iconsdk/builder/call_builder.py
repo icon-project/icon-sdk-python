@@ -29,22 +29,22 @@ class Call:
         self.__params = params
 
     @property
-    def from_(self):
+    def from_(self) -> str:
         return self.__from
 
     @property
-    def to(self):
+    def to(self) -> str:
         return self.__to
 
     @property
-    def method(self):
+    def method(self) -> str:
         return self.__method
 
     @property
-    def params(self):
+    def params(self) -> dict:
         return convert_params_value_to_hex_str(self.__params) if self.__params else None
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {"from_": self.from_, "to": self.to, "method": self.method, "params": self.params}
 
 
@@ -60,19 +60,19 @@ class CallBuilder:
         self._method = method
         self._params = params
 
-    def from_(self, from_):
+    def from_(self, from_: str) -> 'CallBuilder':
         self._from_ = from_
         return self
 
-    def to(self, to):
+    def to(self, to: str) -> 'CallBuilder':
         self._to = to
         return self
 
-    def method(self, method):
+    def method(self, method: str) -> 'CallBuilder':
         self._method = method
         return self
 
-    def params(self, params):
+    def params(self, params: dict) -> 'CallBuilder':
         self._params = params
         return self
 

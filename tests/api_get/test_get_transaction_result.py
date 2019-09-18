@@ -26,35 +26,42 @@ from tests.api_send.test_send_super import TestSendSuper
 
 class TestGetTransactionResult(TestSendSuper):
 
-    def test_validate_transaction(self):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
         param = {"init_supply": 10000}
         deploy_transaction = DeployTransactionBuilder() \
-            .from_(self.setting["from"]) \
-            .to(self.setting["to_install"]) \
-            .step_limit(self.setting["step_limit"]) \
-            .nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]) \
-            .content_type(self.setting["content_type"]) \
-            .content(self.setting["content_install"]) \
+            .from_(cls.setting["from"]) \
+            .to(cls.setting["to_install"]) \
+            .step_limit(cls.setting["step_limit"]) \
+            .nid(cls.setting["nid"]) \
+            .nonce(cls.setting["nonce"]) \
+            .content_type(cls.setting["content_type"]) \
+            .content(cls.setting["content_install"]) \
             .params(param) \
             .version(3) \
             .build()
 
         # Test install SCORE : Sends transaction which makes the SCORE install correctly
-        signed_transaction_dict = SignedTransaction(deploy_transaction, self.wallet)
-        tx_hash = self.icon_service.send_transaction(signed_transaction_dict)
+        signed_transaction_dict = SignedTransaction(deploy_transaction, cls.wallet)
+        tx_result = cls.icon_service.send_transaction(signed_transaction_dict)
 
         sleep(2)
-        result = self.icon_service.get_transaction_result(tx_hash)
+
+        cls.tx_hash = tx_result
+
+    def test_validate_transaction(self):
+        result = self.icon_service.get_transaction_result(self.tx_hash)
         self.assertTrue(is_transaction_result(result))
 
         # case 1: when tx_hash is invalid - no prefixed
-        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, remove_0x_prefix(tx_hash))
+        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, remove_0x_prefix(self.tx_hash))
         # case 2: when tx_hash is invalid - wrong prefixed
         self.assertRaises(DataTypeException, self.icon_service.get_transaction_result,
-                          add_cx_prefix(remove_0x_prefix(tx_hash)))
+                          add_cx_prefix(remove_0x_prefix(self.tx_hash)))
         # case 3: when tx_hash is invalid - too short
-        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, tx_hash[:15])
+        self.assertRaises(DataTypeException, self.icon_service.get_transaction_result, self.tx_hash[:15])
         # case 4: when tx_hash is invalid - not exist
         tx_hash_invalid = add_0x_prefix(os.urandom(32).hex())
         self.assertRaises(JSONRPCException, self.icon_service.get_transaction_result, tx_hash_invalid)

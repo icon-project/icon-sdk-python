@@ -18,7 +18,7 @@ from iconsdk.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
 from iconsdk.utils.type import is_integer, is_bytes, is_str
 
 
-def convert_int_to_hex_str(value: int):
+def convert_int_to_hex_str(value: int) -> str:
     """Converts an integer to hex string prefixed with '0x'."""
     if is_integer(value):
         return hex(value)
@@ -26,7 +26,7 @@ def convert_int_to_hex_str(value: int):
         raise DataTypeException("Data type should be integer.")
 
 
-def convert_bytes_to_hex_str(value: bytes):
+def convert_bytes_to_hex_str(value: bytes) -> str:
     """Converts bytes to hex string prefixed with '0x'."""
     if is_bytes(value):
         return add_0x_prefix(value.hex())
@@ -34,7 +34,7 @@ def convert_bytes_to_hex_str(value: bytes):
         raise DataTypeException("Data type should be bytes.")
 
 
-def convert_params_value_to_hex_str(params: dict):
+def convert_params_value_to_hex_str(params: dict) -> dict:
     """Converts params' values into hex str prefixed with '0x'."""
     if isinstance(params, dict):
         new_params = params
@@ -48,7 +48,7 @@ def convert_params_value_to_hex_str(params: dict):
         raise DataTypeException("Params type should be dict.")
 
 
-def convert_hex_str_to_int(value: str):
+def convert_hex_str_to_int(value: str) -> int:
     """Converts hex string prefixed with '0x' into int."""
     if is_str(value):
         return int(value, 16)
@@ -56,7 +56,7 @@ def convert_hex_str_to_int(value: str):
         raise DataTypeException("Data type should be string.")
 
 
-def convert_hex_str_to_bytes(value: str):
+def convert_hex_str_to_bytes(value: str) -> bytes:
     """Converts hex string prefixed with '0x' into bytes."""
     if is_str(value):
         return bytes.fromhex(remove_0x_prefix(value))

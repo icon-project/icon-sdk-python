@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Optional
+
 from iconsdk.utils.convert_type import convert_hex_str_to_int, convert_hex_str_to_bytes
 from iconsdk.utils.hexadecimal import add_0x_prefix, is_0x_prefixed
 from iconsdk.utils.type import is_integer
@@ -48,7 +50,7 @@ def convert_transaction(transaction: dict):
             transaction[int_field] = convert_hex_str_to_int(transaction[int_field])
 
 
-def convert_block(data: dict):
+def convert_block(data: dict) -> Optional[dict]:
     """
     Convert block data into the right format.
     It supports data about a block made not only from JSON RPC V3 but also from V2.
