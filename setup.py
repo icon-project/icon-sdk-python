@@ -26,6 +26,9 @@ if version is None:
 with open("README.md", 'r') as f:
     long_description = f.read()
 
+with open("requirements.txt") as requirements:
+    requires = list(requirements)
+
 setup(
     name='iconsdk',
     version=version,
@@ -41,12 +44,7 @@ setup(
     tests_require=[
         'secp256k1==0.13.2'
     ],
-    install_requires=[
-        'eth-keyfile==0.5.1',
-        'coincurve~=12.0',  # coincurve >= 12.0 and coincurve == 12.*
-        'multipledispatch==0.5.0',
-        'requests==2.20.0'
-    ],
+    install_requires=requires,
     license='Apache License 2.0',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
