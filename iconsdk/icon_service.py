@@ -16,14 +16,16 @@ from typing import Union
 
 from iconsdk.builder.call_builder import Call
 from iconsdk.builder.transaction_builder import Transaction
-from iconsdk.converter import convert_block, convert_transaction, convert_transaction_result
 from iconsdk.exception import AddressException, DataTypeException
 from iconsdk.providers.provider import Provider
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils import get_timestamp
 from iconsdk.utils.convert_type import convert_int_to_hex_str
+from iconsdk.utils.converter import convert, \
+    get_block_template_to_convert_transactions_for_genesis
 from iconsdk.utils.gen_tx_data import generate_data_value
 from iconsdk.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
+from iconsdk.utils.templates import BLOCK_0_1a, BLOCK_0_3, TRANSACTION_RESULT, TRANSACTION, BLOCK_0_1A_VERSION
 from iconsdk.utils.validation import (
     is_block_height,
     is_hex_block_hash,
@@ -37,26 +39,31 @@ from iconsdk.utils.validation import (
 class IconService:
     """
     The IconService class contains a set of API methods.
-    It accepts a HTTPProvider which serves the purpose of 
+    It accepts a HTTPProvider which serves the purpose of
     connecting to HTTP and HTTPS based JSON-RPC servers.
     """
+    DEFAULT_BLOCK_VERSION = BLOCK_0_1A_VERSION
 
     def __init__(self, provider: Provider):
         self.__provider = provider
 
-    def get_block(self, value: Union[int, str], full_response: bool = False) -> dict:
+    def get_block(self, value: Union[int, str], full_response: bool = False,
+                  block_version: str = DEFAULT_BLOCK_VERSION) -> dict:
         """
         If param is height,
             1. Returns block information by block height
-            2. Delegates to icx_getBlockByHeight RPC method
+            2-1. Delegates to icx_getBlockByHeight RPC method (When Block Version is 0.1a)
+            2-2. Delegates to icx_getBlock RPC method (When Block Version is 0.3)
 
         Or block hash,
             1. Returns block information by block hash
-            2. Delegates to icx_getBlockByHash RPC method
+            2-1. Delegates to icx_getBlockByHash RPC method (When Block Version is 0.1a)
+            2-2. Delegates to icx_getBlock RPC method (When Block Version is 0.3)
 
         Or string value same as `latest`,
             1. Returns the last block information
-            2. Delegates to icx_getLastBlock RPC method
+            2-1. Delegates to icx_getLastBlock RPC method (When Block Version is 0.1a)
+            2-2. Delegates to icx_getBlock RPC method (When Block Version is 0.3)
 
         :param value:
             Integer of a block height
@@ -64,24 +71,46 @@ class IconService:
             or `latest`
         :param full_response:
             Boolean to check whether get naive dict or refined data from server
+        :param block_version:
+            returning block format version
+
         :return result: Block data
         """
+
+        # Nested method of returning right name of API method
+        def return_infos_by_block_version(_prev_method: str) -> str:
+            """ Returns API method name, block template, bool of full print by block version
+
+            :param _prev_method: previous API methods. For instance, icx_getBlockByHeight, icx_getBlockByHash and icx_getLastBlock
+            :return: method name, block template, bool of full print
+            """
+            new_method = "icx_getBlock"
+            if block_version == self.DEFAULT_BLOCK_VERSION:
+                return _prev_method, BLOCK_0_1a, False
+            else:
+                return new_method, BLOCK_0_3, True
+
         # by height
         if is_block_height(value):
             params = {'height': add_0x_prefix(hex(value))}
-            result = self.__provider.make_request('icx_getBlockByHeight', params, full_response)
+            prev_method = 'icx_getBlockByHeight'
         # by hash
         elif is_hex_block_hash(value):
             params = {'hash': value}
-            result = self.__provider.make_request('icx_getBlockByHash', params, full_response)
-        # by value
+            prev_method = 'icx_getBlockByHash'
+        # last block
         elif is_predefined_block_value(value):
-            result = self.__provider.make_request('icx_getLastBlock', full_response=full_response)
+            params = None
+            prev_method = 'icx_getLastBlock'
         else:
             raise DataTypeException("It's unrecognized block reference:{0!r}.".format(value))
 
+        method, block_template, full_print = return_infos_by_block_version(prev_method)
+        result = self.__provider.make_request(method, params, full_response)
+
         if not full_response:
-            convert_block(result)
+            block_template = get_block_template_to_convert_transactions_for_genesis(result, block_template)
+            result = convert(result, block_template, full_print)
 
         return result
 
@@ -153,7 +182,7 @@ class IconService:
         result = self.__provider.make_request('icx_getTransactionResult', params, full_response)
 
         if not full_response:
-            convert_transaction_result(result)
+            result = convert(result, TRANSACTION_RESULT)
 
         return result
 
@@ -173,7 +202,7 @@ class IconService:
         result = self.__provider.make_request('icx_getTransactionByHash', params, full_response)
 
         if not full_response:
-            convert_transaction(result)
+            result = convert(result, TRANSACTION)
 
         return result
 

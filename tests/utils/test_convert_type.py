@@ -56,4 +56,3 @@ class TestConvertType(TestCase):
         """
         hex_str = "0x0000"
         self.assertEqual(convert_hex_str_to_bytes(hex_str), b'\x00\x00')
-
