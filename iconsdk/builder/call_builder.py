@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from iconsdk.exception import DataTypeException
-from iconsdk.utils.convert_type import convert_params_value_to_hex_str
+from ..exception import DataTypeException
+from ..utils.typing.conversion import object_to_str
 
 
 class Call:
@@ -42,7 +42,7 @@ class Call:
 
     @property
     def params(self) -> dict:
-        return convert_params_value_to_hex_str(self.__params) if self.__params else None
+        return object_to_str(self.__params) if self.__params else None
 
     def to_dict(self) -> dict:
         return {"from_": self.from_, "to": self.to, "method": self.method, "params": self.params}
