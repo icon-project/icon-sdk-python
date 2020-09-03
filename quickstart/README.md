@@ -232,6 +232,20 @@ tx_hash = icon_service.send_transaction(signed_transaction)
 
 Note that the estimation can be smaller or larger than the actual amount of step to be used by the transaction, so it is recommended to add some margin to the estimation when you set the `step_limit` of the `SignedTransaction`.
 
+
+
+#### Get Account
+
+Get raw data about account in State Database for debug.
+
+```python
+# Useage
+
+# :param address: An address of EOA or SCORE. type(str)
+# :param account_filter: Filter flags about coin(0x1), stake(0x2), delegation(0x4)
+response = icon_service.get_account("hx000...1", "0x1")
+```
+
 #### 
 
 ## Code Examples

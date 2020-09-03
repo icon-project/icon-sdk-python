@@ -10,118 +10,7 @@ ICON SDK for Python is a collection of libraries which allows you to interact wi
 
 ## Table of Contents
 
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
-
-- [Quick Start](#quick-start)
-  - [Requirements](#requirements)
-  - [Reference](#reference)
-  - [Version](#version)
-  - [Installation](#installation)
-  - [Creating an IconService Instance and Setting a Provider](#creating-an-iconservice-instance-and-setting-a-provider)
-  - [Using logger](#using-logger)
-- [Queries](#queries)
-  - [Examples](#examples)
-  - [Error Cases](#error-cases)
-  - [get_block](#get_block)
-    - [Parameters](#parameters)
-    - [Returns](#returns)
-    - [Example](#example)
-  - [get_balance](#get_balance)
-    - [Parameters](#parameters-1)
-    - [Returns](#returns-1)
-    - [Example](#example-1)
-  - [get_score_api](#get_score_api)
-    - [Parameters](#parameters-2)
-    - [Returns](#returns-2)
-    - [Example](#example-2)
-  - [get_total_supply](#get_total_supply)
-    - [Parameters](#parameters-3)
-    - [Returns](#returns-3)
-    - [Example](#example-3)
-  - [get_transaction](#get_transaction)
-    - [Parameters](#parameters-4)
-    - [Returns](#returns-4)
-    - [Example](#example-4)
-  - [get_transaction_result](#get_transaction_result)
-    - [Parameters](#parameters-5)
-    - [Returns](#returns-5)
-    - [Example](#example-5)
-  - [call](#call)
-    - [Parameters](#parameters-6)
-    - [Returns](#returns-6)
-    - [Example](#example-6)
-- [Loading a Wallet and Storing the Keystore](#loading-a-wallet-and-storing-the-keystore)
-  - [Examples](#examples-1)
-- [API Methods of KeyWallet](#api-methods-of-keywallet)
-  - [create](#create)
-    - [Parameters](#parameters-7)
-    - [Returns](#returns-7)
-    - [Example](#example-7)
-  - [load](#load)
-    - [Parameters](#parameters-8)
-    - [Returns](#returns-8)
-    - [Example](#example-8)
-  - [load](#load-1)
-    - [Parameters](#parameters-9)
-    - [Returns](#returns-9)
-    - [Example](#example-9)
-  - [store](#store)
-    - [Parameters](#parameters-10)
-    - [Returns](#returns-10)
-    - [Example](#example-10)
-  - [get_address](#get_address)
-    - [Parameters](#parameters-11)
-    - [Returns](#returns-11)
-    - [Example](#example-11)
-  - [get_private_key](#get_private_key)
-    - [Parameters](#parameters-12)
-    - [Returns](#returns-12)
-    - [Example](#example-12)
-  - [sign](#sign)
-    - [Parameters](#parameters-13)
-    - [Returns](#returns-13)
-    - [Example](#example-13)
-- [Transactions](#transactions)
-  - [Generating a Transaction](#generating-a-transaction)
-  - [Signing a Transaction](#signing-a-transaction)
-  - [Sending a Transaction](#sending-a-transaction)
-  - [Examples](#examples-2)
-  - [TransactionBuilder](#transactionbuilder)
-    - [set methods](#set-methods)
-    - [Returns](#returns-14)
-    - [Example](#example-14)
-  - [DeployTransactionBuilder](#deploytransactionbuilder)
-    - [methods](#methods)
-    - [Returns](#returns-15)
-    - [Example](#example-15)
-  - [CallTransactionBuilder](#calltransactionbuilder)
-    - [methods](#methods-1)
-    - [Returns](#returns-16)
-    - [Example](#example-16)
-  - [MessageTransactionBuilder](#messagetransactionbuilder)
-    - [methods](#methods-2)
-    - [Returns](#returns-17)
-    - [Example](#example-17)
-  - [DepositTransactionBuilder](#deposittransactionbuilder)
-    - [methods](#methods-3)
-    - [Returns](#returns-18)
-    - [Example](#example-18)
-  - [SignedTransaction](#signedtransaction)
-    - [Parameters](#parameters-14)
-    - [Returns](#returns-19)
-    - [Example](#example-19)
-  - [send_transaction](#send_transaction)
-    - [Parameters](#parameters-15)
-    - [Returns](#returns-20)
-    - [Example](#example-20)
-- [Estimating step](#estimating-step)
-  - [Examples](#examples-3)
-  - [estimate_step](#estimate_step)
-    - [Parameters](#parameters-16)
-    - [Returns](#returns-21)
-    - [Example](#example-21)
-
-<!-- /TOC -->
+[TOC]
 
 
 
@@ -1259,3 +1148,40 @@ transaction = TransactionBuilder()\
 # Returns an estimated step value
 estimate_step = icon_service.estimate_step(transaction)
 ```
+
+
+
+## Get Account
+
+Get raw data about account in State Database for debug.
+
+
+
+#### Parameters
+
+address: An address of EOA or SCORE. type(str)
+
+account_filter: Filter flags about coin(0x1), stake(0x2), delegation(0x4)
+
+
+
+#### Returns
+
+Raw data of account
+
+
+
+#### Error Cases
+
+- AddressException : Address is invalid.
+- JSONRPCException :  JSON-RPC Response is error.
+
+
+
+#### Example
+
+```python
+# Useage
+response = icon_service.get_account("hx000...1", "0x1")
+```
+

@@ -281,3 +281,23 @@ class IconService:
 
         result = self.__provider.make_request('debug_estimateStep', params)
         return int(result, 16)
+
+    def get_account(self, address: str, account_filter: int, full_response: bool = False) -> dict:
+        """
+        Returns the raw data of account in StateDB.
+        Delegates to debug_getAccount RPC method.
+
+        :param address: An address of EOA or SCORE. type(str)
+        :param account_filter: Filter flags about coin(0x1), stake(0x2), delegation(0x4)
+        :param full_response: Boolean to check whether get naive dict or refined data from server
+        :return: raw_data of account in StateDB
+        """
+        if is_score_address(address) or is_wallet_address(address):
+            params = {
+                "address": address,
+                "filter": hex(account_filter)
+            }
+
+            return self.__provider.make_request("debug_getAccount", params, full_response)
+        else:
+            raise AddressException("Address is wrong.")
