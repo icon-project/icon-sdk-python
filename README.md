@@ -1153,7 +1153,7 @@ estimate_step = icon_service.estimate_step(transaction)
 
 ## Get Account
 
-Get raw data about account in State Database for debug.
+Get the raw data of account in State Database.
 
 
 
@@ -1184,4 +1184,3 @@ Raw data of account
 # Useage
 response = icon_service.get_account("hx000...1", "0x1")
 ```
-
