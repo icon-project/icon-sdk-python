@@ -236,7 +236,7 @@ Note that the estimation can be smaller or larger than the actual amount of step
 
 #### Get Account
 
-Get raw data about account in State Database for debug.
+Get the raw data of account in State Database.
 
 ```python
 # Useage
@@ -731,4 +731,3 @@ def get_token_symbol(token_address: str):
         .build()
     return icon_service.call(call)
 ```
-
