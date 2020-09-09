@@ -1,7 +1,11 @@
 import enum
+import json
 from unittest import main
 
+import requests_mock
+
 from tests.api_send.test_send_super import TestSendSuper
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 class AccountFilter(enum.Flag):
@@ -11,81 +15,142 @@ class AccountFilter(enum.Flag):
 
 
 class TestGetAccount(TestSendSuper):
-
     def test_get_account_coin(self):
-        result: dict = self.icon_service.get_account(
-            address=self.setting["from"],
-            account_filter=AccountFilter.COIN.value,
-        )
-        expected_result: dict = {
-            "coin": {
-                'balance': '0x0',
-                'flag': '0x0',
-                'flagStr': 'CoinPartFlag.NONE',
-                'type': '0x0',
-                'typeStr': 'GENERAL'
+        with requests_mock.Mocker() as m:
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'debug_getAccount',
+                'params': {
+                    'address': self.setting["from"],
+                    'filter': hex(AccountFilter.COIN.value)
+                }
             }
-        }
-        self.assertTrue(isinstance(result, dict))
-        self.assertEqual(expected_result, result)
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "result": {
+                    "coin": {
+                        'balance': '0x0',
+                        'flag': '0x0',
+                        'flagStr': 'CoinPartFlag.NONE',
+                        'type': '0x0',
+                        'typeStr': 'GENERAL'
+                    }
+                },
+                "id": 1234
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
+            result: dict = self.icon_service.get_account(
+                address=self.setting["from"],
+                account_filter=AccountFilter.COIN.value,
+            )
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
 
     def test_get_account_stake(self):
-        result: dict = self.icon_service.get_account(
-            address=self.setting["from"],
-            account_filter=AccountFilter.STAKE.value,
-        )
-        expected_result: dict = {
-            "stake": {
-                'stake': '0x0',
-                'unstake': '0x0',
-                'unstakeBlockHeight': '0x0',
-                'unstakesInfo': []
+        with requests_mock.Mocker() as m:
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'debug_getAccount',
+                'params': {
+                    'address': self.setting["from"],
+                    'filter': hex(AccountFilter.STAKE.value)
+                }
             }
-        }
-        self.assertTrue(isinstance(result, dict))
-        self.assertEqual(expected_result, result)
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "result": {
+                    "stake": {
+                        'stake': '0x0',
+                        'unstake': '0x0',
+                        'unstakeBlockHeight': '0x0',
+                        'unstakesInfo': []
+                    }
+                },
+                "id": 1234
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
+            result: dict = self.icon_service.get_account(
+                address=self.setting["from"],
+                account_filter=AccountFilter.STAKE.value,
+            )
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
 
     def test_get_account_delegation(self):
-        result: dict = self.icon_service.get_account(
-            address=self.setting["from"],
-            account_filter=AccountFilter.DELEGATION.value,
-        )
-        expected_result: dict = {
-            "delegation": {
-                'delegations': [],
-                'totalDelegated': '0x0'
+        with requests_mock.Mocker() as m:
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'debug_getAccount',
+                'params': {
+                    'address': self.setting["from"],
+                    'filter': hex(AccountFilter.DELEGATION.value)
+                }
             }
-        }
-        self.assertTrue(isinstance(result, dict))
-        self.assertEqual(expected_result, result)
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "result": {
+                    "stake": {
+                        'stake': '0x0',
+                        'unstake': '0x0',
+                        'unstakeBlockHeight': '0x0',
+                        'unstakesInfo': []
+                    }
+                },
+                "id": 1234
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
+            result: dict = self.icon_service.get_account(
+                address=self.setting["from"],
+                account_filter=AccountFilter.DELEGATION.value,
+            )
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
 
     def test_get_account_all(self):
         all_filter: AccountFilter = AccountFilter.COIN | AccountFilter.STAKE | AccountFilter.DELEGATION
-        result: dict = self.icon_service.get_account(
-            address=self.setting["from"],
-            account_filter=all_filter.value,
-        )
-        expected_result: dict = {
-            "coin": {
-                'balance': '0x0',
-                'flag': '0x0',
-                'flagStr': 'CoinPartFlag.NONE',
-                'type': '0x0',
-                'typeStr': 'GENERAL'
-            },
-            "stake": {
-                'stake': '0x0',
-                'unstake': '0x0',
-                'unstakeBlockHeight': '0x0',
-                'unstakesInfo': []
-            },
-            "delegation": {
-                'delegations': [],
-                'totalDelegated': '0x0'
+        with requests_mock.Mocker() as m:
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'debug_getAccount',
+                'params': {
+                    'address': self.setting["from"],
+                    'filter': hex(all_filter.value)
+                }
             }
-        }
-        self.assertTrue(isinstance(result, dict))
-        self.assertEqual(expected_result, result)
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "result": {
+                    "coin": {
+                        'balance': '0x0',
+                        'flag': '0x0',
+                        'flagStr': 'CoinPartFlag.NONE',
+                        'type': '0x0',
+                        'typeStr': 'GENERAL'
+                    },
+                    "stake": {
+                        'stake': '0x0',
+                        'unstake': '0x0',
+                        'unstakeBlockHeight': '0x0',
+                        'unstakesInfo': []
+                    },
+                    "delegation": {
+                        'delegations': [],
+                        'totalDelegated': '0x0'
+                    }
+                },
+                "id": 1234
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
+            result: dict = self.icon_service.get_account(
+                address=self.setting["from"],
+                account_filter=all_filter.value,
+            )
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
 
 
 if __name__ == "__main__":
