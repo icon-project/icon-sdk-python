@@ -485,6 +485,35 @@ class TestGetScoreApi(TestSendSuper):
             actual_request_body = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request_body, actual_request_body)
 
+    def test_get_score_api_invalid_score_address(self):
+        invalid_score_address: str = "cxb0776ee37f5b45bfaea8cff1d8232fbb6122ec32"
+        # case 3: when the address is not score id
+        with requests_mock.Mocker() as m:
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'icx_getScoreApi',
+                'params': {
+                    'address': invalid_score_address
+                }
+            }
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "error": {
+                    "code": -32002,
+                    "message": f"SCORE not found: {invalid_score_address}"
+                },
+                "id": 1234
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3", status_code=400, json=expected_result)
+            self.assertRaises(
+                JSONRPCException,
+                self.icon_service.get_score_api,
+                invalid_score_address
+            )
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
+
     def test_invalidate_score_apis(self):
         # case 1: when address is wrong - wallet address
         self.assertRaises(AddressException, self.icon_service.get_score_api,
@@ -492,9 +521,6 @@ class TestGetScoreApi(TestSendSuper):
         # case 2: when address is wrong - too short
         self.assertRaises(AddressException, self.icon_service.get_score_api,
                           "cx882efc17c2f50e0d60142b9c0e746cbafb")
-        # case 3: when the address is not score id
-        self.assertRaises(JSONRPCException, self.icon_service.get_score_api,
-                          "cxb0776ee37f5b45bfaea8cff1d8232fbb6122ec32")
 
 
 if __name__ == "__main__":
