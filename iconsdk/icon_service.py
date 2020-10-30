@@ -265,6 +265,9 @@ class IconService:
             "nid": convert_int_to_hex_str(transaction.nid) if transaction.nid else "0x1"
         }
 
+        if transaction.step_limit is not None:
+            params["stepLimit"] = convert_int_to_hex_str(transaction.step_limit)
+
         if transaction.value is not None:
             params["value"] = convert_int_to_hex_str(transaction.value)
 
@@ -280,6 +283,7 @@ class IconService:
             params["data"] = transaction.data
 
         result = self.__provider.make_request('debug_estimateStep', params)
+
         return int(result, 16)
 
     def get_account(self, address: str, account_filter: int, full_response: bool = False) -> dict:
