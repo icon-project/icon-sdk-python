@@ -40,7 +40,7 @@ class TestGetAccount(TestSendSuper):
                 "id": 1234
             }
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
-            result: dict = self.icon_service.get_account(
+            self.icon_service.get_account(
                 address=self.setting["from"],
                 account_filter=AccountFilter.COIN.value,
             )
@@ -71,7 +71,7 @@ class TestGetAccount(TestSendSuper):
                 "id": 1234
             }
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
-            result: dict = self.icon_service.get_account(
+            self.icon_service.get_account(
                 address=self.setting["from"],
                 account_filter=AccountFilter.STAKE.value,
             )
@@ -102,7 +102,7 @@ class TestGetAccount(TestSendSuper):
                 "id": 1234
             }
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
-            result: dict = self.icon_service.get_account(
+            self.icon_service.get_account(
                 address=self.setting["from"],
                 account_filter=AccountFilter.DELEGATION.value,
             )
@@ -145,7 +145,7 @@ class TestGetAccount(TestSendSuper):
                 "id": 1234
             }
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3", json=expected_result)
-            result: dict = self.icon_service.get_account(
+            self.icon_service.get_account(
                 address=self.setting["from"],
                 account_filter=all_filter.value,
             )
