@@ -31,6 +31,7 @@ class TestEstimateStep(TestSendSuper):
                     'from': self.setting["from"],
                     'nid': hex(self.setting["nid"]),
                     'nonce': hex(self.setting["nonce"]),
+                    'stepLimit': hex(self.setting["step_limit"]),
                     'timestamp': hex(self.setting["timestamp"]),
                     'to': self.setting["to"],
                     'value': hex(self.setting["value"]),
@@ -72,6 +73,7 @@ class TestEstimateStep(TestSendSuper):
                     'from': self.setting["from"],
                     'nid': hex(self.setting["nid"]),
                     'nonce': hex(self.setting["nonce"]),
+                    'stepLimit': hex(self.setting["step_limit"]),
                     'timestamp': hex(self.setting["timestamp"]),
                     'to': self.setting["to"],
                     'version': '0x3'
@@ -121,6 +123,7 @@ class TestEstimateStep(TestSendSuper):
                     'from': self.setting["from"],
                     'nid': hex(self.setting["nid"]),
                     'nonce': hex(self.setting["nonce"]),
+                    'stepLimit': hex(self.setting["step_limit"]),
                     'timestamp': hex(self.setting["timestamp"]),
                     'to': self.setting["to_install"],
                     'version': '0x3'
