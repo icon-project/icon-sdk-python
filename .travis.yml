@@ -2,12 +2,6 @@ language: python
 python:
   - "3.6"
 
-services:
-  - docker
-
-install:
-- docker run -d -it --name tbears-container -p 9000:9000 iconloop/tbears:mainnet
-
 script:
 - python setup.py test
 

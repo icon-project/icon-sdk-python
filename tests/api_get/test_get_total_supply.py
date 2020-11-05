@@ -12,24 +12,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
+from unittest import main
 
-from unittest import TestCase, main
+import requests_mock
 
-from iconsdk.icon_service import IconService
-from iconsdk.providers.http_provider import HTTPProvider
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
+from tests.api_send.test_send_super import TestSendSuper
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
-class TestGetTotalSupply(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
-
+class TestGetTotalSupply(TestSendSuper):
     def test_get_total_supply(self):
-        # case 0: when calling the method successfully
-        result = self.icon_service.get_total_supply()
-        self.assertTrue(isinstance(result, int))
+        with requests_mock.Mocker() as m:
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'icx_getTotalSupply',
+            }
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "result": hex(1_000_000),
+                "id": 1234
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3", json=expected_result)
+            result = self.icon_service.get_total_supply()
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
 
 
 if __name__ == "__main__":

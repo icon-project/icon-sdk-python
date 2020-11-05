@@ -12,73 +12,112 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
+
+import requests_mock
 
 from iconsdk.builder.transaction_builder import TransactionBuilder
 from iconsdk.exception import JSONRPCException, DataTypeException
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_icx_transaction, is_T_HASH
 from tests.api_send.test_send_super import TestSendSuper
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 class TestSendTransfer(TestSendSuper):
-
     def test_transfer(self):
-
-        # When having an optional property, nonce
-        icx_transaction = TransactionBuilder()\
-            .from_(self.setting["from"])\
+        icx_transaction = TransactionBuilder() \
+            .from_(self.setting["from"]) \
             .to(self.setting["to"]) \
-            .value(self.setting["value"])\
-            .step_limit(self.setting["step_limit"])\
+            .value(self.setting["value"]) \
+            .step_limit(self.setting["step_limit"]) \
             .nid(3) \
-            .nonce(self.setting["nonce"])\
+            .nonce(self.setting["nonce"]) \
             .version(3) \
+            .timestamp(self.setting["timestamp"]) \
             .build()
         tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
         self.assertTrue(is_icx_transaction(tx_dict))
+        signed_transaction = SignedTransaction(icx_transaction, self.wallet)
 
-        signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        result = self.icon_service.send_transaction(signed_transaction_dict)
-        self.assertTrue(is_T_HASH(result))
+        with requests_mock.Mocker() as m:
+            tx_hash: str = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "result": tx_hash,
+                "id": 1234
+            }
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'icx_sendTransaction',
+                'params': {
+                    'from': self.setting["from"],
+                    'nid': hex(self.setting["nid"]),
+                    'nonce': hex(self.setting["nonce"]),
+                    'signature': signed_transaction.signed_transaction_dict["signature"],
+                    'stepLimit': hex(self.setting["step_limit"]),
+                    'timestamp': hex(self.setting["timestamp"]),
+                    'to': self.setting["to"],
+                    'value': hex(self.setting["value"]),
+                    'version': '0x3'
+                }
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3", json=expected_result)
+            result = self.icon_service.send_transaction(signed_transaction)
+            self.assertTrue(is_T_HASH(result))
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
 
-        # When not having an optional property, nonce
-        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
-            .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).build()
-        tx_dict = SignedTransaction.convert_tx_to_jsonrpc_request(icx_transaction)
-        self.assertTrue(is_icx_transaction(tx_dict))
-
-        signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        result = self.icon_service.send_transaction(signed_transaction_dict)
-        self.assertTrue(is_T_HASH(result))
-
+    def test_invalid_transfer1(self):
         # When value is wrong prefixed with '0x'
         wrong_value = "0x34330000000"
-        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
-            .value(wrong_value).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]).build()
+        icx_transaction = TransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .value(wrong_value) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .nonce(self.setting["nonce"]) \
+            .build()
         self.assertRaises(DataTypeException, SignedTransaction, icx_transaction, self.wallet)
 
-        # When value is valid which type is int
-        wrong_value = 34330000000
-        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
-            .value(wrong_value).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]).build()
-        signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        result = self.icon_service.send_transaction(signed_transaction_dict)
-        self.assertTrue(is_T_HASH(result))
+    def test_invalid_transfer2(self):
+        icx_transaction = TransactionBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"][2:]) \
+            .value(self.setting["value"]) \
+            .step_limit(self.setting["step_limit"]) \
+            .nid(self.setting["nid"]) \
+            .timestamp(self.setting["timestamp"]) \
+            .build()
+        signed_transaction = SignedTransaction(icx_transaction, self.wallet)
 
-        # When address is wrong
-        wrong_address = "hx5bfdb090f43a808005ffc27c25b213145e8"
-        icx_transaction = TransactionBuilder().from_(self.setting["from"]).to(wrong_address) \
-            .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]).build()
-        signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
-
-        # When a sending address is wrong - not the wallet's address
-        wrong_address = "hx5bfdb090f43a808005ffc27c25b213145e80b7cd"
-        icx_transaction = TransactionBuilder().from_(wrong_address).to(self.setting["to"]) \
-            .value(self.setting["value"]).step_limit(self.setting["step_limit"]).nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]).build()
-        signed_transaction_dict = SignedTransaction(icx_transaction, self.wallet)
-        self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction_dict)
+        with requests_mock.Mocker() as m:
+            expected_result: dict = {
+                "jsonrpc": "2.0",
+                "error": {
+                    "code": -32602,
+                    "message": "Server error"
+                },
+                "id": 5
+            }
+            expected_request_body: dict = {
+                'id': 1234,
+                'jsonrpc': '2.0',
+                'method': 'icx_sendTransaction',
+                'params': {
+                    'from': self.setting["from"],
+                    'to': self.setting["to"][2:],
+                    'nid': hex(self.setting["nid"]),
+                    'signature': signed_transaction.signed_transaction_dict["signature"],
+                    'stepLimit': hex(self.setting["step_limit"]),
+                    'timestamp': hex(self.setting["timestamp"]),
+                    'value': hex(self.setting["value"]),
+                    'version': '0x3'
+                }
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3", status_code=500, json=expected_result)
+            self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction)
+            actual_request_body = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request_body, actual_request_body)
