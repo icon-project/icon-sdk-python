@@ -59,7 +59,7 @@ class InMemoryZip:
         try:
             # when it is a zip file
             if path.isfile(_path):
-                zf = ZipFile(_path, 'r', ZIP_DEFLATED, False, compresslevel=9)
+                zf = ZipFile(_path, 'r', ZIP_DEFLATED, False)
                 zf.testzip()
                 with open(_path, mode='rb') as fp:
                     fp.seek(0)
