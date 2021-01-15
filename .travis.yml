@@ -6,16 +6,15 @@ services:
   - docker
 
 install:
-- docker run -d -it --name tbears-container -p 9000:9000 iconloop/tbears:mainnet
+  - docker run -d -it --name tbears-container -p 9000:9000 iconloop/tbears:mainnet
 
 script:
-- python setup.py test
+  - python setup.py test
 
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
-  #server: https://test.pypi.org/legacy/
-  user: iconfoundation
-  password: $Pypi_pw
+  username: $PYPI_USER
+  password: $PYPI_PW
   on:
-    branch: master
+    tags: true
