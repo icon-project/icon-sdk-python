@@ -59,7 +59,7 @@ class InMemoryZip:
         try:
             # when it is a zip file
             if path.isfile(_path):
-                zf = ZipFile(_path, 'r', ZIP_DEFLATED, False)
+                zf = ZipFile(_path, 'r', ZIP_DEFLATED, False, compresslevel=9)
                 zf.testzip()
                 with open(_path, mode='rb') as fp:
                     fp.seek(0)
@@ -68,7 +68,7 @@ class InMemoryZip:
             else:
                 # root path for figuring out directory of tests
                 tmp_root = None
-                with ZipFile(self._in_memory, 'a', ZIP_DEFLATED, False) as zf:
+                with ZipFile(self._in_memory, 'a', ZIP_DEFLATED, False, compresslevel=9) as zf:
                     for root, folders, files in walk(_path):
                         if 'package.json' in files:
                             tmp_root = root
