@@ -158,16 +158,23 @@ def is_block(result: dict) -> bool:
     return has_keys(result, inner_key_of_result)
 
 
-def is_score_apis(result: dict) -> bool:
+def is_score_apis(result: list) -> bool:
     """Checks list of score apis in response has right format.
 
     :param result
     :return: bool
     """
-    result = result[0]
-    inner_key_of_result = ["type", "name", "inputs", "outputs"]
-    inner_key_of_inputs = ["name", "type"]
-    return has_keys(result, inner_key_of_result) and has_keys(result["inputs"][0], inner_key_of_inputs)
+    for api in result:
+        if api['type'] == 'eventlog':
+            inner_key_of_result = ["type", "name", "inputs"]
+        else:
+            inner_key_of_result = ["type", "name", "inputs", "outputs"]
+        inner_key_of_inputs = ["name", "type"]
+        if not has_keys(api, inner_key_of_result):
+            return False
+        if len(api["inputs"]) > 0 and not has_keys(api["inputs"][0], inner_key_of_inputs):
+            return False
+    return True
 
 
 def is_transaction(result: dict) -> bool:

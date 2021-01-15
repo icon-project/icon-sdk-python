@@ -61,7 +61,7 @@ class TestSendMessage(TestSendSuper):
         block = self.icon_service.get_block(int(tx_result["blockHeight"]))
 
         # Checks the block's transaction
-        self.assertEqual(block["confirmed_transaction_list"][0]["data"], self.setting["data"])
+        self.assertEqual(block["confirmed_transaction_list"][1]["data"], self.setting["data"])
 
         # When data is not hex string
         message_transaction = MessageTransactionBuilder() \
