@@ -33,10 +33,10 @@ setup(
     name='iconsdk',
     version=version,
     description='ICON SDK for Python is a collection of libraries which allow you to interact '
-                'with a local or remote Loopchain node, using an HTTP connection. ',
+                'with a local or remote ICON node using an HTTP connection.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='ICON foundation',
+    author='ICON Foundation',
     author_email='foo@icon.foundation',
     url='https://github.com/icon-project/icon-sdk-python',
     packages=find_packages(exclude=['tests*']),
@@ -45,6 +45,7 @@ setup(
         'secp256k1==0.13.2'
     ],
     install_requires=requires,
+    python_requires='>=3.6',
     license='Apache License 2.0',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -52,7 +53,6 @@ setup(
         'Intended Audience :: System Administrators',
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python',
         'Programming Language :: Python :: 3.6'
     ]
 )
