@@ -22,7 +22,7 @@ setup(
     url='https://github.com/icon-project/icon-sdk-python',
     packages=find_packages(exclude=['tests*']),
     install_requires=requires,
-    python_requires='>=3.6',
+    python_requires='~=3.7',
     license='Apache License 2.0',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -30,6 +30,6 @@ setup(
         'Intended Audience :: System Administrators',
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.7'
     ]
 )
