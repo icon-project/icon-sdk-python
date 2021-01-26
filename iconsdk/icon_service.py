@@ -12,7 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Union
+
+from typing import Union, Tuple, Any
 
 from iconsdk.builder.call_builder import Call
 from iconsdk.builder.transaction_builder import Transaction
@@ -78,10 +79,11 @@ class IconService:
         """
 
         # Nested method of returning right name of API method
-        def return_infos_by_block_version(_prev_method: str) -> str:
+        def return_infos_by_block_version(_prev_method: str) -> Tuple[str, Any, bool]:
             """ Returns API method name, block template, bool of full print by block version
 
-            :param _prev_method: previous API methods. For instance, icx_getBlockByHeight, icx_getBlockByHash and icx_getLastBlock
+            :param _prev_method: previous API methods.
+                    For instance, icx_getBlockByHeight, icx_getBlockByHash and icx_getLastBlock
             :return: method name, block template, bool of full print
             """
             new_method = "icx_getBlock"
@@ -208,7 +210,7 @@ class IconService:
 
     def call(self, call: object, full_response: bool = False) -> Union[dict, str]:
         """
-        Calls SCORE's external function which is read-only without creating a transaction on Loopchain.
+        Calls SCORE's external function which is read-only without creating a transaction.
         Delegates to icx_call RPC method.
 
         :param call: Call object made by CallBuilder
@@ -260,8 +262,7 @@ class IconService:
             "version": convert_int_to_hex_str(transaction.version) if transaction.version else "0x3",
             "from": transaction.from_,
             "to": transaction.to,
-            "timestamp": convert_int_to_hex_str(
-                transaction.timestamp) if transaction.timestamp else get_timestamp(),
+            "timestamp": convert_int_to_hex_str(transaction.timestamp) if transaction.timestamp else get_timestamp(),
             "nid": convert_int_to_hex_str(transaction.nid) if transaction.nid else "0x1"
         }
 

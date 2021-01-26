@@ -17,7 +17,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class Provider(metaclass=ABCMeta):
-    """The provider defines how the IconService connects to Loopchain."""
+    """The provider defines how the IconService connects to RPC server."""
 
     @abstractmethod
     def make_request(self, method: str, params=None, full_response: bool = False):

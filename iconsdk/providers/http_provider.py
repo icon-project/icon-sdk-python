@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
 import json
 import os
 from json.decoder import JSONDecodeError
+from time import time
+from typing import Union
 from urllib.parse import urlparse
 
 import requests
@@ -24,9 +25,12 @@ from multipledispatch import dispatch
 
 from iconsdk import logger
 from iconsdk.exception import JSONRPCException, URLException
-from iconsdk.providers.config_api_path import CONFIG_API_PATH
 from iconsdk.providers.provider import Provider
 from iconsdk.utils import to_dict
+
+CONFIG_API_PATH = {
+    "debug_estimateStep": "api/debug"
+}
 
 
 class HTTPProvider(Provider):
@@ -118,7 +122,7 @@ class HTTPProvider(Provider):
         rpc_dict = {
             'jsonrpc': '2.0',
             'method': method,
-            'id': 1234
+            'id': int(time())
         }
 
         if params:
@@ -156,7 +160,7 @@ class HTTPProvider(Provider):
     def is_connected(self) -> bool:
         try:
             logger.debug("Connected")
-            last_block = self.make_request('icx_getLastBlock', [])
+            self.make_request('icx_getLastBlock', [])
         except (IOError, URLException, JSONRPCException):
             return False
         else:

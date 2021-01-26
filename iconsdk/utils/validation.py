@@ -99,7 +99,7 @@ def is_T_HASH(value) -> bool:
 
 def is_T_BIN_DATA(value) -> bool:
     """
-    T_BIN_DATA is data type which is hexadeciamal string prefixed with `0x`
+    T_BIN_DATA is data type which is hexadecimal string prefixed with `0x`
     and length is even.
     """
     try:
