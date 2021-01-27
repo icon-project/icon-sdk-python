@@ -248,11 +248,12 @@ class IconService:
         params = signed_transaction.signed_transaction_dict
         return self.__provider.make_request('icx_sendTransaction', params, full_response)
 
-    def estimate_step(self, transaction: Transaction) -> int:
+    def estimate_step(self, transaction: Transaction, full_response: bool = False) -> int:
         """
         Returns an estimated step of how much step is necessary to allow the transaction to complete.
 
-        :param transaction: Transaction
+        :param transaction: a raw transaction
+        :param full_response: a boolean indicating whether or not it returns refined data
         :return: an estimated step
         """
         if not isinstance(transaction, Transaction):
@@ -280,5 +281,5 @@ class IconService:
         elif transaction.data_type == 'message':
             params["data"] = transaction.data
 
-        result = self.__provider.make_request('debug_estimateStep', params)
-        return int(result, 16)
+        result = self.__provider.make_request('debug_estimateStep', params, full_response)
+        return result if full_response else int(result, 16)

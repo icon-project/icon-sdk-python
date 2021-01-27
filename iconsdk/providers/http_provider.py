@@ -23,7 +23,6 @@ from urllib.parse import urlparse
 import requests
 from multipledispatch import dispatch
 
-from iconsdk import logger
 from iconsdk.exception import JSONRPCException, URLException
 from iconsdk.providers.provider import Provider
 from iconsdk.utils import to_dict
@@ -109,27 +108,29 @@ class HTTPProvider(Provider):
         if params:
             rpc_dict['params'] = params
 
-        request_url = self._URL_MAP.get(method.split('_')[0])
-        response = self._make_post_request(request_url, rpc_dict, **self._get_request_kwargs())
-        custom_response = self._return_custom_response(response, full_response)
+        req_key = method.split('_')[0]
+        retry_count = 2
+        raw_response = ''
+        while retry_count > 0:
+            request_url = self._URL_MAP.get(req_key)
+            response = self._make_post_request(request_url, rpc_dict, **self._get_request_kwargs())
+            try:
+                return self._return_custom_response(response, full_response)
+            except JSONDecodeError:
+                retry_count -= 1
+                raw_response = response.content.decode()
+                if req_key == 'debug':
+                    self._URL_MAP['debug'] = "{0}/api/v{1}d/{2}".format(self._serverUri, self._version, self._channel)
+                else:
+                    break
 
-        logger.debug(f"Request: {rpc_dict}")
-        logger.debug(f"Response: {custom_response}")
-
-        return custom_response
+        raise JSONRPCException(f'Unknown response: {raw_response}')
 
     @staticmethod
     def _return_custom_response(response: requests.Response, full_response: bool = False) -> Union[str, list, dict]:
+        content = json.loads(response.content)
         if full_response:
-            return json.loads(response.content)
-
+            return content
         if response.ok:
-            content_as_dict = json.loads(response.content)
-            return content_as_dict["result"]
-        else:
-            try:
-                content_as_dict = json.loads(response.content)
-            except (JSONDecodeError, KeyError):
-                raise URLException(response.content.decode("utf-8"))
-            else:
-                raise JSONRPCException(content_as_dict["error"])
+            return content['result']
+        raise JSONRPCException(content["error"])
