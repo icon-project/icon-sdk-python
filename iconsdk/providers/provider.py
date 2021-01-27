@@ -22,7 +22,3 @@ class Provider(metaclass=ABCMeta):
     @abstractmethod
     def make_request(self, method: str, params=None, full_response: bool = False):
         raise NotImplementedError("Providers must implement this method")
-
-    @abstractmethod
-    def is_connected(self) -> bool:
-        raise NotImplementedError("Providers must implement this method")

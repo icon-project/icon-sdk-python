@@ -15,8 +15,7 @@
 
 from unittest import main
 
-from iconsdk.builder.transaction_builder import TransactionBuilder
-from iconsdk.exception import URLException, JSONRPCException
+from iconsdk.exception import URLException
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from tests.api_send.test_send_super import TestSendSuper
@@ -38,120 +37,50 @@ class TestHTTPProvider(TestSendSuper):
         self.assertEqual(type(icon_service.get_block("latest")), dict)
 
     def test_set_http_provider_with_request_kwargs(self):
-        # the initializer
-        http_provider = HTTPProvider(self.FULL_PATH_URL,
-                                     request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
-        self.assertTrue(http_provider.is_connected())
+        # the legacy initializer
+        try:
+            HTTPProvider(self.FULL_PATH_URL,
+                         request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
+        except URLException:
+            self.fail(f'Unexpected exception')
 
         # the new initializer to be failed
-        http_provider = HTTPProvider(self.BASE_PATH_URL,
-                                     request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
-        self.assertFalse(http_provider.is_connected())
+        with self.assertRaises(URLException):
+            HTTPProvider(self.BASE_PATH_URL,
+                         request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
 
         # the new initializer to be success
-        http_provider = HTTPProvider(self.BASE_PATH_URL, 3,
-                                     request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
-        self.assertTrue(http_provider.is_connected())
+        try:
+            HTTPProvider(self.BASE_PATH_URL, 3,
+                         request_kwargs={'timeout': 60, 'allow_redirects': False, 'verify': True})
+        except URLException:
+            self.fail(f'Unexpected exception')
 
     def test_set_http_provider_by_the_initializer_with_valid_url(self):
         """The initializer should pass all kind of URLs"""
         valid_urls = [
-            "http://localhost:9000/api/v2",
-            "http://localhost:9000/api/v",
-            "http://localhost:9000/api/",
-            "http://localhost:9000",
-            "http://localhost:9000/api/debug/v3"
+            "http://localhost:9000/api/v3",
+            "https://ctz.solidwallet.io/api/v3",
+            "http://localhost:9000/api/v3/channel"
         ]
-        for valid_url in valid_urls:
-            icon_service = IconService(HTTPProvider(valid_url))
-
-    def test_call_api_by_the_initializer_with_valid_url(self):
-        http_provider = HTTPProvider(self.FULL_PATH_URL)
-        self.assertIsNotNone(http_provider._full_path_url)
-        try:
-            http_provider._base_domain_url
-        except AttributeError:
-            self.assertTrue(True)
-
-        icon_service = IconService(http_provider)
-        self.assertEqual(type(icon_service.get_block("latest")), dict)
-
-    def test_call_api_by_the_initializer_with_invalid_url(self):
-        http_provider = HTTPProvider(self.DEBUG_FULL_PATH_URL)  # invalid URL
-        self.assertIsNotNone(http_provider._full_path_url)
-
-        icon_service = IconService(http_provider)
-        self.assertRaises(JSONRPCException, icon_service.get_block, "latest")
-
-    def test_call_debug_api_by_initializer_with_valid_url(self):
-        http_provider = HTTPProvider(self.DEBUG_FULL_PATH_URL)
-        self.assertIsNotNone(http_provider._full_path_url)
-        try:
-            http_provider._base_domain_url
-        except AttributeError:
-            self.assertTrue(True)
-
-        icon_service = IconService(http_provider)
-
-        # When having an optional property, nonce
-        icx_transaction = TransactionBuilder() \
-            .from_(self.setting["from"]) \
-            .to(self.setting["to"]) \
-            .value(self.setting["value"]) \
-            .step_limit(self.setting["step_limit"]) \
-            .nid(3) \
-            .nonce(self.setting["nonce"]) \
-            .version(self.VERSION) \
-            .build()
-
-        self.assertEqual(100000, icon_service.estimate_step(icx_transaction))
-
-    def test_call_debug_api_by_initializer_with_invalid_url(self):
-        http_provider = HTTPProvider(self.FULL_PATH_URL)
-        self.assertIsNotNone(http_provider._full_path_url)
-        try:
-            http_provider._base_domain_url
-        except AttributeError:
-            self.assertTrue(True)
-
-        icon_service = IconService(http_provider)
-
-        # When having an optional property, nonce
-        icx_transaction = TransactionBuilder() \
-            .from_(self.setting["from"]) \
-            .to(self.setting["to"]) \
-            .value(self.setting["value"]) \
-            .step_limit(self.setting["step_limit"]) \
-            .nid(3) \
-            .nonce(self.setting["nonce"]) \
-            .version(self.VERSION) \
-            .build()
-
-        self.assertRaises(JSONRPCException, icon_service.estimate_step, icx_transaction)
+        for url in valid_urls:
+            try:
+                HTTPProvider(url)
+            except URLException:
+                self.fail(f'Unexpected exception with {url}')
 
     def test_set_http_provider_by_new_initializer_with_invalid_url(self):
         invalid_urls = [
+            "http://localhost:9000/",
+            "http://localhost:9000/api/v3",
+            "http://localhost:9000/api/v3/",
             "http://localhost:9000/api/v3/channel",
-            "localhost",
-            "http://localhost:9000/api/v3"
+            "https://ctz.solidwallet.io/",
+            "https://ctz.solidwallet.io/api/v3",
         ]
-        for invalid_url in invalid_urls:
-            try:
-                http_provider = HTTPProvider(invalid_url, self.VERSION)
-                icon_service = IconService(http_provider)
-            except URLException:
-                self.assertTrue(True)
-            else:
-                self.assertFalse(True)
-
-    def test_set_http_provider_by_initializer_with_channel(self):
-        full_path_url_with_channel = "http://localhost:9000/api/v3/icon_dex"
-        http_provider = HTTPProvider(full_path_url_with_channel)
-        self.assertEqual(http_provider._full_path_url, full_path_url_with_channel)
-        try:
-            http_provider._base_domain_url
-        except AttributeError:
-            self.assertTrue(True)
+        for url in invalid_urls:
+            with self.assertRaises(URLException):
+                HTTPProvider(url, self.VERSION)
 
 
 if __name__ == "__main__":

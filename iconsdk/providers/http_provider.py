@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import json
-import os
+import re
 from json.decoder import JSONDecodeError
 from time import time
 from typing import Union
@@ -28,34 +28,13 @@ from iconsdk.exception import JSONRPCException, URLException
 from iconsdk.providers.provider import Provider
 from iconsdk.utils import to_dict
 
-CONFIG_API_PATH = {
-    "debug_estimateStep": "api/debug"
-}
-
 
 class HTTPProvider(Provider):
     """
     The HTTPProvider takes the full URI where the server can be found.
     For local development this would be something like 'http://localhost:9000'.
     """
-
-    @staticmethod
-    def _validate_base_domain_url(base_domain_url: str) -> bool:
-        """
-        Validates if input base domain url is valid or not.
-
-        When base domain url is as below,
-        <scheme>://<host>:<port>
-        if there are scheme and netloc which are host and port, it returns True.
-
-        :param base_domain_url: as like <scheme>://<host>:<port>
-        :return: True or False
-        """
-        url_components = urlparse(base_domain_url)
-        if all([url_components.scheme, url_components.netloc]) and url_components.path in ('', '/'):
-            return True
-        else:
-            return False
+    _URL_MAP = {}
 
     @dispatch(str, int, dict=None)
     def __init__(self, base_domain_url: str, version: int, request_kwargs: dict = None):
@@ -66,17 +45,14 @@ class HTTPProvider(Provider):
         :param version: version for RPC server
         :param request_kwargs: kwargs for setting to head of request
         """
-        if not self._validate_base_domain_url(base_domain_url):
-            logger.error(f"While setting HTTPProvider, raised URLException because the URL is invalid. "
-                         f"URL: {base_domain_url}")
-            raise URLException("Invalid base domain URL. "
-                               "Valid base domain URL format is as like <scheme>://<host>:<port>.")
-        self._full_path_url = None
-        self._base_domain_url = base_domain_url
+        uri = urlparse(base_domain_url)
+        if uri.path != '':
+            raise URLException('Path is not allowed')
+        self._serverUri = f'{uri.scheme}://{uri.netloc}'
+        self._channel = ''
         self._version = version
         self._request_kwargs = request_kwargs or {}
-        logger.info(f"Set HTTPProvider. "
-                    f"Base domain URL: {base_domain_url}, Version: {version}, Request kwargs: {self._request_kwargs}")
+        self._generate_url_map()
 
     @dispatch(str, dict=None)
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
@@ -87,13 +63,28 @@ class HTTPProvider(Provider):
         :param full_path_url: full path URL as like <scheme>://<host>:<port>/api/v3
         :param request_kwargs: kwargs for setting to head of request
         """
-        self._full_path_url = full_path_url
+        uri = urlparse(full_path_url)
+        self._serverUri = f'{uri.scheme}://{uri.netloc}'
+        self._channel = self._get_channel(uri.path)
+        self._version = 3
         self._request_kwargs = request_kwargs or {}
-        logger.info(f"Set HTTPProvider. "
-                    f"Full path URL: {full_path_url}, Request kwargs: {self._request_kwargs}")
+        self._generate_url_map()
+
+    def _generate_url_map(self):
+        self._URL_MAP['icx'] = "{0}/api/v{1}/{2}".format(self._serverUri, self._version, self._channel)
+        self._URL_MAP['debug'] = "{0}/api/debug/v{1}/{2}".format(self._serverUri, self._version, self._channel)
+
+    @staticmethod
+    def _get_channel(path: str):
+        tokens = re.split("/(?=[^/]+$)", path.rstrip('/'))
+        if tokens[0] == '/api/v3':
+            return tokens[1]
+        elif tokens == ['/api', 'v3']:
+            return ''
+        raise URLException('Invalid URI path')
 
     def __str__(self):
-        return "RPC connection {0}".format(self._base_domain_url)
+        return "RPC connection to {0}".format(self._serverUri)
 
     @to_dict
     def _get_request_kwargs(self) -> dict:
@@ -103,20 +94,11 @@ class HTTPProvider(Provider):
             yield key, value
 
     @staticmethod
-    def _make_post_request(full_path_url: str, data: dict, **kwargs) -> requests.Response:
+    def _make_post_request(request_url: str, data: dict, **kwargs) -> requests.Response:
         kwargs.setdefault('timeout', 10)
         with requests.Session() as session:
-            response = session.post(url=full_path_url, data=json.dumps(data), **kwargs)
+            response = session.post(url=request_url, data=json.dumps(data), **kwargs)
         return response
-
-    def _get_full_path_url(self, method: str) -> str:
-        url_components = urlparse(self._base_domain_url)
-        if method in CONFIG_API_PATH:
-            path = os.path.join(CONFIG_API_PATH[method], 'v' + str(self._version))
-        else:
-            path = os.path.join("api", "v" + str(self._version))
-        url_components = url_components._replace(path=path)
-        return url_components.geturl()
 
     def make_request(self, method: str, params=None, full_response: bool = False) -> Union[str, list, dict]:
         rpc_dict = {
@@ -124,12 +106,11 @@ class HTTPProvider(Provider):
             'method': method,
             'id': int(time())
         }
-
         if params:
             rpc_dict['params'] = params
 
-        full_path_url = self._full_path_url if self._full_path_url else self._get_full_path_url(method)
-        response = self._make_post_request(full_path_url, rpc_dict, **self._get_request_kwargs())
+        request_url = self._URL_MAP.get(method.split('_')[0])
+        response = self._make_post_request(request_url, rpc_dict, **self._get_request_kwargs())
         custom_response = self._return_custom_response(response, full_response)
 
         logger.debug(f"Request: {rpc_dict}")
@@ -149,19 +130,6 @@ class HTTPProvider(Provider):
             try:
                 content_as_dict = json.loads(response.content)
             except (JSONDecodeError, KeyError):
-                logger.exception(f"Raised URLException while returning the custom response. "
-                                 f"Response content: {response.content.decode('utf-8')}")
                 raise URLException(response.content.decode("utf-8"))
             else:
-                logger.error(f"Raised JSONRPCException while returning the custom response. "
-                             f"Error message: {content_as_dict['error']}")
                 raise JSONRPCException(content_as_dict["error"])
-
-    def is_connected(self) -> bool:
-        try:
-            logger.debug("Connected")
-            self.make_request('icx_getLastBlock', [])
-        except (IOError, URLException, JSONRPCException):
-            return False
-        else:
-            return True
