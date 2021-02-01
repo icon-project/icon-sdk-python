@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import Mapping
 from numbers import Number
+from typing import Mapping
 
 bytes_types = (bytes, bytearray)
 integer_types = (int,)

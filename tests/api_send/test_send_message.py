@@ -39,6 +39,31 @@ class TestSendMessage(TestSendSuper):
         self.assertTrue(is_message_transaction(tx_dict))
         # Checks if sending transaction correctly
         signed_transaction = SignedTransaction(message_transaction, self.wallet)
+<<<<<<< HEAD
+=======
+        result = self.icon_service.send_transaction(signed_transaction)
+        self.assertTrue(is_T_HASH(result))
+
+        # When having an optional property, nonce
+        sleep(sleep_time)
+        message_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"]) \
+            .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()
+        signed_transaction = SignedTransaction(message_transaction, self.wallet)
+        result = self.icon_service.send_transaction(signed_transaction)
+        self.assertTrue(is_T_HASH(result))
+
+        # When the data is hex string
+        sleep(sleep_time)
+        tx_result = self.icon_service.get_transaction_result(result)
+        tx = self.icon_service.get_transaction(result)
+
+        # Checks the transaction
+        self.assertEqual(tx["data"], self.setting["data"])
+        block = self.icon_service.get_block(int(tx_result["blockHeight"]))
+
+        # Checks the block's transaction
+        self.assertEqual(block["confirmed_transaction_list"][1]["data"], self.setting["data"])
+>>>>>>> master
 
         with requests_mock.Mocker() as m:
             tx_hash: str = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"

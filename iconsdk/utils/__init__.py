@@ -19,7 +19,6 @@ from os import path
 from time import time
 
 from iconsdk import logger
-from iconsdk.utils.hexadecimal import add_0x_prefix
 
 
 def store_keystore_file_on_the_path(file_path, json_string):
@@ -65,6 +64,6 @@ def set_logger(level, handler=StreamHandler(),
     logger.setLevel(level)
 
 
-def get_timestamp():
-    """Get epoch time"""
-    return add_0x_prefix(hex(int(time() * 10 ** 6)))
+def get_timestamp() -> str:
+    """Returns the timestamp in microseconds since the epoch"""
+    return hex(int(time() * 10 ** 6))

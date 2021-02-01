@@ -38,16 +38,40 @@ ICON SDK for Python development and execution requires the following environment
 First, you need to get ICON SDK for Python into your project. It can be installed using pip as follows:
 
 ``````shell
+=======
+[![Build Status](https://travis-ci.com/icon-project/icon-sdk-python.svg?branch=master)](https://travis-ci.com/icon-project/icon-sdk-python)
+[![PyPI](https://img.shields.io/pypi/v/iconsdk)](https://pypi.org/project/iconsdk)
+
+# ICON SDK for Python
+
+ICON SDK for Python is a collection of libraries which allows you to interact with a local or remote ICON node using an HTTP connection.
+
+This document describes how to interact with ICON Network using the ICON SDK for Python, including SDK installation, API usage guide, and code examples.
+
+## Requirements
+
+- Python 3.7 or later.
+
+## Installation
+
+Setup a virtual environment first, and install ICON SDK.
+
+```shell
+$ virtualenv -p python3 venv
+$ source venv/bin/activate
+>>>>>>> master
 $ pip install iconsdk
-``````
+```
 
-### Creating an IconService Instance and Setting a Provider
+## Using the SDK
 
-Next, you need to create an IconService instance and set a provider.
+### Create `IconService` and Set Provider
 
-- The **IconService** class contains a set of API methods. It accepts a HTTPProvider which serves the purpose of connecting to HTTP and HTTPS based JSON-RPC servers.
+You need to create an `IconService` instance and set a provider.
 
-- A **provider** defines how the IconService connects to ICON node.
+- The **IconService** class contains a set of API methods. It accepts an `HTTPProvider` which serves the purpose of connecting to HTTP and HTTPS based JSON-RPC servers.
+
+- A **provider** defines how the `IconService` connects to ICON node.
 
 - The **HTTPProvider** takes a base domain URL where the server can be found. For local development, this would be something like `http://localhost:9000`.
 
@@ -64,7 +88,7 @@ icon_service = IconService(HTTPProvider("http://localhost:9000", 3))
 block = icon_service.get_block(1209)
 ```
 
-### Using logger
+### Using Logger
 
 Set a logger named `ICON-SDK-PYTHON` if necessary. Use `set_logger` function to set log level like "DEBUG", "INFO", etc as shown below.
 
@@ -75,7 +99,7 @@ from iconsdk.utils import set_logger
 set_logger("DEBUG")
 ```
 
-You can also set logger with a specific handler like FileHandler or SteamHandler and user own log format as shown below.
+You can also set logger with a specific handler like `FileHandler` or `SteamHandler` and user own log format as shown below.
 
 ```python 
 from logging import StreamHandler, Formatter
@@ -90,10 +114,7 @@ set_logger("DEBUG", handler, formatter)
 ```
 
 
-
 ## Queries
-
-### Examples
 
 ```python
 from iconsdk.builder.call_builder import CallBuilder
@@ -131,46 +152,14 @@ call = CallBuilder().from_(wallet.get_address())\
 
 # Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction
 result = icon_service.call(call)
-
 ```
-
-
-
-### Error Cases
-
-There are different types of error cases as shown below.  The exception is raised with the specific message. You can get more information about the exception from the message.
-
-- **KeyStoreException**
-  - It is raised when making or loading a key store file.
-  - Error code for the exception is 1.
-
-- **AddressException**
-  - It is raised when the address is invalid.
-  - Error code for the exception is 2.
-
-- **BalanceException**
-  - It is raised when the balance is invalid.
-  - Error code for the exception is 3.
-
-- **DataTypeException**
-  - It is raised when the data type is invalid.
-  - Error code for the exception is 4.
-
-- **JSONRPCException**
-  - It is raised when JSON-RPC response is an error.
-  - Error code for the exception is 5.
-
-- **ZipException**
-  - It is raised while writing zip in memory.
-  - Error code for the exception is 6.
-
 
 
 ### get_block
 
-``````python
+```python
 get_block(value)
-``````
+```
 
 * Function A
   * Returns block information by block height
@@ -475,13 +464,11 @@ result = icon_service.call(call)
 
 
 
-## Loading a Wallet and Storing the Keystore
+## KeyWallet
 
 To send transactions, first, you should make an instance of your wallet.
 
 You can make an instance of the wallet using bytes of the private key or from a keystore file.
-
-### Examples
 
 ```python
 from iconsdk.wallet.wallet import KeyWallet
@@ -508,10 +495,6 @@ wallet.get_private_key()
 signature = wallet.sign(b'D8\xe9...\xfc')
 ```
 
-
-
-## API Methods of KeyWallet
-
 ### create
 
 ```python
@@ -530,10 +513,10 @@ An instance of Wallet class
 
 #### Example
 
-``````python
+```python
 # Generates a wallet
 wallet = KeyWallet.create()
-``````
+```
 
 
 
@@ -1149,6 +1132,7 @@ transaction = TransactionBuilder()\
 estimate_step = icon_service.estimate_step(transaction)
 ```
 
+<<<<<<< HEAD
 
 
 ## Get Account
@@ -1184,3 +1168,18 @@ Raw data of account
 # Useage
 response = icon_service.get_account("hx000...1", "0x1")
 ```
+=======
+## References
+
+- [Quick Start]
+- [ICON JSON-RPC API v3]
+- [ICON Network]
+
+[Quick Start]: quickstart
+[ICON JSON-RPC API v3]: https://www.icondev.io/docs/icon-json-rpc-v3
+[ICON Network]: https://www.icondev.io/docs/the-icon-network
+
+## License
+
+This project is available under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+>>>>>>> master

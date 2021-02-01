@@ -18,8 +18,7 @@ from coincurve import PrivateKey
 
 def sign(data: bytes, private_key: bytes) -> bytes:
     """
-    Generates on the ECDSA-SHA256 signature in bytes from data.
-    It refers to a document on https://github.com/ludbb/secp256k1-py.
+    Generates on the ECDSA signature in bytes from data.
 
     :param data: data to be signed
     :param private_key: private key

@@ -12,7 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Union
+
+from typing import Union, Tuple, Any
 
 from iconsdk.builder.call_builder import Call
 from iconsdk.builder.transaction_builder import Transaction
@@ -78,10 +79,11 @@ class IconService:
         """
 
         # Nested method of returning right name of API method
-        def return_infos_by_block_version(_prev_method: str) -> str:
+        def return_infos_by_block_version(_prev_method: str) -> Tuple[str, Any, bool]:
             """ Returns API method name, block template, bool of full print by block version
 
-            :param _prev_method: previous API methods. For instance, icx_getBlockByHeight, icx_getBlockByHash and icx_getLastBlock
+            :param _prev_method: previous API methods.
+                    For instance, icx_getBlockByHeight, icx_getBlockByHash and icx_getLastBlock
             :return: method name, block template, bool of full print
             """
             new_method = "icx_getBlock"
@@ -208,7 +210,7 @@ class IconService:
 
     def call(self, call: object, full_response: bool = False) -> Union[dict, str]:
         """
-        Calls SCORE's external function which is read-only without creating a transaction on Loopchain.
+        Calls SCORE's external function which is read-only without creating a transaction.
         Delegates to icx_call RPC method.
 
         :param call: Call object made by CallBuilder
@@ -246,11 +248,12 @@ class IconService:
         params = signed_transaction.signed_transaction_dict
         return self.__provider.make_request('icx_sendTransaction', params, full_response)
 
-    def estimate_step(self, transaction: Transaction) -> int:
+    def estimate_step(self, transaction: Transaction, full_response: bool = False) -> int:
         """
         Returns an estimated step of how much step is necessary to allow the transaction to complete.
 
-        :param transaction: Transaction
+        :param transaction: a raw transaction
+        :param full_response: a boolean indicating whether or not it returns refined data
         :return: an estimated step
         """
         if not isinstance(transaction, Transaction):
@@ -260,13 +263,9 @@ class IconService:
             "version": convert_int_to_hex_str(transaction.version) if transaction.version else "0x3",
             "from": transaction.from_,
             "to": transaction.to,
-            "timestamp": convert_int_to_hex_str(
-                transaction.timestamp) if transaction.timestamp else get_timestamp(),
+            "timestamp": convert_int_to_hex_str(transaction.timestamp) if transaction.timestamp else get_timestamp(),
             "nid": convert_int_to_hex_str(transaction.nid) if transaction.nid else "0x1"
         }
-
-        if transaction.step_limit is not None:
-            params["stepLimit"] = convert_int_to_hex_str(transaction.step_limit)
 
         if transaction.value is not None:
             params["value"] = convert_int_to_hex_str(transaction.value)
@@ -282,26 +281,5 @@ class IconService:
         elif transaction.data_type == 'message':
             params["data"] = transaction.data
 
-        result = self.__provider.make_request('debug_estimateStep', params)
-
-        return int(result, 16)
-
-    def get_account(self, address: str, account_filter: int, full_response: bool = False) -> dict:
-        """
-        Returns the raw data of account in StateDB.
-        Delegates to debug_getAccount RPC method.
-
-        :param address: An address of EOA or SCORE. type(str)
-        :param account_filter: Filter flags about coin(0x1), stake(0x2), delegation(0x4)
-        :param full_response: Boolean to check whether get naive dict or refined data from server
-        :return: raw_data of account in StateDB
-        """
-        if is_score_address(address) or is_wallet_address(address):
-            params = {
-                "address": address,
-                "filter": hex(account_filter)
-            }
-
-            return self.__provider.make_request("debug_getAccount", params, full_response)
-        else:
-            raise AddressException("Address is wrong.")
+        result = self.__provider.make_request('debug_estimateStep', params, full_response)
+        return result if full_response else int(result, 16)

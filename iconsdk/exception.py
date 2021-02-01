@@ -50,7 +50,7 @@ class IconServiceBaseException(BaseException):
         return self.__code
 
     def __str__(self):
-        return f'{self.message} ({str(self.code)})'
+        return f'{self.message}'
 
 
 class KeyStoreException(IconServiceBaseException):
