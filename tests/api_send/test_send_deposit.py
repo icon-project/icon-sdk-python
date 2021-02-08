@@ -2,7 +2,7 @@ import requests_mock
 import json
 
 from unittest.mock import patch
-from iconsdk.builder.transaction_builder import DepositTransactionBuilder, DepositTransaction
+from iconsdk.builder.transaction_builder import DepositTransactionBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_T_HASH
 from tests.api_send.test_send_super import TestSendSuper
