@@ -62,12 +62,36 @@ class TestFullResponseBase(TestSendSuper):
               "timestamp": "1517999520286000",
               "signature": "sILBL1MPwOou8ItM4s0Vqx21l62QyucgTLsEQ51BGi5v/IJ1hOCT/P/rz1V1pDSGAnTQ7rGw9rSOVM5TAGbJOAE=",
               "method": "icx_sendTransaction",
-              "txHash": "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238",
+              "txHash": "0x33db06f38424207daa69c9df153649fd3913c21e162f16f4839c9c3318e44388",
               "txIndex": "0x0",
               "blockHeight": "0xa",
               "blockHash": "0x9a39a75d7075687f746d61191baf1a1ff3b5bc0acc4a8df0bb872e53e13cdc17"
         }
 
+        cls.receipt = {
+            "txHash": "0x33db06f38424207daa69c9df153649fd3913c21e162f16f4839c9c3318e44388",
+            "blockHeight": "0x13f",
+            "blockHash": "0x069e8a2431ae2c7e55924af477be87518476aa1eb1b2e7d1ee8d61d7874ea907",
+            "txIndex": "0x1",
+            "to": "cx0000000000000000000000000000000000000000",
+            "stepUsed": "0x263b8",
+            "stepPrice": "0x2540be400",
+            "cumulativeStepUsed": "0x263b8",
+            "eventLogs": [
+                {
+                    "scoreAddress": "cx0000000000000000000000000000000000000000",
+                    "indexed": [
+                        "PRepSet(Address)"
+                    ],
+                    "data": [
+                        "hx86aba2210918a9b116973f3c4b27c41a54d5dafe"
+                    ]
+                }
+            ],
+            "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000080000000000000000000000000000000000000000000000000000000000020000000000000008000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "status": "0x1"
+        }
+
         cls.block_hash = "0x3c9d91c2ea42d6b20edd39093a5c4c6f332fa9cb381c29533399365e4c07916d"
         cls.block_height = 6226175
-        cls.transaction_hash = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"
+        cls.transaction_hash = "0x33db06f38424207daa69c9df153649fd3913c21e162f16f4839c9c3318e44388"

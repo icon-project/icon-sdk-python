@@ -39,7 +39,7 @@ class TestGetTransactionResult(TestSendSuper):
                     'txHash': tx_hash
                 }
             }
-            expected_result = {
+            response_json = {
                 "jsonrpc": "2.0",
                 "result": {
                     "txHash": "0x33db06f38424207daa69c9df153649fd3913c21e162f16f4839c9c3318e44388",
@@ -66,7 +66,7 @@ class TestGetTransactionResult(TestSendSuper):
                 },
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=expected_result)
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
             result = self.icon_service.get_transaction_result(tx_hash)
             actual_request = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request, actual_request)
@@ -83,7 +83,7 @@ class TestGetTransactionResult(TestSendSuper):
                     'txHash': wrong_tx_hash
                 }
             }
-            expected_result = {
+            response_json = {
                 "jsonrpc": "2.0",
                 "error": {
                     "code": -32602,
@@ -91,7 +91,7 @@ class TestGetTransactionResult(TestSendSuper):
                 },
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", status_code=400, json=expected_result)
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", status_code=400, json=response_json)
             # case 4: when tx_hash is invalid - not exist
             self.assertRaises(JSONRPCException, self.icon_service.get_transaction_result, wrong_tx_hash)
             actual_request = json.loads(m._adapter.last_request.text)
