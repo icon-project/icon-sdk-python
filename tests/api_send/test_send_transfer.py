@@ -26,6 +26,7 @@ from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
 class TestSendTransfer(TestSendSuper):
+
     def test_transfer(self, _make_id):
         icx_transaction = TransactionBuilder() \
             .from_(self.setting["from"]) \
@@ -43,7 +44,6 @@ class TestSendTransfer(TestSendSuper):
 
         with requests_mock.Mocker() as m:
             tx_hash: str = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"
-
             expected_request = {
                 'id': 1234,
                 'jsonrpc': '2.0',
