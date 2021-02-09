@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import requests_mock
+from unittest.mock import patch
+
 from os import path
 from unittest import TestCase, main
 
@@ -48,7 +51,8 @@ class TestWalletLoadFromKeystoreFile(TestCase):
         password = "1234wrongpassword**"
         self.assertRaises(KeyStoreException, KeyWallet.load, self.TEST_KEYSTORE_FILE_PATH, password)
 
-    def test_wallet_load_and_call_api(self):
+    @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
+    def test_wallet_load_and_call_api(self, _make_id):
         """Case when loading a wallet and call an api."""
         # Loads a wallet.
         wallet = KeyWallet.load(self.TEST_KEYSTORE_FILE_PATH, self.TEST_KEYSTORE_FILE_PASSWORD)
@@ -58,8 +62,15 @@ class TestWalletLoadFromKeystoreFile(TestCase):
 
         # Calls an api.
         icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
-        balance = icon_service.get_balance(wallet.get_address())
-        self.assertEqual(balance, 0)
+        with requests_mock.Mocker() as m:
+            response_json = {
+                "jsonrpc": "2.0",
+                "result": hex(0),
+                "id": 1234
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            balance = icon_service.get_balance(wallet.get_address())
+            self.assertEqual(balance, 0)
 
 
 if __name__ == "__main__":
