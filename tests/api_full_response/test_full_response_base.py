@@ -52,5 +52,22 @@ class TestFullResponseBase(TestSendSuper):
             "next_leader": "hxd3be921dfe193cd49ed7494a53743044e3376cd3"
         }
 
+        cls.transaction = {
+              "version": "0x3",
+              "from": cls.setting["from"],
+              "to": cls.setting["to"],
+              "stepLimit": hex(cls.setting["step_limit"]),
+              "value": "0x470de4df820000",
+              "nid": hex(cls.setting["nid"]),
+              "timestamp": "1517999520286000",
+              "signature": "sILBL1MPwOou8ItM4s0Vqx21l62QyucgTLsEQ51BGi5v/IJ1hOCT/P/rz1V1pDSGAnTQ7rGw9rSOVM5TAGbJOAE=",
+              "method": "icx_sendTransaction",
+              "txHash": "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238",
+              "txIndex": "0x0",
+              "blockHeight": "0xa",
+              "blockHash": "0x9a39a75d7075687f746d61191baf1a1ff3b5bc0acc4a8df0bb872e53e13cdc17"
+        }
+
         cls.block_hash = "0x3c9d91c2ea42d6b20edd39093a5c4c6f332fa9cb381c29533399365e4c07916d"
         cls.block_height = 6226175
+        cls.transaction_hash = "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238"
