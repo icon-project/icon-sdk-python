@@ -53,3 +53,4 @@ class TestFullResponseBase(TestSendSuper):
         }
 
         cls.block_hash = "0x3c9d91c2ea42d6b20edd39093a5c4c6f332fa9cb381c29533399365e4c07916d"
+        cls.block_height = 6226175
