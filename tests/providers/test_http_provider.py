@@ -16,7 +16,6 @@
 from unittest import main
 
 from iconsdk.exception import URLException
-from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
 from tests.api_send.test_send_super import TestSendSuper
 
@@ -28,13 +27,14 @@ class TestHTTPProvider(TestSendSuper):
     VERSION = 3
 
     def test_set_http_provider_with_param(self):
-        # the initializer
-        icon_service = IconService(HTTPProvider(self.FULL_PATH_URL))
-        self.assertEqual(type(icon_service.get_block("latest")), dict)
+        try:
+            # the initializer
+            HTTPProvider(self.FULL_PATH_URL)
 
-        # the new initializer
-        icon_service = IconService(HTTPProvider(self.BASE_PATH_URL, self.VERSION))
-        self.assertEqual(type(icon_service.get_block("latest")), dict)
+            # the new initializer
+            HTTPProvider(self.BASE_PATH_URL, self.VERSION)
+        except URLException:
+            self.fail('Unexpected exception')
 
     def test_set_http_provider_with_request_kwargs(self):
         # the legacy initializer
