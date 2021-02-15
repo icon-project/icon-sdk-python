@@ -99,11 +99,14 @@ class HTTPProvider(Provider):
             response = session.post(url=request_url, data=json.dumps(data), **kwargs)
         return response
 
+    def _make_id(self) -> int:
+        return int(time())
+
     def make_request(self, method: str, params=None, full_response: bool = False) -> Union[str, list, dict]:
         rpc_dict = {
             'jsonrpc': '2.0',
             'method': method,
-            'id': int(time())
+            'id': self._make_id()
         }
         if params:
             rpc_dict['params'] = params

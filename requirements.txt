@@ -2,3 +2,4 @@ eth-keyfile~=0.5.1
 coincurve~=13.0.0
 multipledispatch~=0.6.0
 requests>=2.20.0
+requests-mock~=1.8.0

@@ -12,37 +12,46 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests_mock
+
 import json
-from unittest import main
+import requests_mock
+
 from unittest.mock import patch
-from tests.api_send.test_send_super import TestSendSuper
 from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
+from unittest import main
+
+from iconsdk.utils.validation import is_block
+from tests.api_full_response.example_response import result_success_v3
+from tests.api_full_response.test_full_response_base import TestFullResponseBase
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
-class TestGetTotalSupply(TestSendSuper):
+class TestFullResponseGetBlockByHeight(TestFullResponseBase):
 
-    def test_get_total_supply(self, _make_id):
+    def test_get_last_block_full_response(self, _make_id):
+        # used valid hash and got and valid block
         with requests_mock.Mocker() as m:
-            supply = 1_000_000_000
             expected_request = {
-                'id': 1234,
                 'jsonrpc': '2.0',
-                'method': 'icx_getTotalSupply',
+                'method': 'icx_getLastBlock',
+                'id': 1234,
             }
 
             response_json = {
                 'jsonrpc': '2.0',
-                'result': hex(supply),
+                'result': self.block,
                 'id': 1234
             }
+
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
-            # case 0: when calling the method successfully
-            result = self.icon_service.get_total_supply()
+            result_dict = self.icon_service.get_block("latest", full_response=True)
             actual_request = json.loads(m._adapter.last_request.text)
+            result_keys = result_dict.keys()
+            result_content = result_dict['result']
+
             self.assertEqual(expected_request, actual_request)
-            self.assertTrue(result, supply)
+            self.assertEqual(result_success_v3.keys(), result_keys)
+            self.assertTrue(is_block(result_content))
 
 
 if __name__ == "__main__":

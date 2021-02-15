@@ -12,23 +12,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import requests_mock
 import json
 
-from unittest import main
 from unittest.mock import patch
-from tests.api_send.test_send_super import TestSendSuper
-from iconsdk.exception import AddressException, JSONRPCException
+from unittest import main
+
 from iconsdk.utils.validation import is_score_apis
 from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
+from tests.api_full_response.example_response import result_success_v3, result_error_v3
+from tests.api_full_response.test_full_response_base import TestFullResponseBase
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
-class TestGetScoreApi(TestSendSuper):
+class TestFullResponseGetScoreAPI(TestFullResponseBase):
 
-    def test_get_score_api(self, _make_id):
+    def test_get_score_api_full_response(self, _make_id):
+        governance_address = "cx0000000000000000000000000000000000000001"
         with requests_mock.Mocker() as m:
-            governance_address = "cx0000000000000000000000000000000000000001"
             expected_request = {
                 'id': 1234,
                 'jsonrpc': '2.0',
@@ -39,32 +41,17 @@ class TestGetScoreApi(TestSendSuper):
             }
 
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_governance_json)
-            # case 0: when getting score apis successfully
-            result = self.icon_service.get_score_api(governance_address)
+            result_dict = self.icon_service.get_score_api(governance_address, full_response=True)
             actual_request = json.loads(m._adapter.last_request.text)
-            self.assertEqual(expected_request, actual_request)
-            self.assertTrue(result)
-            self.assertTrue(is_score_apis(result))
+            result_content = result_dict['result']
 
-    def test_get_score_api_invalid(self, _make_id):
-        # case 1: when address is wrong - wallet address
-        self.assertRaises(AddressException, self.icon_service.get_score_api,
-                          "hx882efc17c2f50e0d60142b9c0e746cbafb569d8c")
-        # case 2: when address is wrong - too short
-        self.assertRaises(AddressException, self.icon_service.get_score_api,
-                          "cx882efc17c2f50e0d60142b9c0e746cbafb")
+            self.assertEqual(expected_request, actual_request)
+            self.assertEqual(result_success_v3.keys(), result_dict.keys())
+            self.assertTrue(is_score_apis(result_content))
 
     def test_get_score_api_by_wrong_address(self, _make_id):
         with requests_mock.Mocker() as m:
             wrong_address = "cxb0776ee37f5b45bfaea8cff1d8232fbb6122ec32"
-            expected_request = {
-                'id': 1234,
-                'jsonrpc': '2.0',
-                'method': 'icx_getScoreApi',
-                'params': {
-                    'address': wrong_address
-                }
-            }
 
             response_json: dict = {
                 "jsonrpc": "2.0",
@@ -75,10 +62,8 @@ class TestGetScoreApi(TestSendSuper):
                 "id": 1234
             }
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json, status_code=400)
-            # case 3: when the address is not score id
-            self.assertRaises(JSONRPCException, self.icon_service.get_score_api, wrong_address)
-            actual_request = json.loads(m._adapter.last_request.text)
-            self.assertEqual(expected_request, actual_request)
+            result_dict = self.icon_service.get_score_api(wrong_address, full_response=True)
+            self.assertEqual(result_dict.keys(), result_error_v3.keys())
 
 
 response_governance_json: dict = {

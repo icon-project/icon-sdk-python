@@ -12,39 +12,121 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import requests_mock
+import json
 
-from unittest import TestCase, main
-
+from unittest import main
+from unittest.mock import patch
 from iconsdk.builder.call_builder import CallBuilder
-from iconsdk.icon_service import IconService
-from iconsdk.providers.http_provider import HTTPProvider
-from iconsdk.wallet.wallet import KeyWallet
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
+from tests.api_send.test_send_super import TestSendSuper
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
-class TestCall(TestCase):
+@patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
+class TestCall(TestSendSuper):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.wallet = KeyWallet.create()
-        cls.address = cls.wallet.get_address()
-        cls.to = "cx0000000000000000000000000000000000000001"
-        cls.icon_service = IconService(HTTPProvider(BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST))
-
-    def test_call(self):
+    def test_call(self, _make_id):
         # with from
-        test_call = CallBuilder().from_(self.address).to(self.to).method("getStepCosts").params("").build()
-        result = self.icon_service.call(test_call)
-        self.assertEqual(type(result), dict)
+        test_call = CallBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .method("getStepCosts") \
+            .params({}) \
+            .build()
 
-        test_call = CallBuilder().from_(self.address).to(self.to).method("getStepCosts").build()
-        result = self.icon_service.call(test_call)
-        self.assertTrue(type(result), dict)
+        with requests_mock.Mocker() as m:
+            expected_request = {
+                "jsonrpc": "2.0",
+                "method": "icx_call",
+                "id": 1234,
+                "params": {
+                    "to": self.setting["to"],
+                    "dataType": "call",
+                    "data": {
+                        "method": "getStepCosts"
+                    },
+                    "from": self.setting["from"]
+                }
+            }
 
-        # without from
-        test_call = CallBuilder().to(self.to).method("getStepCosts").params("").build()
-        result = self.icon_service.call(test_call)
-        self.assertEqual(type(result), dict)
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            result = self.icon_service.call(test_call)
+            actual_request = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request, actual_request)
+            self.assertTrue(result)
+
+    def test_call_without_params(self, _make_id):
+        test_call = CallBuilder() \
+            .from_(self.setting["from"]) \
+            .to(self.setting["to"]) \
+            .method("getStepCosts") \
+            .build()
+
+        with requests_mock.Mocker() as m:
+            expected_request = {
+                "jsonrpc": "2.0",
+                "method": "icx_call",
+                "id": 1234,
+                "params": {
+                    "to": self.setting["to"],
+                    "dataType": "call",
+                    "data": {
+                        "method": "getStepCosts"
+                    },
+                    "from": self.setting["from"]
+                }
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            result = self.icon_service.call(test_call)
+            actual_request = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request, actual_request)
+            self.assertTrue(result)
+
+    def test_call_without_from(self, _make_id):
+        test_call = CallBuilder() \
+            .to(self.setting["to"]) \
+            .method("getStepCosts") \
+            .build()
+
+        with requests_mock.Mocker() as m:
+            expected_request = {
+                "jsonrpc": "2.0",
+                "method": "icx_call",
+                "id": 1234,
+                "params": {
+                    "to": self.setting["to"],
+                    "dataType": "call",
+                    "data": {
+                        "method": "getStepCosts"
+                    },
+                }
+            }
+            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            result = self.icon_service.call(test_call)
+            actual_request = json.loads(m._adapter.last_request.text)
+            self.assertEqual(expected_request, actual_request)
+            self.assertTrue(result)
+
+
+response_json = {
+    "jsonrpc": "2.0",
+    "result": {
+        "default": "0x186a0",
+        "contractCall": "0x61a8",
+        "contractCreate": "0x3b9aca00",
+        "contractUpdate": "0x5f5e1000",
+        "contractDestruct": "-0x11170",
+        "contractSet": "0x7530",
+        "get": "0x0",
+        "set": "0x140",
+        "replace": "0x50",
+        "delete": "-0xf0",
+        "input": "0xc8",
+        "eventLog": "0x64",
+        "apiCall": "0x2710"
+    },
+    "id": 1234
+}
 
 
 if __name__ == "__main__":

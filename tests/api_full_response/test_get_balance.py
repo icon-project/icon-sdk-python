@@ -18,35 +18,41 @@ import json
 from unittest import main
 from unittest.mock import patch
 from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
+from tests.api_full_response.test_full_response_base import TestFullResponseBase
+from tests.api_full_response.example_response import result_success_v3
 from iconsdk.exception import AddressException
-from tests.api_send.test_send_super import TestSendSuper
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
-class TestGetBalance(TestSendSuper):
+class TestFullResponseGetBalance(TestFullResponseBase):
 
-    def test_get_balance_from_wallet(self, _make_id):
-        # case 0: get balance from wallet or score successfully.
+    def test_get_balance_full_response(self, _make_id):
+
+        # get_balance with full_response
         with requests_mock.Mocker() as m:
-            expected_result = 0
             expected_request = {
-                'id': 1234,
                 'jsonrpc': '2.0',
                 'method': 'icx_getBalance',
+                'id': 1234,
                 'params': {
-                    'address': self.setting["from"]
+                    'address': self.setting['from']
                 }
             }
             response_json = {
-                "jsonrpc": "2.0",
-                "result": hex(0),
-                "id": 1234
+                'jsonrpc': '2.0',
+                'result': hex(self.setting['value']),
+                'id': 1234
             }
+
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
-            result = self.icon_service.get_balance(self.setting["from"])
+            result_dict = self.icon_service.get_balance(self.setting['from'], full_response=True)
             actual_request = json.loads(m._adapter.last_request.text)
+            result_keys = result_dict.keys()
+            result_content = result_dict['result']
+
             self.assertEqual(expected_request, actual_request)
-            self.assertEqual(expected_result, result)
+            self.assertEqual(result_success_v3.keys(), result_keys)
+            self.assertEqual(int(result_content, 16), self.setting['value'])
 
     def test_get_balance_invalid(self, _make_id):
         # case 1: when a param is wrong.
@@ -58,5 +64,5 @@ class TestGetBalance(TestSendSuper):
         self.assertRaises(AddressException, self.icon_service.get_balance, "cx882efc17c2f50e0d60142b9c0e746cbafb569d")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
