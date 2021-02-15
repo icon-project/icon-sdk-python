@@ -42,7 +42,7 @@ class TesFullResponseGetTotalSupply(TestFullResponseBase):
             }
             m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
             result_dict = self.icon_service.get_total_supply(full_response=True)
-            actual_request = actual_request = json.loads(m._adapter.last_request.text)
+            actual_request = json.loads(m._adapter.last_request.text)
             result_content = result_dict['result']
 
             self.assertEqual(expected_request, actual_request)
