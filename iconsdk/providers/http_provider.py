@@ -78,11 +78,7 @@ class HTTPProvider(Provider):
         tokens = re.split("/(?=[^/]+$)", path.rstrip('/'))
         if tokens[0] == '/api/v3':
             return tokens[1]
-        elif tokens[0] == 'api/debug/v3':
-            return tokens[1]
         elif tokens == ['/api', 'v3']:
-            return ''
-        elif tokens == ['/api/debug', 'v3']:
             return ''
         raise URLException('Invalid URI path')
 
