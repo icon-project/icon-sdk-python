@@ -33,7 +33,6 @@ class HTTPProvider(Provider):
     The HTTPProvider takes the full URI where the server can be found.
     For local development this would be something like 'http://localhost:9000'.
     """
-    _URL_MAP = {}
 
     @dispatch(str, int, dict=None)
     def __init__(self, base_domain_url: str, version: int, request_kwargs: dict = None):
@@ -70,8 +69,10 @@ class HTTPProvider(Provider):
         self._generate_url_map()
 
     def _generate_url_map(self):
-        self._URL_MAP['icx'] = "{0}/api/v{1}/{2}".format(self._serverUri, self._version, self._channel)
-        self._URL_MAP['debug'] = "{0}/api/debug/v{1}/{2}".format(self._serverUri, self._version, self._channel)
+        self._URL_MAP = {
+            'icx': "{0}/api/v{1}/{2}".format(self._serverUri, self._version, self._channel),
+            'debug': "{0}/api/debug/v{1}/{2}".format(self._serverUri, self._version, self._channel)
+        }
 
     @staticmethod
     def _get_channel(path: str):
