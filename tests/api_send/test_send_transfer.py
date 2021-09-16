@@ -13,15 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+from unittest.mock import patch
+
 import requests_mock
 
-from unittest.mock import patch
 from iconsdk.builder.transaction_builder import TransactionBuilder
 from iconsdk.exception import JSONRPCException, DataTypeException
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_icx_transaction, is_T_HASH
 from tests.api_send.test_send_super import TestSendSuper
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
@@ -66,7 +66,7 @@ class TestSendTransfer(TestSendSuper):
                 "result": tx_hash,
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.send_transaction(signed_transaction)
             self.assertTrue(is_T_HASH(result))
             actual_request = json.loads(m._adapter.last_request.text)
@@ -122,7 +122,7 @@ class TestSendTransfer(TestSendSuper):
                 "id": 5
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", status_code=500, json=response_json)
+            m.post(self.matcher, json=response_json, status_code=500)
             self.assertRaises(JSONRPCException, self.icon_service.send_transaction, signed_transaction)
             actual_request = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request, actual_request)

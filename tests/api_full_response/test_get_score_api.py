@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import requests_mock
 import json
-
-from unittest.mock import patch
 from unittest import main
+from unittest.mock import patch
+
+import requests_mock
 
 from iconsdk.utils.validation import is_score_apis
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 from tests.api_full_response.example_response import result_success_v3, result_error_v3
 from tests.api_full_response.test_full_response_base import TestFullResponseBase
 
@@ -40,7 +39,7 @@ class TestFullResponseGetScoreAPI(TestFullResponseBase):
                 }
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_governance_json)
+            m.post(self.matcher, json=response_governance_json)
             result_dict = self.icon_service.get_score_api(governance_address, full_response=True)
             actual_request = json.loads(m._adapter.last_request.text)
             result_content = result_dict['result']
@@ -61,7 +60,7 @@ class TestFullResponseGetScoreAPI(TestFullResponseBase):
                 },
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json, status_code=400)
+            m.post(self.matcher, json=response_json, status_code=400)
             result_dict = self.icon_service.get_score_api(wrong_address, full_response=True)
             self.assertEqual(result_dict.keys(), result_error_v3.keys())
 

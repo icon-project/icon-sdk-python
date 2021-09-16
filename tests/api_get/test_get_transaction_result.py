@@ -13,17 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import requests_mock
 import json
-
 from unittest import main
 from unittest.mock import patch
+
+import requests_mock
 
 from iconsdk.exception import DataTypeException, JSONRPCException
 from iconsdk.utils.hexadecimal import remove_0x_prefix, add_cx_prefix
 from iconsdk.utils.validation import is_transaction_result
 from tests.api_send.test_send_super import TestSendSuper
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
@@ -66,7 +65,7 @@ class TestGetTransactionResult(TestSendSuper):
                 },
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.get_transaction_result(tx_hash)
             actual_request = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request, actual_request)
@@ -91,7 +90,7 @@ class TestGetTransactionResult(TestSendSuper):
                 },
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", status_code=400, json=response_json)
+            m.post(self.matcher, json=response_json, status_code=400)
             # case 4: when tx_hash is invalid - not exist
             self.assertRaises(JSONRPCException, self.icon_service.get_transaction_result, wrong_tx_hash)
             actual_request = json.loads(m._adapter.last_request.text)

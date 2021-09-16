@@ -12,16 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests_mock
 import json
-
 from unittest import main
 from unittest.mock import patch
+
+import requests_mock
+
 from iconsdk.exception import JSONRPCException, DataTypeException
 from iconsdk.utils.hexadecimal import remove_0x_prefix, add_cx_prefix
 from iconsdk.utils.validation import is_transaction
 from tests.api_send.test_send_super import TestSendSuper
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
@@ -58,7 +58,7 @@ class TestGetTransactionByHash(TestSendSuper):
                 "id": 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             # case 0: when tx_hash is valid
             result = self.icon_service.get_transaction(tx_hash)
             actual_request = json.loads(m._adapter.last_request.text)
@@ -87,7 +87,7 @@ class TestGetTransactionByHash(TestSendSuper):
                 "id": 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json, status_code=400)
+            m.post(self.matcher, json=response_json, status_code=400)
             self.assertRaises(JSONRPCException, self.icon_service.get_transaction, wrong_tx_hash)
 
 

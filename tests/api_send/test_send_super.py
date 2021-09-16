@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import os
+import re
 from unittest import TestCase, main
 
 from iconsdk.icon_service import IconService
@@ -27,6 +28,7 @@ class TestSendSuper(TestCase):
     A super class of other send test class, it is for unit tests of sending transaction.
     All of sup classes for testing sending transaction extends this super class.
     """
+    matcher = re.compile(re.escape(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/") + "?")
 
     @classmethod
     def setUpClass(cls):

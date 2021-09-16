@@ -12,20 +12,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests_mock
 import json
-
 from unittest import main
 from unittest.mock import patch
+
+import requests_mock
+
 from iconsdk.builder.call_builder import CallBuilder
 from tests.api_send.test_send_super import TestSendSuper
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
 class TestCall(TestSendSuper):
 
     def test_call(self, _make_id):
+
         # with from
         test_call = CallBuilder() \
             .from_(self.setting["from"]) \
@@ -49,7 +50,7 @@ class TestCall(TestSendSuper):
                 }
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.call(test_call)
             actual_request = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request, actual_request)
@@ -76,7 +77,7 @@ class TestCall(TestSendSuper):
                     "from": self.setting["from"]
                 }
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.call(test_call)
             actual_request = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request, actual_request)
@@ -101,7 +102,7 @@ class TestCall(TestSendSuper):
                     },
                 }
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.call(test_call)
             actual_request = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request, actual_request)

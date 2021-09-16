@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import re
 
 import requests_mock
 from unittest.mock import patch
@@ -31,6 +32,7 @@ class TestWalletLoadFromKeystoreFile(TestCase):
     TEST_KEYSTORE_FILE_PATH = path.abspath(path.join(TEST_CUR_DIR, '../keystore_file/test_keystore.txt'))
 
     TEST_KEYSTORE_FILE_PASSWORD = "Adas21312**"
+    matcher = re.compile(re.escape(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/") + "?")
 
     def test_wallet_load_from_keystore_file(self):
         """A wallet loads from a keystore file correctly."""
@@ -68,7 +70,7 @@ class TestWalletLoadFromKeystoreFile(TestCase):
                 "result": hex(0),
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             balance = icon_service.get_balance(wallet.get_address())
             self.assertEqual(balance, 0)
 

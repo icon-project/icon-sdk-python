@@ -14,11 +14,10 @@
 # limitations under the License.
 
 import json
-import requests_mock
-
-from unittest.mock import patch
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 from unittest import main
+from unittest.mock import patch
+
+import requests_mock
 
 from iconsdk.utils.validation import is_block
 from tests.api_full_response.example_response import result_success_v3
@@ -43,7 +42,7 @@ class TestFullResponseGetBlockByHeight(TestFullResponseBase):
                 'id': 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result_dict = self.icon_service.get_block("latest", full_response=True)
             actual_request = json.loads(m._adapter.last_request.text)
             result_keys = result_dict.keys()
