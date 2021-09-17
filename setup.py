@@ -10,6 +10,10 @@ with open("README.md", 'r') as f:
 with open("requirements.txt") as requirements:
     requires = list(requirements)
 
+extras_requires = {
+    'tests': ['pytest~=6.2.5']
+}
+
 setup(
     name='iconsdk',
     version=version,
@@ -22,6 +26,7 @@ setup(
     url='https://github.com/icon-project/icon-sdk-python',
     packages=find_packages(exclude=['tests*']),
     install_requires=requires,
+    extras_require=extras_requires,
     python_requires='~=3.7',
     license='Apache License 2.0',
     classifiers=[

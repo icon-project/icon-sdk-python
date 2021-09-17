@@ -12,15 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests_mock
 import json
-
 from unittest import main
 from unittest.mock import patch
-from tests.api_send.test_send_super import TestSendSuper
+
+import requests_mock
+
 from iconsdk.exception import AddressException, JSONRPCException
 from iconsdk.utils.validation import is_score_apis
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
+from tests.api_send.test_send_super import TestSendSuper
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
@@ -38,7 +38,7 @@ class TestGetScoreApi(TestSendSuper):
                 }
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_governance_json)
+            m.post(self.matcher, json=response_governance_json)
             # case 0: when getting score apis successfully
             result = self.icon_service.get_score_api(governance_address)
             actual_request = json.loads(m._adapter.last_request.text)
@@ -74,7 +74,7 @@ class TestGetScoreApi(TestSendSuper):
                 },
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json, status_code=400)
+            m.post(self.matcher, json=response_json, status_code=400)
             # case 3: when the address is not score id
             self.assertRaises(JSONRPCException, self.icon_service.get_score_api, wrong_address)
             actual_request = json.loads(m._adapter.last_request.text)

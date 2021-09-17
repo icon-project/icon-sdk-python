@@ -13,17 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import requests_mock
 import json
-
 from unittest import main
 from unittest.mock import patch
+
+import requests_mock
+
 from iconsdk.builder.transaction_builder import DeployTransactionBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils.validation import is_T_HASH
 from tests.api_full_response.example_response import result_success_v3, result_error_v3
 from tests.api_full_response.test_full_response_base import TestFullResponseBase
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
@@ -48,7 +48,7 @@ class TesFullResponseSendDeploy(TestFullResponseBase):
                 "result": "0x4bf74e6aeeb43bde5dc8d5b62537a33ac8eb7605ebbdb51b015c1881b45b3aed"
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result_dict = self.icon_service.send_transaction(signed_transaction, full_response=True)
             actual_request = json.loads(m._adapter.last_request.text)
             result_content = result_dict['result']
@@ -80,7 +80,7 @@ class TesFullResponseSendDeploy(TestFullResponseBase):
                 }
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json, status_code=400)
+            m.post(self.matcher, json=response_json, status_code=400)
             result_dict = self.icon_service.send_transaction(signed_transaction, full_response=True)
             self.assertEqual(result_error_v3.keys(), result_dict.keys())
 

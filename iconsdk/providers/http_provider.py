@@ -69,9 +69,14 @@ class HTTPProvider(Provider):
         self._generate_url_map()
 
     def _generate_url_map(self):
+        def _add_channel_path(url: str):
+            if self._channel:
+                return f"{url}/{self._channel}"
+            return url
+
         self._URL_MAP = {
-            'icx': "{0}/api/v{1}/{2}".format(self._serverUri, self._version, self._channel),
-            'debug': "{0}/api/debug/v{1}/{2}".format(self._serverUri, self._version, self._channel)
+            'icx': _add_channel_path(f"{self._serverUri}/api/v{self._version}"),
+            'debug': _add_channel_path(f"{self._serverUri}/api/debug/v{self._version}")
         }
 
     @staticmethod

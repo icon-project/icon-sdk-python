@@ -12,11 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests_mock
 import json
-
 from unittest.mock import patch
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
+
+import requests_mock
+
 from iconsdk.builder.transaction_builder import MessageTransactionBuilder
 from iconsdk.exception import JSONRPCException, DataTypeException
 from iconsdk.signed_transaction import SignedTransaction
@@ -68,7 +68,7 @@ class TestSendMessage(TestSendSuper):
                 'id': 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.send_transaction(signed_transaction)
             self.assertTrue(is_T_HASH(result))
             actual_request = json.loads(m._adapter.last_request.text)
@@ -104,7 +104,7 @@ class TestSendMessage(TestSendSuper):
                 "id": 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.get_transaction_result(tx_hash)
             self.assertTrue(is_transaction_result(result))
 
@@ -163,7 +163,7 @@ class TestSendMessage(TestSendSuper):
                 "id": 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.get_block(int('0x13f', 16))
             self.assertTrue(is_block(result))
             self.assertEqual(result["confirmed_transaction_list"][1]["data"], self.setting["data"])
@@ -190,7 +190,7 @@ class TestSendMessage(TestSendSuper):
                 },
                 "id": 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3/", json=response_json, status_code=400)
+            m.post(self.matcher, json=response_json, status_code=400)
             # When address is wrong
             message_transaction = MessageTransactionBuilder().from_(self.setting["from"]).to(self.setting["to"][2:]) \
                 .step_limit(self.setting["step_limit"]).nid(self.setting["nid"]).data(self.setting["data"]).build()

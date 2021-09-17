@@ -1,15 +1,18 @@
 import json
+import re
+from unittest.mock import patch
+
 import requests_mock
 
-from unittest.mock import patch
-from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder
 from iconsdk.builder.transaction_builder import TransactionBuilder, MessageTransactionBuilder
 from tests.api_send.test_send_super import TestSendSuper
+from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
 class TestEstimateStep(TestSendSuper):
+    matcher = re.compile(re.escape(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3/") + "?")
 
     def test_estimate_step_with_send_icx_transaction(self, _make_id):
         icx_transaction = TransactionBuilder() \
@@ -46,7 +49,7 @@ class TestEstimateStep(TestSendSuper):
                 'id': 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.estimate_step(icx_transaction)
             actual_request = json.loads(m._adapter.last_request.text)
 
@@ -88,7 +91,7 @@ class TestEstimateStep(TestSendSuper):
                 'id': 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.estimate_step(message_transaction)
             actual_request = json.loads(m._adapter.last_request.text)
 
@@ -138,7 +141,7 @@ class TestEstimateStep(TestSendSuper):
                 'id': 1234
             }
 
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.estimate_step(deploy_transaction)
             actual_request = json.loads(m._adapter.last_request.text)
 
@@ -186,7 +189,7 @@ class TestEstimateStep(TestSendSuper):
                 'result': hex(expected_step),
                 'id': 1234
             }
-            m.post(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3/", json=response_json)
+            m.post(self.matcher, json=response_json)
             result = self.icon_service.estimate_step(call_transaction)
             actual_request = json.loads(m._adapter.last_request.text)
 

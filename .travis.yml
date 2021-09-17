@@ -3,8 +3,13 @@ dist: bionic
 python:
   - "3.7"
 
+install:
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -e .[tests]
+
 script:
-  - python setup.py test
+  - python -m pytest -ra
 
 deploy:
   provider: pypi
