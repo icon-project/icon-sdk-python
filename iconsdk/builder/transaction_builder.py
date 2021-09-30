@@ -172,13 +172,14 @@ class MessageTransaction(Transaction):
 
 
 class DepositTransaction(Transaction):
-    """Subclass `DepositTransaction`, making a transaction object for depositing  and withdrawing"""
+    """Subclass `DepositTransaction`, making a transaction object for depositing and withdrawing"""
 
     def __init__(self, from_: str, to: str, value: int, step_limit: int, nid: int, nonce: int, version: int,
-                 timestamp: int, action: str, id: str):
+                 timestamp: int, action: str, id: str, amount: int):
         Transaction.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self.__action = action
         self.__id = id
+        self.__amount = amount
 
     @property
     def data_type(self) -> str:
@@ -192,9 +193,14 @@ class DepositTransaction(Transaction):
     def id(self) -> str:
         return self.__id
 
+    @property
+    def amount(self) -> int:
+        return self.__amount
+
     def to_dict(self) -> dict:
         transaction_as_dict = super().to_dict()
-        transaction_as_dict.update({"data_type": self.data_type, "action": self.action, "id": self.id})
+        transaction_as_dict.update(
+            {"data_type": self.data_type, "action": self.action, "id": self.id, "amount": self.amount})
         return transaction_as_dict
 
 
@@ -381,10 +387,12 @@ class DepositTransactionBuilder(TransactionBuilder):
     """Builder for `DepositTransaction` object"""
 
     def __init__(self, from_: str = None, to: str = None, value: int = None, step_limit: int = None, nid: int = None,
-                 nonce: int = None, version: int = None, timestamp: int = None, action: str = None, id: str = None):
+                 nonce: int = None, version: int = None, timestamp: int = None, action: str = None, id: str = None,
+                 amount: int = None):
         TransactionBuilder.__init__(self, from_, to, value, step_limit, nid, nonce, version, timestamp)
         self._action = action
         self._id = id
+        self._amount = amount
 
     def action(self, action: str) -> 'DepositTransactionBuilder':
         self._action = action
@@ -394,18 +402,22 @@ class DepositTransactionBuilder(TransactionBuilder):
         self._id = id
         return self
 
+    def amount(self, amount: int) -> 'DepositTransactionBuilder':
+        self._amount = amount
+        return self
+
     def build(self) -> DepositTransaction:
         if not self._action:
             raise DataTypeException("'action' should be provided. Available values are 'add' or 'withdraw'.")
         if self._action == "withdraw":
-            if not self._id:
-                raise DataTypeException("When action is 'withdraw', 'id' should be provided.")
+            if self._id is not None and self._amount is not None:
+                raise DataTypeException("When action is 'withdraw', Do not set 'id' and 'amount' at same time.")
             if self._value:
                 raise DataTypeException("When action is 'withdraw'. 'value' should not be provided.")
         if self._action == "add" and not self._value:
             raise DataTypeException("When action is 'add', 'value' should be provided.")
         return DepositTransaction(self._from_, self._to, self._value, self._step_limit, self._nid, self._nonce,
-                                  self._version, self._timestamp, self._action, self._id)
+                                  self._version, self._timestamp, self._action, self._id, self._amount)
 
     @classmethod
     def from_dict(cls, transaction_as_dict: dict) -> 'DepositTransactionBuilder':
@@ -414,6 +426,7 @@ class DepositTransactionBuilder(TransactionBuilder):
             cls = super().from_dict(transaction_as_dict)
             cls.action(transaction_as_dict["action"])
             cls.id(transaction_as_dict["id"] if "id" in transaction_as_dict else None)
+            cls.amount(transaction_as_dict["amount"] if "amount" in transaction_as_dict else None)
             return cls
         except KeyError:
             raise DataTypeException("The input data invalid. Mapping key not found.")

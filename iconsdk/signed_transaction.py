@@ -74,7 +74,10 @@ class SignedTransaction:
             dict_tx["data"] = transaction.data
         elif transaction.data_type == "deposit":
             dict_tx["data"] = {"action": transaction.action}
-            if transaction.action == "withdraw" and transaction.id:
-                dict_tx["data"]["id"] = transaction.id
+            if transaction.action == "withdraw":
+                if transaction.id is not None:
+                    dict_tx["data"]["id"] = transaction.id
+                elif transaction.amount is not None:
+                    dict_tx["data"]["amount"] = convert_int_to_hex_str(transaction.amount)
 
         return dict_tx
