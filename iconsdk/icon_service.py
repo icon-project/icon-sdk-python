@@ -283,3 +283,18 @@ class IconService:
 
         result = self.__provider.make_request('debug_estimateStep', params, full_response)
         return result if full_response else int(result, 16)
+
+    def get_trace(self, tx_hash: str) -> dict:
+        """
+        Get trace of the transaction
+
+        :param tx_hash: Transaction hash prefixed with '0x'
+        :return: trace
+        """
+
+        if not is_T_HASH(tx_hash):
+            raise DataTypeException("This hash value is unrecognized.")
+
+        params = {'txHash': tx_hash}
+        result = self.__provider.make_request('debug_getTrace', params)
+        return result
