@@ -12,7 +12,7 @@ from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
 @patch('iconsdk.providers.http_provider.HTTPProvider._make_id', return_value=1234)
 class TestEstimateStep(TestSendSuper):
-    matcher = re.compile(re.escape(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/debug/v3/") + "?")
+    matcher = re.compile(re.escape(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3d/") + "?")
 
     def test_estimate_step_with_send_icx_transaction(self, _make_id):
         icx_transaction = TransactionBuilder() \

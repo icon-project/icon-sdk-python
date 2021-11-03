@@ -76,7 +76,7 @@ class HTTPProvider(Provider):
 
         self._URL_MAP = {
             'icx': _add_channel_path(f"{self._serverUri}/api/v{self._version}"),
-            'debug': _add_channel_path(f"{self._serverUri}/api/debug/v{self._version}")
+            'debug': _add_channel_path(f"{self._serverUri}/api/v{self._version}d"),
         }
 
     @staticmethod
@@ -128,10 +128,6 @@ class HTTPProvider(Provider):
             except JSONDecodeError:
                 retry_count -= 1
                 raw_response = response.content.decode()
-                if req_key == 'debug':
-                    self._URL_MAP['debug'] = "{0}/api/v{1}d/{2}".format(self._serverUri, self._version, self._channel)
-                else:
-                    break
 
         raise JSONRPCException(f'Unknown response: {raw_response}')
 
