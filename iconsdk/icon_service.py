@@ -188,6 +188,28 @@ class IconService:
 
         return result
 
+    def wait_transaction_result(self, tx_hash: str, full_response: bool = False) -> dict:
+        """
+        Returns the result of a transaction specified by the transaction hash like get_transaction_result,
+        but waits for some time to get the transaction result instead of returning immediately
+        if there is no finalized result.
+        Delegates to icx_WaitTransactionResult RPC method.
+
+        :param tx_hash: Hash of a transaction prefixed with '0x'
+        :param full_response: Boolean to check whether get naive dict or refined data from server
+        :return A transaction result object
+        """
+        if not is_T_HASH(tx_hash):
+            raise DataTypeException("This hash value is unrecognized.")
+
+        params = {'txHash': tx_hash}
+        result = self.__provider.make_request('icx_waitTransactionResult', params, full_response)
+
+        if not full_response:
+            result = convert(result, TRANSACTION_RESULT)
+
+        return result
+
     def get_transaction(self, tx_hash: str, full_response: bool = False) -> dict:
         """
         Returns the transaction information requested by transaction hash.
@@ -247,6 +269,23 @@ class IconService:
         """
         params = signed_transaction.signed_transaction_dict
         return self.__provider.make_request('icx_sendTransaction', params, full_response)
+
+    def send_transaction_and_wait(self, signed_transaction: SignedTransaction, full_response: bool = False) -> dict:
+        """
+        Sends a transaction like icx_sendTransaction, then it will wait for the result of it for specified time.
+        Delegates to icx_sendTransactionAndWait RPC method.
+
+        :param signed_transaction: A signed transaction object
+        :param full_response: Boolean to check whether get naive dict or refined data from server
+        :return A transaction result object
+        """
+        params = signed_transaction.signed_transaction_dict
+        result = self.__provider.make_request('icx_sendTransactionAndWait', params, full_response)
+
+        if not full_response:
+            result = convert(result, TRANSACTION_RESULT)
+
+        return result
 
     def estimate_step(self, transaction: Transaction, full_response: bool = False) -> int:
         """
