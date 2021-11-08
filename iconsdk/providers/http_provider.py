@@ -118,18 +118,13 @@ class HTTPProvider(Provider):
             rpc_dict['params'] = params
 
         req_key = method.split('_')[0]
-        retry_count = 2
-        raw_response = ''
-        while retry_count > 0:
-            request_url = self._URL_MAP.get(req_key)
-            response = self._make_post_request(request_url, rpc_dict, **self._get_request_kwargs())
-            try:
-                return self._return_custom_response(response, full_response)
-            except JSONDecodeError:
-                retry_count -= 1
-                raw_response = response.content.decode()
-
-        raise JSONRPCException(f'Unknown response: {raw_response}')
+        request_url = self._URL_MAP.get(req_key)
+        response = self._make_post_request(request_url, rpc_dict, **self._get_request_kwargs())
+        try:
+            return self._return_custom_response(response, full_response)
+        except JSONDecodeError:
+            raw_response = response.content.decode()
+            raise JSONRPCException(f'Unknown response: {raw_response}')
 
     @staticmethod
     def _return_custom_response(response: requests.Response, full_response: bool = False) -> Union[str, list, dict]:

@@ -22,7 +22,6 @@ from tests.api_send.test_send_super import TestSendSuper
 
 class TestHTTPProvider(TestSendSuper):
     FULL_PATH_URL = "http://localhost:9000/api/v3"
-    DEBUG_FULL_PATH_URL = "http://localhost:9000/api/debug/v3"
     BASE_PATH_URL = "http://localhost:9000"
     VERSION = 3
 
