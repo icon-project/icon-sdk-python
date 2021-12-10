@@ -1,7 +1,7 @@
 
 *.py[cod]
 *$py.class
-.idea
+.idea/
 
 .Python
 
@@ -18,8 +18,3 @@ build/
 dist/
 tmp/
 iconsdk.egg-info/
-.*/
-
-log.ini
-
-test_keystore
