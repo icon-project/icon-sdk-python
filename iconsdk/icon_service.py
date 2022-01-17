@@ -12,8 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from typing import Union, Tuple, Any
+from typing import Union, Tuple, Any, List
 
 from iconsdk.builder.call_builder import Call
 from iconsdk.builder.transaction_builder import Transaction
@@ -337,3 +336,79 @@ class IconService:
         params = {'txHash': tx_hash}
         result = self.__provider.make_request('debug_getTrace', params)
         return result
+
+    def get_data_by_hash(self, _hash: str) -> str:
+        """
+        Returns data by hash.
+        It can be used to retrieve data based on the hash algorithm (SHA3-256).
+        Following data can be retrieved by a hash.
+            - BlockHeader with the hash of the block
+            - Validators with BlockHeader.NextValidatorsHash
+            - Votes with BlockHeader.VotesHash
+            - etc…
+        Delegates to icx_getDataByHash RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp_extension.md#icx_getdatabyhash
+
+        :param _hash: The hash value of the data to retrieve
+        :return: A data object
+        """
+        params = {'hash': _hash}
+        return self.__provider.make_request('icx_getDataByHash', params)
+
+    def get_block_header_by_height(self, height: int) -> str:
+        """
+        Returns block header for specified height.
+        Delegates to icx_getBlockHeaderByHeight RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp_extension.md#icx_getblockheaderbyheight
+
+        :param height: The height of the block
+        :return: A block header object
+        """
+        params = {'height': hex(height)}
+        return self.__provider.make_request('icx_getBlockHeaderByHeight', params)
+
+    def get_votes_by_height(self, height: int) -> str:
+        """
+        Returns votes for the block specified by height.
+        Delegates to icx_getVotesByHeight RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp_extension.md#icx_getvotesbyheight
+
+        :param height: The height of the block for votes
+        :return: A votes object
+        """
+        params = {'height': hex(height)}
+        return self.__provider.make_request('icx_getVotesByHeight', params)
+
+    def get_proof_for_result(self, _hash: str, index: int) -> str:
+        """
+        Returns proof for the receipt. Proof, itself, may include the receipt.
+        Delegates to icx_getProofForResult RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp_extension.md#icx_getproofforresult
+
+        :param _hash: The hash value of the block including the result
+        :param index: Index of the receipt in the block. 0 for the first
+        :return: A proof object
+        """
+        params = {
+            'hash': _hash,
+            'index': hex(index),
+        }
+        return self.__provider.make_request('icx_getProofForResult', params)
+
+    def get_proof_for_events(self, _hash: str, index: int, events: List[str] = []) -> str:
+        """
+        Returns proof for the receipt and the events in it. The proof may include the data itself.
+        Delegates to icx_getProofForEvents RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp_extension.md#icx_getproofforevents
+
+        :param _hash: The hash value of the block including the result
+        :param index: Index of the receipt in the block. 0 for the first
+        :param events: List of indexes of the events in the receipt
+        :return: A proof object
+        """
+        params = {
+            'hash': _hash,
+            'index': hex(index),
+            'events': events,
+        }
+        return self.__provider.make_request('icx_getProofForEvents', params)
