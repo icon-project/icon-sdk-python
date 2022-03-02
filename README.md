@@ -102,6 +102,21 @@ tx = icon_service.get_transaction("0x000...000")
 # Returns the result of a transaction by transaction hash
 tx_result = icon_service.get_transaction_result("0x000...000")
 
+# Returns the data based on the hash
+tx_result = icon_service.get_data_by_hash("0x000...000")
+
+# Returns block header for specified height.
+tx_result = icon_service.get_block_header_by_height(1000)
+
+# Returns votes for the block specified by height
+tx_result = icon_service.get_votes_by_height(1000)
+
+# Returns proof for the receipt. Proof, itself, may include the receipt.
+tx_result = icon_service.get_proof_for_result("0x000...000", 0)
+
+# Returns proof for the receipt and the events in it. The proof may include the data itself.
+tx_result = icon_service.get_proof_for_events("0x000...000", 0, [ "0x0", "0x2" ])
+
 # Generates a call instance using the CallBuilder
 call = CallBuilder().from_(wallet.get_address())\
                     .to("cx000...1")\
@@ -374,6 +389,96 @@ Field :
 tx_result = icon_service.get_transaction_result("0x000...000")
 ```
 
+
+### get_data_by_hash
+
+```python
+get_data_by_hash(hash: str)
+```
+
+Get data by hash.
+
+It can be used to retrieve data based on the hash algorithm (SHA3-256).
+
+Following data can be retrieved by a hash.
+
+* BlockHeader with the hash of the block
+* Validators with BlockHeader.NextValidatorsHash
+* Votes with BlockHeader.VotesHash
+* etc…
+
+Delegates to **icx_getDataByHash** RPC method
+
+#### Parameters
+
+hash : The hash value of the data to retrieve.
+
+#### Returns
+
+#### Error Cases
+
+* DataTypeException : Data type is invalid.
+* JSONRPCException :  JSON-RPC Response is error.
+
+#### Example
+
+```python
+tx_result = icon_service.get_data_by_hash("0x000...000")
+```
+
+### get_block_header_by_height
+
+```python
+get_block_header_by_height(height: int)
+```
+Get block header for specified height.
+
+Delegates to **icx_getBlockHeaderByHeight** RPC method
+
+#### Parameters
+
+height : The height of the block
+
+#### Returns
+
+#### Error Cases
+
+* DataTypeException : Data type is invalid.
+* JSONRPCException :  JSON-RPC Response is error.
+
+#### Example
+
+```python
+tx_result = icon_service.get_block_header_by_height(1000)
+```
+
+### get_votes_by_height
+
+```python
+get_votes_by_height(height: int)
+```
+Get votes for the block specified by height.
+
+Normally votes for the block are included in the next. So, even though the block is finalized by votes already, the block including votes may not exist. For that reason, we support this API to get votes as proof for the block.
+
+Delegates to **icx_getVoteByHeight** RPC method
+
+#### Parameters
+
+height : The height of the block
+
+#### Returns
+
+#### Error Cases
+
+* DataTypeException : Data type is invalid.
+* JSONRPCException :  JSON-RPC Response is error.
+
+#### Example
+
+```python
+tx_result = icon_service.get_vote_by_height(1000)
+```
 
 
 ### call
