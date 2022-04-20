@@ -45,6 +45,11 @@ class TestGetTotalSupply(TestSendSuper):
             self.assertEqual(expected_request, actual_request)
             self.assertTrue(result, supply)
 
+            # with height
+            self.icon_service.get_total_supply(height=self.setting['height'])
+            actual_request = json.loads(m._adapter.last_request.text)
+            self.assertEqual(hex(self.setting['height']), actual_request['params']['height'])
+
 
 if __name__ == "__main__":
     main()

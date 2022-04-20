@@ -115,33 +115,41 @@ class IconService:
 
         return result
 
-    def get_total_supply(self, full_response: bool = False) -> Union[dict, int]:
+    def get_total_supply(self, height: int = None, full_response: bool = False) -> Union[dict, int]:
         """
         Returns total ICX coin supply that has been issued
         Delegates to icx_getTotalSupply RPC method
 
+        :param height: Block height
         :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: Total number of ICX coins issued
         """
 
-        result = self.__provider.make_request('icx_getTotalSupply', full_response=full_response)
+        params = {}
+        if height is not None:
+            params["height"] = hex(height)
+
+        result = self.__provider.make_request('icx_getTotalSupply', params, full_response=full_response)
 
         if full_response:
             return result
         else:
             return int(remove_0x_prefix(result), 16)
 
-    def get_balance(self, address: str, full_response: bool = False) -> Union[dict, int]:
+    def get_balance(self, address: str, height: int = None, full_response: bool = False) -> Union[dict, int]:
         """
         Returns the ICX balance of the given EOA or SCORE.
         Delegates to icx_getBalance RPC method.
 
         :param address: An address of EOA or SCORE. type(str)
+        :param height: Block height. type(int)
         :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: Number of ICX coins
         """
         if is_score_address(address) or is_wallet_address(address):
             params = {'address': address}
+            if height is not None:
+                params["height"] = hex(height)
 
             result = self.__provider.make_request('icx_getBalance', params, full_response)
 
@@ -152,12 +160,13 @@ class IconService:
         else:
             raise AddressException("Address is wrong.")
 
-    def get_score_api(self, address: str, full_response: bool = False) -> Union[dict, list]:
+    def get_score_api(self, address: str, height: int = None, full_response: bool = False) -> Union[dict, list]:
         """
         Returns SCORE's external API list.
         Delegates to icx_getScoreApi RPC method.
 
         :param address: A SCORE address to be examined
+        :param height: Block height
         :param full_response: Boolean to check whether get naive dict or refined data from server
         :return: A list of API methods of the SCORE and its information
         """
@@ -165,6 +174,8 @@ class IconService:
             raise AddressException("SCORE Address is wrong.")
 
         params = {'address': address}
+        if height is not None:
+            params['height'] = hex(height)
         return self.__provider.make_request('icx_getScoreApi', params, full_response)
 
     def get_transaction_result(self, tx_hash: str, full_response: bool = False) -> dict:
@@ -254,6 +265,9 @@ class IconService:
 
         if isinstance(call.params, dict):
             params["data"]["params"] = call.params
+
+        if call.height is not None:
+            params["height"] = call.height
 
         return self.__provider.make_request('icx_call', params, full_response)
 
