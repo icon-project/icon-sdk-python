@@ -22,11 +22,12 @@ class Call:
     Class `Call` for calling a SCORE API.
     Once an instance generated, it is read-only."""
 
-    def __init__(self, from_: str, to: str, method: str, params: dict):
+    def __init__(self, from_: str, to: str, method: str, params: dict, height: int):
         self.__from = from_
         self.__to = to
         self.__method = method
         self.__params = params
+        self.__height = height
 
     @property
     def from_(self) -> str:
@@ -44,8 +45,12 @@ class Call:
     def params(self) -> dict:
         return object_to_str(self.__params) if self.__params else None
 
+    @property
+    def height(self) -> int:
+        return object_to_str(self.__height) if self.__height else None
+
     def to_dict(self) -> dict:
-        return {"from_": self.from_, "to": self.to, "method": self.method, "params": self.params}
+        return {"from_": self.from_, "to": self.to, "method": self.method, "params": self.params, "height": self.height}
 
 
 class CallBuilder:
@@ -54,11 +59,13 @@ class CallBuilder:
     Once setting it, a value of any property can't be changed forever.
     """
 
-    def __init__(self, from_: str = None, to: str = None, method: str = None, params: dict = None) -> Call:
+    def __init__(self, from_: str = None, to: str = None, method: str = None, params: dict = None,
+                 height: int = None) -> Call:
         self._from_ = from_
         self._to = to
         self._method = method
         self._params = params
+        self._height = height
 
     def from_(self, from_: str) -> 'CallBuilder':
         self._from_ = from_
@@ -76,8 +83,12 @@ class CallBuilder:
         self._params = params
         return self
 
+    def height(self, height: int) -> 'CallBuilder':
+        self._height = height
+        return self
+
     def build(self) -> Call:
-        return Call(self._from_, self._to, self._method, self._params)
+        return Call(self._from_, self._to, self._method, self._params, self._height)
 
     @classmethod
     def from_dict(cls, call_as_dict: dict) -> 'CallBuilder':
@@ -87,7 +98,8 @@ class CallBuilder:
                 from_=call_as_dict['from_'] if "from_" in call_as_dict else None,
                 to=call_as_dict['to'],
                 method=call_as_dict['method'],
-                params=call_as_dict['params'] if "params" in call_as_dict else None
+                params=call_as_dict['params'] if "params" in call_as_dict else None,
+                height=call_as_dict['height'],
             )
         except KeyError:
             raise DataTypeException("The input data invalid. Mapping key not found.")

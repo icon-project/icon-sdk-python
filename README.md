@@ -122,6 +122,7 @@ call = CallBuilder().from_(wallet.get_address())\
                     .to("cx000...1")\
                     .method("balance_of")\
                     .params({"address": "hx000...1"})\
+                    .height(100)\
                     .build()
 
 # Executes a call method to call a read-only API method on the SCORE immediately without creating a transaction
@@ -185,7 +186,7 @@ block = icon_service.get_block("latest")
 ### get_balance
 
 ```python
-get_balance(address: str)
+get_balance(address: str, height: int = None)
 ```
 
 Returns the ICX balance of the given EOA or SCORE
@@ -195,6 +196,8 @@ Delegates to **icx_getBalance** RPC method
 #### Parameters
 
 address : An address of EOA or SCORE
+
+height(optional) : Block height
 
 #### Returns
 
@@ -218,7 +221,7 @@ balance = icon_service.get_balance("hx000...1")
 ### get_score_api
 
 ```python
-get_score_api(address: str)
+get_score_api(address: str, height: int = None)
 ```
 
 Returns SCORE's external API list
@@ -228,6 +231,8 @@ Delegates to **icx_getScoreApi** RPC method
 #### Parameters
 
 address : A SCORE address to be examined
+
+height(optional) : Block height
 
 #### Returns
 
@@ -264,7 +269,7 @@ score_apis = icon_service.get_score_api("cx000...1")
 ### get_total_supply
 
 ```python
-get_total_supply()
+get_total_supply(height: int = None)
 ```
 
 Returns total ICX coin supply that has been issued
@@ -273,7 +278,7 @@ Delegates to **icx_getTotalSupply** RPC method
 
 #### Parameters
 
-None
+height(optional) : Block height
 
 #### Returns
 

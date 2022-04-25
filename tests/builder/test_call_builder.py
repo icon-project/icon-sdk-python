@@ -22,19 +22,21 @@ class TestCallBuilder(TestCase):
 
     def test_make_call_builder(self):
         """Testing for making a couple of call builders successfully"""
+        height = 100
 
         call_1 = CallBuilder() \
             .from_("1_FROM") \
             .to("1_TO") \
             .method("1_METHOD") \
             .params({"test": 123}) \
+            .height(height) \
             .build()
 
-        call_2 = CallBuilder().from_("2_FROM").to("2_TO").method("2_METHOD").params({"test": 123}).build()
+        call_2 = CallBuilder().from_("2_FROM").to("2_TO").method("2_METHOD").params({"test": 123}).height(100).build()
 
-        properties = ["from_", "to", "method", "params"]
-        values_call_1 = ["1_FROM", "1_TO", "1_METHOD", {'test': '0x7b'}]
-        values_call_2 = ["2_FROM", "2_TO", "2_METHOD", {'test': '0x7b'}]
+        properties = ["from_", "to", "method", "params", "height"]
+        values_call_1 = ["1_FROM", "1_TO", "1_METHOD", {'test': '0x7b'}, hex(height)]
+        values_call_2 = ["2_FROM", "2_TO", "2_METHOD", {'test': '0x7b'}, hex(height)]
 
         # Checks all of property is collect.
         for idx, property in enumerate(properties):
@@ -47,6 +49,7 @@ class TestCallBuilder(TestCase):
             .to("1_TO") \
             .method("1_METHOD") \
             .params({"test": 123}) \
+            .height(100) \
             .build()
 
         call_1_as_dict = call_1.to_dict()

@@ -48,6 +48,11 @@ class TestGetBalance(TestSendSuper):
             self.assertEqual(expected_request, actual_request)
             self.assertEqual(expected_result, result)
 
+            # with height
+            self.icon_service.get_balance(self.setting['from'], height=self.setting['height'])
+            actual_request = json.loads(m._adapter.last_request.text)
+            self.assertEqual(hex(self.setting['height']), actual_request['params']['height'])
+
     def test_get_balance_invalid(self, _make_id):
         # case 1: when a param is wrong.
         self.assertRaises(AddressException, self.icon_service.get_balance, self.setting["to"][2:])

@@ -46,6 +46,11 @@ class TestGetScoreApi(TestSendSuper):
             self.assertTrue(result)
             self.assertTrue(is_score_apis(result))
 
+            # with height
+            self.icon_service.get_score_api(governance_address, height=self.setting['height'])
+            actual_request = json.loads(m._adapter.last_request.text)
+            self.assertEqual(hex(self.setting['height']), actual_request['params']['height'])
+
     def test_get_score_api_invalid(self, _make_id):
         # case 1: when address is wrong - wallet address
         self.assertRaises(AddressException, self.icon_service.get_score_api,

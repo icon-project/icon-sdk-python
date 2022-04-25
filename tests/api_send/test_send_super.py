@@ -80,7 +80,8 @@ class TestSendSuper(TestCase):
             # It is used to send message only.
             "data": "0x" + "test".encode().hex(),
             "id": "0x" + os.urandom(32).hex(),
-            "timestamp": 10_000
+            "timestamp": 10_000,
+            "height": 100,
         }
 
 
