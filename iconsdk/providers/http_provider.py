@@ -76,6 +76,7 @@ class HTTPProvider(Provider):
 
         self._URL_MAP = {
             'icx': _add_channel_path(f"{self._serverUri}/api/v{self._version}"),
+            'btp': _add_channel_path(f"{self._serverUri}/api/v{self._version}"),
             'debug': _add_channel_path(f"{self._serverUri}/api/v{self._version}d"),
         }
 

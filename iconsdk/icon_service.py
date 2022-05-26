@@ -427,7 +427,7 @@ class IconService:
         }
         return self.__provider.make_request('icx_getProofForResult', params)
 
-    def get_proof_for_events(self, _hash: str, index: int, events: List[str] = []) -> str:
+    def get_proof_for_events(self, _hash: str, index: int, events: List[str] = []) -> dict:
         """
         Returns proof for the receipt and the events in it. The proof may include the data itself.
         Delegates to icx_getProofForEvents RPC method.
@@ -444,3 +444,78 @@ class IconService:
             'events': events,
         }
         return self.__provider.make_request('icx_getProofForEvents', params)
+
+    def btp_get_network_info(self, height: int, id: int) -> dict:
+        """
+        Returns BTP Network information for specified height and ID.
+        Delegates to btp_getNetworkInfo RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getNetworkInfo
+
+        :param height: The height of the main block
+        :param id: The id of the BTP network
+        :return: A BTP Network information object
+        """
+        params = {'height': hex(height), 'id': hex(id)}
+        return self.__provider.make_request('btp_getNetworkInfo', params)
+
+    def btp_get_network_type_info(self, height: int, id: int) -> dict:
+        """
+        Returns BTP Network Type information for specified height and ID.
+        Delegates to btp_getNetworkTypeInfo RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getNetworkTypeInfo
+
+        :param height: The height of the main block
+        :param id: The id of the BTP network type
+        :return: A BTP Network Type information object
+        """
+        params = {'height': hex(height), 'id': hex(id)}
+        return self.__provider.make_request('btp_getNetworkTypeInfo', params)
+
+    def btp_get_messages(self, height: int, network_id: int) -> list:
+        """
+        Returns BTP messages for specified height and network ID.
+        Delegates to btp_getMessages RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getMessages
+
+        :param height: The height of the main block
+        :param network_id: The id of the BTP network
+        :return: A BTP Messages object
+        """
+        params = {'height': hex(height), 'networkID': hex(network_id)}
+        return self.__provider.make_request('btp_getMessages', params)
+
+    def btp_get_header(self, height: int, network_id: int) -> dict:
+        """
+        Returns BTP block header for specified height and network ID.
+        Delegates to btp_getHeader RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getHeader
+
+        :param height: The height of the main block
+        :param network_id: The id of the BTP network
+        :return: A list of BTP Messages
+        """
+        params = {'height': hex(height), 'networkID': hex(network_id)}
+        return self.__provider.make_request('btp_getHeader', params)
+
+    def btp_get_proof(self, height: int, network_id: int) -> dict:
+        """
+        Returns BTP block proof for specified height and network ID.
+        Delegates to btp_getHeader RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getProof
+
+        :param height: The height of the main block
+        :param network_id: The id of the BTP network
+        :return: A list of BTP Messages
+        """
+        params = {'height': hex(height), 'networkID': hex(network_id)}
+        return self.__provider.make_request('btp_getProof', params)
+
+    def btp_get_source_information(self) -> dict:
+        """
+        Returns BTP source network information.
+        Delegates to btp_getSourceInformation RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getSourceInformation
+
+        :return: A BTP network information object
+        """
+        return self.__provider.make_request('btp_getSourceInformation')
