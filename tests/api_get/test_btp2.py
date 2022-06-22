@@ -67,19 +67,19 @@ class TestBTP2(TestSendSuper):
     def test_btp_get_network_info(self, _make_id):
         func = self.icon_service.btp_get_network_info
         method = "btp_getNetworkInfo"
-        params = {
-            'height': self.HEIGHT,
-            'id': self.ID
-        }
+        params = {'id': self.ID}
+        self.run_test(_make_id, func, method, params)
+
+        params['height'] = self.HEIGHT
         self.run_test(_make_id, func, method, params)
 
     def test_btp_get_network_type_info(self, _make_id):
         func = self.icon_service.btp_get_network_type_info
         method = "btp_getNetworkTypeInfo"
-        params = {
-            'height': self.HEIGHT,
-            'id': self.ID,
-        }
+        params = {'id': self.ID}
+        self.run_test(_make_id, func, method, params)
+
+        params['height'] = self.HEIGHT
         self.run_test(_make_id, func, method, params)
 
     def test_btp_get_messages(self, _make_id):
