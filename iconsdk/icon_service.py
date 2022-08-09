@@ -178,6 +178,24 @@ class IconService:
             params['height'] = hex(height)
         return self.__provider.make_request('icx_getScoreApi', params, full_response)
 
+    def get_score_status(self, address: str, height: int = None, full_response: bool = False) -> dict:
+        """
+        Returns SCORE's status.
+        Delegates to icx_getScoreStatus RPC method.
+
+        :param address: A SCORE address to be examined
+        :param height: Block height
+        :param full_response: Boolean to check whether get naive dict or refined data from server
+        :return: Status information
+        """
+        if not is_score_address(address):
+            raise AddressException("SCORE Address is wrong.")
+
+        params = {'address': address}
+        if height is not None:
+            params['height'] = hex(height)
+        return self.__provider.make_request('icx_getScoreStatus', params, full_response)
+
     def get_transaction_result(self, tx_hash: str, full_response: bool = False) -> dict:
         """
         Returns the transaction result requested by transaction hash.
