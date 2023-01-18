@@ -13,21 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from functools import wraps
-from logging import StreamHandler, Formatter
-from os import path
+from logging import Formatter, StreamHandler
 from time import time
+from typing import Union
 
 from iconsdk import logger
 
+# https://docs.python.org/3/glossary.html#term-path-like-object
+PathLikeObject = Union[str, bytes, os.PathLike]
 
-def store_keystore_file_on_the_path(file_path, json_string):
+
+def store_keystore_file_on_the_path(file_path: PathLikeObject, json_string: str):
     """Stores a created keystore string data which is JSON format on the file path.
 
     :param file_path: The path where the file will be saved. type(str)
     :param json_string: Contents of the keystore.
     """
-    if path.isfile(file_path):
+    if os.path.isfile(file_path):
         raise FileExistsError
 
     with open(file_path, 'wt') as f:

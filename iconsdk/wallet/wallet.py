@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import json
 import warnings
 from abc import ABCMeta, abstractmethod
@@ -20,12 +21,12 @@ from hashlib import sha3_256
 
 from coincurve import PrivateKey
 from eth_keyfile import create_keyfile_json, extract_key_from_keyfile
-from multipledispatch import dispatch
+from multimethod import multimethod
 
 from iconsdk import logger
-from iconsdk.exception import KeyStoreException, DataTypeException
+from iconsdk.exception import DataTypeException, KeyStoreException
 from iconsdk.libs.signer import sign
-from iconsdk.utils import store_keystore_file_on_the_path
+from iconsdk.utils import PathLikeObject, store_keystore_file_on_the_path
 from iconsdk.utils.validation import is_keystore_file
 
 
@@ -68,9 +69,8 @@ class KeyWallet(Wallet):
         logger.info(f"Created Wallet. Address: {wallet.get_address()}")
         return wallet
 
-    @staticmethod
-    @dispatch(bytes)
-    def load(private_key: bytes) -> 'KeyWallet':
+    @multimethod
+    def load(private_key: bytes) -> KeyWallet:
         """Loads a wallet from a private key and generates an instance of Wallet.
 
         :param private_key: private key in bytes
@@ -85,11 +85,11 @@ class KeyWallet(Wallet):
             raise DataTypeException("Private key is invalid.")
 
     @staticmethod
-    @dispatch(str, str)
-    def load(file_path: str, password: str) -> 'KeyWallet':
+    @multimethod
+    def load(file_path: PathLikeObject, password: str) -> KeyWallet:
         """Loads a wallet from a keystore file with your password and generates an instance of Wallet.
 
-        :param file_path: File path of the keystore file. type(str)
+        :param file_path: File path of the keystore file. type(str | bytes | PathLike)
         :param password:
             Password for the keystore file.
             It must include alphabet character, number, and special character.
@@ -110,10 +110,10 @@ class KeyWallet(Wallet):
         except Exception as e:
             raise KeyStoreException(f'Keystore error: {e}')
 
-    def store(self, file_path: str, password: str):
+    def store(self, file_path: PathLikeObject, password: str):
         """Stores data of an instance of a derived wallet class on the file path with your password.
 
-        :param file_path: File path of the keystore file. type(str)
+        :param file_path: File path of the keystore file. type(str | bytes | PathLike)
         :param password:
             Password for the keystore file. Password must include alphabet character, number, and special character.
             type(str)

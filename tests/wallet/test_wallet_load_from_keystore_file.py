@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pathlib
 import re
 
 import requests_mock
@@ -39,6 +40,13 @@ class TestWalletLoadFromKeystoreFile(TestCase):
 
         # Loads a wallet.
         wallet = KeyWallet.load(self.TEST_KEYSTORE_FILE_PATH, self.TEST_KEYSTORE_FILE_PASSWORD)
+
+        # Checks a wallet's address is correct.
+        self.assertEqual(wallet.get_address(), "hxfd7e4560ba363f5aabd32caac7317feeee70ea57")
+
+        # Loads a wallet using path-like object.
+        keystore_path = pathlib.Path(self.TEST_KEYSTORE_FILE_PATH)
+        wallet = KeyWallet.load(keystore_path, self.TEST_KEYSTORE_FILE_PASSWORD)
 
         # Checks a wallet's address is correct.
         self.assertEqual(wallet.get_address(), "hxfd7e4560ba363f5aabd32caac7317feeee70ea57")
