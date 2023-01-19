@@ -100,7 +100,7 @@ class TestBTP2(TestSendSuper):
         }
         self.run_test(_make_id, func, method, params)
 
-    def test_bet_btp_proof(self, _make_id):
+    def test_get_btp_proof(self, _make_id):
         func = self.icon_service.get_btp_proof
         method = "btp_getProof"
         params = {
