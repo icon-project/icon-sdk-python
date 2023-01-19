@@ -621,8 +621,13 @@ wallet = KeyWallet.load(b'-B\x99...xedy')
 ### load
 
 ```python
-load(file_path, password)
+load(file_path: PathLikeObject, password: str)
 ```
+> **Note**:
+> type alias `PathLikeObject` is defined in `utils/__init__.py`
+> ```python
+> PathLikeObject = Union[str, bytes, os.PathLike]
+> ```
 
 Loads a wallet from a keystore file with your password and generates an instance of Wallet
 
@@ -1201,6 +1206,124 @@ transaction = TransactionBuilder()\
 estimate_step = icon_service.estimate_step(transaction)
 ```
 
+## BTP2 extension
+
+### get_btp_network_info
+
+```python
+def get_btp_network_info(self, id: int, height: int = None) -> dict:
+```
+
+> Returns BTP Network information for specified height and ID.
+>
+> Delegates to btp_getNetworkInfo RPC method.
+>
+> https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getNetworkInfo
+
+#### Parameters
+| param  | description                  |
+|--------|------------------------------|
+| id     | The id of the BTP network    |
+| height | The height of the main block |
+
+#### Returns
+  A BTP Network information object
+
+### get_btp_network_type_info
+
+```python
+def get_btp_network_type_info(self, id: int, height: int = None) -> dict:
+```
+> Returns BTP Network Type information for specified height and ID.
+>
+> Delegates to btp_getNetworkTypeInfo RPC method.
+>
+> https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getNetworkTypeInfo
+
+#### Parameters
+| param  | description                    |
+|--------|--------------------------------|
+| id     | The id of the BTP network type |
+| height | The height of the main block   |
+
+#### Returns
+  A BTP Network Type information object
+
+### get_btp_messages
+```python
+def get_btp_messages(self, height: int, network_id: int) -> list:
+```
+
+> Returns BTP messages for specified height and network ID.
+>
+> Delegates to btp_getMessages RPC method.
+>
+> https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getMessages
+
+#### Parameters
+| param      | description                  |
+|------------|------------------------------|
+| height     | The height of the main block |
+| network_id | The id of the BTP network    |
+
+#### Returns
+  A BTP Messages object
+
+### get_btp_header
+```python
+def get_btp_header(self, height: int, network_id: int) -> str:
+```
+
+> Returns BTP block header for specified height and network ID.
+>
+> Delegates to btp_getHeader RPC method.
+>
+> https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getHeader
+
+#### Parameters
+| param      | description                  |
+|------------|------------------------------|
+| height     | The height of the main block |
+| network_id | The id of the BTP network    |
+
+#### Returns
+  A Base64 encoded BTP block header
+
+### get_btp_proof
+```python
+def get_btp_proof(self, height: int, network_id: int) -> str:
+```
+
+> Returns BTP block proof for specified height and network ID.
+>
+> Delegates to btp_getHeader RPC method.
+>
+> https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getProof
+
+#### Parameters
+| param      | description                  |
+|------------|------------------------------|
+| height     | The height of the main block |
+| network_id | The id of the BTP network    |
+
+#### Returns
+  A Base64 encoded BTP block proof
+
+### get_btp_source_information
+```python
+def get_btp_source_information(self) -> dict:
+```
+
+> Returns BTP source network information.
+>
+> Delegates to btp_getSourceInformation RPC method.
+>
+> https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getSourceInformation
+
+#### Returns
+  :return: A BTP network information object
+
+
 ## References
 
 - [Quick Start]
@@ -1208,8 +1331,8 @@ estimate_step = icon_service.estimate_step(transaction)
 - [ICON Network]
 
 [Quick Start]: quickstart
-[ICON JSON-RPC API v3]: https://www.icondev.io/docs/icon-json-rpc-v3
-[ICON Network]: https://www.icondev.io/docs/the-icon-network
+[ICON JSON-RPC API v3]: https://docs.icon.community/icon-stack/client-apis/json-rpc-api/v3
+[ICON Network]: https://docs.icon.community/icon-stack/icon-networks
 
 ## License
 

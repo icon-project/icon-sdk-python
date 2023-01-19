@@ -64,8 +64,8 @@ class TestBTP2(TestSendSuper):
             actual_request = json.loads(m._adapter.last_request.text)
             self.assertEqual(expected_request, actual_request)
 
-    def test_btp_get_network_info(self, _make_id):
-        func = self.icon_service.btp_get_network_info
+    def test_get_btp_network_info(self, _make_id):
+        func = self.icon_service.get_btp_network_info
         method = "btp_getNetworkInfo"
         params = {'id': self.ID}
         self.run_test(_make_id, func, method, params)
@@ -73,8 +73,8 @@ class TestBTP2(TestSendSuper):
         params['height'] = self.HEIGHT
         self.run_test(_make_id, func, method, params)
 
-    def test_btp_get_network_type_info(self, _make_id):
-        func = self.icon_service.btp_get_network_type_info
+    def test_get_btp_network_type_info(self, _make_id):
+        func = self.icon_service.get_btp_network_type_info
         method = "btp_getNetworkTypeInfo"
         params = {'id': self.ID}
         self.run_test(_make_id, func, method, params)
@@ -82,8 +82,8 @@ class TestBTP2(TestSendSuper):
         params['height'] = self.HEIGHT
         self.run_test(_make_id, func, method, params)
 
-    def test_btp_get_messages(self, _make_id):
-        func = self.icon_service.btp_get_messages
+    def test_get_btp_messages(self, _make_id):
+        func = self.icon_service.get_btp_messages
         method = "btp_getMessages"
         params = {
             'height': self.HEIGHT,
@@ -91,8 +91,8 @@ class TestBTP2(TestSendSuper):
         }
         self.run_test(_make_id, func, method, params)
 
-    def test_btp_header(self, _make_id):
-        func = self.icon_service.btp_get_header
+    def test_get_btp_header(self, _make_id):
+        func = self.icon_service.get_btp_header
         method = "btp_getHeader"
         params = {
             'height': self.HEIGHT,
@@ -100,8 +100,8 @@ class TestBTP2(TestSendSuper):
         }
         self.run_test(_make_id, func, method, params)
 
-    def test_btp_proof(self, _make_id):
-        func = self.icon_service.btp_get_proof
+    def test_bet_btp_proof(self, _make_id):
+        func = self.icon_service.get_btp_proof
         method = "btp_getProof"
         params = {
             'height': self.HEIGHT,
@@ -109,8 +109,8 @@ class TestBTP2(TestSendSuper):
         }
         self.run_test(_make_id, func, method, params)
 
-    def test_btp_source_information(self, _make_id):
-        func = self.icon_service.btp_get_source_information
+    def test_get_btp_source_information(self, _make_id):
+        func = self.icon_service.get_btp_source_information
         method = "btp_getSourceInformation"
         params = None
         self.run_test(_make_id, func, method, params)
