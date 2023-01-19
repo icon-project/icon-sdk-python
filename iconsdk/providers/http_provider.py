@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 ICON Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +20,7 @@ from typing import Union
 from urllib.parse import urlparse
 
 import requests
-from multipledispatch import dispatch
+from multimethod import multimethod
 
 from iconsdk.exception import JSONRPCException, URLException
 from iconsdk.providers.provider import Provider
@@ -34,7 +33,7 @@ class HTTPProvider(Provider):
     For local development this would be something like 'http://localhost:9000'.
     """
 
-    @dispatch(str, int, dict=None)
+    @multimethod
     def __init__(self, base_domain_url: str, version: int, request_kwargs: dict = None):
         """
         The initializer to be set with base domain URL and version.
@@ -52,7 +51,7 @@ class HTTPProvider(Provider):
         self._request_kwargs = request_kwargs or {}
         self._generate_url_map()
 
-    @dispatch(str, dict=None)
+    @multimethod
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
         """
         The initializer to be set with full path url as like <scheme>://<host>:<port>/api/v3.

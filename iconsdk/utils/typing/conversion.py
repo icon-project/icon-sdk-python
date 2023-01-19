@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union, Any
+from __future__ import annotations
+
+from typing import Any
 
 from ...wallet.wallet import Wallet
 
@@ -57,7 +59,7 @@ def base_object_to_str(value: Any) -> str:
     raise TypeError(f"Unsupported type: {type(value)}")
 
 
-def object_to_str(value: Any) -> Union[Any]:
+def object_to_str(value: Any) -> Any | None:
     if is_base_type(type(value)):
         return base_object_to_str(value)
 
