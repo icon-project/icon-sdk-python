@@ -445,7 +445,7 @@ class IconService:
         }
         return self.__provider.make_request('icx_getProofForEvents', params)
 
-    def btp_get_network_info(self, id: int, height: int = None) -> dict:
+    def get_btp_network_info(self, id: int, height: int = None) -> dict:
         """
         Returns BTP Network information for specified height and ID.
         Delegates to btp_getNetworkInfo RPC method.
@@ -460,7 +460,7 @@ class IconService:
             params['height'] = hex(height)
         return self.__provider.make_request('btp_getNetworkInfo', params)
 
-    def btp_get_network_type_info(self, id: int, height: int = None) -> dict:
+    def get_btp_network_type_info(self, id: int, height: int = None) -> dict:
         """
         Returns BTP Network Type information for specified height and ID.
         Delegates to btp_getNetworkTypeInfo RPC method.
@@ -475,7 +475,7 @@ class IconService:
             params['height'] = hex(height)
         return self.__provider.make_request('btp_getNetworkTypeInfo', params)
 
-    def btp_get_messages(self, height: int, network_id: int) -> list:
+    def get_btp_messages(self, height: int, network_id: int) -> list:
         """
         Returns BTP messages for specified height and network ID.
         Delegates to btp_getMessages RPC method.
@@ -488,7 +488,7 @@ class IconService:
         params = {'height': hex(height), 'networkID': hex(network_id)}
         return self.__provider.make_request('btp_getMessages', params)
 
-    def btp_get_header(self, height: int, network_id: int) -> str:
+    def get_btp_header(self, height: int, network_id: int) -> str:
         """
         Returns BTP block header for specified height and network ID.
         Delegates to btp_getHeader RPC method.
@@ -501,7 +501,7 @@ class IconService:
         params = {'height': hex(height), 'networkID': hex(network_id)}
         return self.__provider.make_request('btp_getHeader', params)
 
-    def btp_get_proof(self, height: int, network_id: int) -> str:
+    def get_btp_proof(self, height: int, network_id: int) -> str:
         """
         Returns BTP block proof for specified height and network ID.
         Delegates to btp_getHeader RPC method.
@@ -514,7 +514,7 @@ class IconService:
         params = {'height': hex(height), 'networkID': hex(network_id)}
         return self.__provider.make_request('btp_getProof', params)
 
-    def btp_get_source_information(self) -> dict:
+    def get_btp_source_information(self) -> dict:
         """
         Returns BTP source network information.
         Delegates to btp_getSourceInformation RPC method.
