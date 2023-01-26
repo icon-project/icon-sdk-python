@@ -1321,7 +1321,7 @@ def get_btp_source_information(self) -> dict:
 > https://github.com/icon-project/goloop/blob/master/doc/btp2_extension.md#btp_getSourceInformation
 
 #### Returns
-  :return: A BTP network information object
+  A BTP network information object
 
 
 ## References
