@@ -11,7 +11,7 @@ with open("requirements.txt") as requirements:
     requires = list(requirements)
 
 extras_requires = {
-    'tests': ['pytest~=6.2.5']
+    'tests': ['pytest~=7.2.1']
 }
 
 setup(
