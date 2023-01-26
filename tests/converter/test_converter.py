@@ -30,7 +30,7 @@ from tests.converter.example_tx_results import (TX_RESULT_0, TX_RESULT_1, TX_RES
 from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST, VERSION_FOR_TEST
 
 
-@skip("TestConverter will be updated soon")
+@skip("TestConverter MUST work without network")
 class TestConverter(TestCase):
 
     @classmethod
