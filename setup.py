@@ -1,8 +1,5 @@
-import os
 from setuptools import setup, find_packages
-
-with open(os.path.join('.', 'VERSION')) as version_file:
-    version = version_file.read().strip()
+from iconsdk.version import __version__
 
 with open("README.md", 'r') as f:
     long_description = f.read()
@@ -16,7 +13,7 @@ extras_requires = {
 
 setup(
     name='iconsdk',
-    version=version,
+    version=__version__,
     description='ICON SDK for Python is a collection of libraries which allow you to interact '
                 'with a local or remote ICON node using an HTTP connection.',
     long_description=long_description,
