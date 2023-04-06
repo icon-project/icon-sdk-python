@@ -346,7 +346,7 @@ class IconService:
         if transaction.data_type is not None:
             params["dataType"] = transaction.data_type
 
-        if transaction.data_type in ('deploy', 'call'):
+        if transaction.data_type in ('deploy', 'call', 'deposit'):
             params["data"] = generate_data_value(transaction)
         elif transaction.data_type == 'message':
             params["data"] = transaction.data

@@ -24,7 +24,17 @@ def generate_data_value(transaction) -> Optional[dict]:
         data = {"method": transaction.method}
         # Params is an optional property.
         if transaction.params:
-            data["params"] = object_to_str(transaction.params)
+            data["params"] = transaction.params
+    elif transaction.data_type == "deposit":
+        data = {
+            "action": transaction.action
+        }
+
+        if transaction.action == "withdraw":
+            if transaction.id is not None:
+                data["id"] = transaction.id
+            if transaction.amount is not None:
+                data["amount"] = transaction.amount
     else:
         raise DataTypeException(f"Invalid dataType: {transaction.data_type}")
 
