@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 from iconsdk.exception import DataTypeException
 from iconsdk.utils.hexadecimal import remove_0x_prefix, is_0x_prefixed, is_lowercase_hex_string
+from iconsdk.utils.typing.conversion import object_to_str
 
 
 class Transaction:
@@ -72,7 +75,7 @@ class Transaction:
         return None
 
     @property
-    def data(self):
+    def data(self) -> dict | str | None:
         return None
 
     def to_dict(self) -> dict:
@@ -111,6 +114,13 @@ class DeployTransaction(Transaction):
     def params(self) -> dict:
         return self.__params
 
+    @property
+    def data(self) -> dict | None:
+        data = {"contentType": self.__content_type, "content": self.__content}
+        if self.__params:
+            data["params"] = self.__params
+        return object_to_str(data)
+
     def to_dict(self) -> dict:
         transaction_as_dict = super().to_dict()
         transaction_as_dict.update({"content_type": self.content_type, "content": self.content,
@@ -139,6 +149,13 @@ class CallTransaction(Transaction):
     def params(self) -> dict:
         return self.__params
 
+    @property
+    def data(self) -> dict | None:
+        data = {"method": self.__method}
+        if self.__params:
+            data["params"] = self.__params
+        return object_to_str(data)
+
     def to_dict(self) -> dict:
         transaction_as_dict = super().to_dict()
         transaction_as_dict.update({"method": self.method, "data_type": self.data_type, "params": self.params})
@@ -162,7 +179,7 @@ class MessageTransaction(Transaction):
         return "message"
 
     @property
-    def data(self) -> str:
+    def data(self) -> str | None:
         return self.__data
 
     def to_dict(self) -> dict:
@@ -184,6 +201,16 @@ class DepositTransaction(Transaction):
     @property
     def data_type(self) -> str:
         return "deposit"
+
+    @property
+    def data(self) -> dict | None:
+        data = {"action": self.__action}
+        if self.__action == 'withdraw':
+            if self.__id is not None:
+                data['id'] = self.__id
+            if self.__amount is not None:
+                data['amount'] = self.__amount
+        return object_to_str(data)
 
     @property
     def action(self) -> str:

@@ -21,7 +21,6 @@ from iconsdk.exception import DataTypeException
 from iconsdk.libs.serializer import serialize
 from iconsdk.utils import get_timestamp
 from iconsdk.utils.convert_type import convert_int_to_hex_str
-from iconsdk.utils.gen_tx_data import generate_data_value
 from iconsdk.wallet.wallet import Wallet
 
 
@@ -68,16 +67,7 @@ class SignedTransaction:
         if transaction.data_type is not None:
             dict_tx["dataType"] = transaction.data_type
 
-        if transaction.data_type in ('deploy', 'call'):
-            dict_tx["data"] = generate_data_value(transaction)
-        elif transaction.data_type == 'message':
+        if transaction.data is not None:
             dict_tx["data"] = transaction.data
-        elif transaction.data_type == "deposit":
-            dict_tx["data"] = {"action": transaction.action}
-            if transaction.action == "withdraw":
-                if transaction.id is not None:
-                    dict_tx["data"]["id"] = transaction.id
-                elif transaction.amount is not None:
-                    dict_tx["data"]["amount"] = convert_int_to_hex_str(transaction.amount)
 
         return dict_tx
