@@ -4,9 +4,13 @@ from unittest.mock import patch
 
 import requests_mock
 
-from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder, \
-    DepositTransactionBuilder
-from iconsdk.builder.transaction_builder import TransactionBuilder, MessageTransactionBuilder
+from iconsdk.builder.transaction_builder import (
+    TransactionBuilder,
+    DeployTransactionBuilder,
+    CallTransactionBuilder,
+    MessageTransactionBuilder,
+    DepositTransactionBuilder,
+)
 from tests.api_send.test_send_super import TestSendSuper
 from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
 
@@ -16,16 +20,16 @@ class TestEstimateStep(TestSendSuper):
     matcher = re.compile(re.escape(f"{BASE_DOMAIN_URL_V3_FOR_TEST}/api/v3d/") + "?")
 
     def test_estimate_step_with_send_icx_transaction(self, _make_id):
-        icx_transaction = TransactionBuilder() \
-            .from_(self.setting["from"]) \
-            .to(self.setting["to"]) \
-            .value(self.setting["value"]) \
-            .timestamp(self.setting["timestamp"]) \
-            .step_limit(self.setting["step_limit"]) \
-            .nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]) \
-            .version(self.version) \
-            .build()
+        icx_transaction = (TransactionBuilder()
+            .from_(self.setting["from"])
+            .to(self.setting["to"])
+            .value(self.setting["value"])
+            .timestamp(self.setting["timestamp"])
+            .step_limit(self.setting["step_limit"])
+            .nid(self.setting["nid"])
+            .nonce(self.setting["nonce"])
+            .version(self.version)
+            .build())
 
         with requests_mock.Mocker() as m:
             expected_step = 100_000
@@ -59,14 +63,15 @@ class TestEstimateStep(TestSendSuper):
 
     def test_estimate_step_with_message_transaction(self, _make_id):
         # Checks if making an instance of message transaction correctly
-        message_transaction = MessageTransactionBuilder() \
-            .from_(self.setting["from"]) \
-            .to(self.setting["to"]) \
-            .step_limit(self.setting["step_limit"]) \
-            .timestamp(self.setting["timestamp"]) \
-            .nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]) \
-            .data(self.setting["data"]).build()
+        message_transaction = (MessageTransactionBuilder()
+            .from_(self.setting["from"])
+            .to(self.setting["to"])
+            .step_limit(self.setting["step_limit"])
+            .timestamp(self.setting["timestamp"])
+            .nid(self.setting["nid"])
+            .nonce(self.setting["nonce"])
+            .data(self.setting["data"])
+            .build())
 
         with requests_mock.Mocker() as m:
             expected_step = 102_400
@@ -101,18 +106,18 @@ class TestEstimateStep(TestSendSuper):
 
     def test_estimate_step_with_deploy_transaction(self, _make_id):
         param = {"init_supply": 10000}
-        deploy_transaction = DeployTransactionBuilder() \
-            .from_(self.setting["from"]) \
-            .to(self.setting["to_install"]) \
-            .step_limit(self.setting["step_limit"]) \
-            .nid(self.setting["nid"]) \
-            .nonce(self.setting["nonce"]) \
-            .timestamp(self.setting["timestamp"]) \
-            .content_type(self.setting["content_type"]) \
-            .content(self.setting["content_install"]) \
-            .params(param) \
-            .version(3) \
-            .build()
+        deploy_transaction = (DeployTransactionBuilder()
+            .from_(self.setting["from"])
+            .to(self.setting["to_install"])
+            .step_limit(self.setting["step_limit"])
+            .nid(self.setting["nid"])
+            .nonce(self.setting["nonce"])
+            .timestamp(self.setting["timestamp"])
+            .content_type(self.setting["content_type"])
+            .content(self.setting["content_install"])
+            .params(param)
+            .version(3)
+            .build())
 
         with requests_mock.Mocker() as m:
             expected_step = 1_042_767_600
@@ -151,15 +156,15 @@ class TestEstimateStep(TestSendSuper):
 
     def test_estimate_step_with_call_transaction(self, _make_id):
         params = {"addr_to": self.setting["to"], "value": 1000000}
-        call_transaction = CallTransactionBuilder() \
-            .from_(self.setting["from"]) \
-            .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114") \
-            .nid(self.setting["nid"]) \
-            .timestamp(self.setting["timestamp"]) \
-            .nonce(self.setting["nonce"]) \
-            .method("transfer") \
-            .params(params) \
-            .build()
+        call_transaction = (CallTransactionBuilder()
+            .from_(self.setting["from"])
+            .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114")
+            .nid(self.setting["nid"])
+            .timestamp(self.setting["timestamp"])
+            .nonce(self.setting["nonce"])
+            .method("transfer")
+            .params(params)
+            .build())
         with requests_mock.Mocker() as m:
             expected_step = 155_160
 
@@ -197,17 +202,18 @@ class TestEstimateStep(TestSendSuper):
             self.assertEqual(expected_request, actual_request)
             self.assertEqual(expected_step, result)
 
+
     def test_estimate_step_with_deposit_transaction_add(self, _make_id):
         deposit_value = 100_000_000_000_000_000_000
         deposit_transaction = (DepositTransactionBuilder()
-                               .from_(self.setting["from"])
-                               .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114")
-                               .nid(self.setting["nid"])
-                               .timestamp(self.setting["timestamp"])
-                               .nonce(self.setting["nonce"])
-                               .value(deposit_value)
-                               .action("add")
-                               .build())
+            .from_(self.setting["from"])
+            .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114")
+            .nid(self.setting["nid"])
+            .timestamp(self.setting["timestamp"])
+            .nonce(self.setting["nonce"])
+            .value(deposit_value)
+            .action("add")
+            .build())
         with requests_mock.Mocker() as m:
             expected_step = 103_200
 
@@ -245,14 +251,14 @@ class TestEstimateStep(TestSendSuper):
     def test_estimate_step_with_deposit_transaction_withdraw(self, _make_id):
         withdraw_amount = 100
         deposit_transaction = (DepositTransactionBuilder()
-                               .from_(self.setting["from"])
-                               .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114")
-                               .nid(self.setting["nid"])
-                               .timestamp(self.setting["timestamp"])
-                               .nonce(self.setting["nonce"])
-                               .action("withdraw")
-                               .amount(withdraw_amount)
-                               .build())
+            .from_(self.setting["from"])
+            .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114")
+            .nid(self.setting["nid"])
+            .timestamp(self.setting["timestamp"])
+            .nonce(self.setting["nonce"])
+            .action("withdraw")
+            .amount(withdraw_amount)
+            .build())
         with requests_mock.Mocker() as m:
             expected_step = 155_160
 
