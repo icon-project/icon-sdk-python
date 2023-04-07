@@ -4,7 +4,8 @@ from unittest.mock import patch
 
 import requests_mock
 
-from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder
+from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder, \
+    DepositTransactionBuilder
 from iconsdk.builder.transaction_builder import TransactionBuilder, MessageTransactionBuilder
 from tests.api_send.test_send_super import TestSendSuper
 from tests.example_config import BASE_DOMAIN_URL_V3_FOR_TEST
@@ -196,3 +197,92 @@ class TestEstimateStep(TestSendSuper):
             self.assertEqual(expected_request, actual_request)
             self.assertEqual(expected_step, result)
 
+    def test_estimate_step_with_deposit_transaction_add(self, _make_id):
+        deposit_value = 100_000_000_000_000_000_000
+        deposit_transaction = (DepositTransactionBuilder()
+                               .from_(self.setting["from"])
+                               .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114")
+                               .nid(self.setting["nid"])
+                               .timestamp(self.setting["timestamp"])
+                               .nonce(self.setting["nonce"])
+                               .value(deposit_value)
+                               .action("add")
+                               .build())
+        with requests_mock.Mocker() as m:
+            expected_step = 103_200
+
+            expected_request = {
+                'jsonrpc': '2.0',
+                'method': 'debug_estimateStep',
+                'id': 1234,
+                'params': {
+                    'from': self.setting["from"],
+                    'nid': hex(self.setting["nid"]),
+                    'nonce': hex(self.setting["nonce"]),
+                    'timestamp': hex(self.setting["timestamp"]),
+                    'to': "cx4d6f646441a3f9c9b91019c9b98e3c342cceb114",
+                    'version': hex(self.version),
+                    'value': hex(deposit_value),
+                    'dataType': 'deposit',
+                    'data': {
+                        'action': 'add'
+                    }
+                }
+            }
+
+            response_json = {
+                'jsonrpc': '2.0',
+                'result': hex(expected_step),
+                'id': 1234
+            }
+            m.post(self.matcher, json=response_json)
+            result = self.icon_service.estimate_step(deposit_transaction)
+            actual_request = json.loads(m._adapter.last_request.text)
+
+            self.assertEqual(expected_request, actual_request)
+            self.assertEqual(expected_step, result)
+
+    def test_estimate_step_with_deposit_transaction_withdraw(self, _make_id):
+        withdraw_amount = 100
+        deposit_transaction = (DepositTransactionBuilder()
+                               .from_(self.setting["from"])
+                               .to("cx4d6f646441a3f9c9b91019c9b98e3c342cceb114")
+                               .nid(self.setting["nid"])
+                               .timestamp(self.setting["timestamp"])
+                               .nonce(self.setting["nonce"])
+                               .action("withdraw")
+                               .amount(withdraw_amount)
+                               .build())
+        with requests_mock.Mocker() as m:
+            expected_step = 155_160
+
+            expected_request = {
+                'jsonrpc': '2.0',
+                'method': 'debug_estimateStep',
+                'id': 1234,
+                'params': {
+                    'from': self.setting["from"],
+                    'nid': hex(self.setting["nid"]),
+                    'nonce': hex(self.setting["nonce"]),
+                    'timestamp': hex(self.setting["timestamp"]),
+                    'to': "cx4d6f646441a3f9c9b91019c9b98e3c342cceb114",
+                    'version': hex(self.version),
+                    'dataType': 'deposit',
+                    'data': {
+                        'action': 'withdraw',
+                        'amount': hex(withdraw_amount)
+                    }
+                }
+            }
+
+            response_json = {
+                'jsonrpc': '2.0',
+                'result': hex(expected_step),
+                'id': 1234
+            }
+            m.post(self.matcher, json=response_json)
+            result = self.icon_service.estimate_step(deposit_transaction)
+            actual_request = json.loads(m._adapter.last_request.text)
+
+            self.assertEqual(expected_request, actual_request)
+            self.assertEqual(expected_step, result)
