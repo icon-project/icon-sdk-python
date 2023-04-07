@@ -23,7 +23,6 @@ from iconsdk.utils import get_timestamp
 from iconsdk.utils.convert_type import convert_int_to_hex_str
 from iconsdk.utils.converter import convert, \
     get_block_template_to_convert_transactions_for_genesis
-from iconsdk.utils.gen_tx_data import generate_data_value
 from iconsdk.utils.hexadecimal import add_0x_prefix, remove_0x_prefix
 from iconsdk.utils.templates import BLOCK_0_1a, BLOCK_0_3, TRANSACTION_RESULT, TRANSACTION, BLOCK_0_1A_VERSION
 from iconsdk.utils.validation import (
@@ -346,9 +345,7 @@ class IconService:
         if transaction.data_type is not None:
             params["dataType"] = transaction.data_type
 
-        if transaction.data_type in ('deploy', 'call'):
-            params["data"] = generate_data_value(transaction)
-        elif transaction.data_type == 'message':
+        if transaction.data is not None:
             params["data"] = transaction.data
 
         result = self.__provider.make_request('debug_estimateStep', params, full_response)
