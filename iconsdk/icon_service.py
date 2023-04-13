@@ -523,7 +523,7 @@ class IconService:
 
     def monitor(self, spec: MonitorSpec, keep_alive: Optional[float]) -> Monitor:
         """
-        Monitor events specified the spec
+        Monitor events specified in the spec
 
         :param spec: Monitor specification
         :param keep_alive: interval to send keep-alive while it reads a message
