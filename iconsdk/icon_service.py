@@ -521,7 +521,7 @@ class IconService:
         """
         return self.__provider.make_request('btp_getSourceInformation')
 
-    def monitor(self, spec: MonitorSpec, keep_alive: Optional[float]) -> Monitor:
+    def monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> Monitor:
         """
         Monitor events specified in the spec
 

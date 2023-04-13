@@ -48,7 +48,7 @@ class Monitor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def read(self, timeout: Optional[float]) -> any:
+    def read(self, timeout: Optional[float] = None) -> any:
         """
         Read the notification
 
@@ -66,7 +66,7 @@ class Provider(metaclass=ABCMeta):
         raise NotImplementedError("Providers must implement this method")
 
     @abstractmethod
-    def make_monitor(self, spec: MonitorSpec, keep_alive: float = 30.0) -> Monitor:
+    def make_monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> Monitor:
         """
         Make monitor for the spec
         :param spec: Monitoring spec
