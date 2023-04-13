@@ -14,6 +14,48 @@
 # limitations under the License.
 
 from abc import ABCMeta, abstractmethod
+from typing import Optional
+
+
+class MonitorSpec(metaclass=ABCMeta):
+    @abstractmethod
+    def get_request(self) -> any:
+        """
+        Request object to send to the websocket
+        """
+        raise NotImplementedError("MonitorSpec must implement this method")
+
+    @abstractmethod
+    def get_path(self) -> str:
+        """
+        Extra path fragment for the websocket
+        """
+        raise NotImplementedError("MonitorSpec must implement this method")
+
+
+class MonitorTimeoutException(Exception):
+    pass
+
+
+class Monitor(metaclass=ABCMeta):
+    @abstractmethod
+    def close(self):
+        """
+        Close the monitor
+
+        It releases related resources.
+        """
+        pass
+
+    @abstractmethod
+    def read(self, timeout: Optional[float]) -> any:
+        """
+        Read the notification
+
+        :param timeout: Timeout to wait for the message in fraction of seconds
+        :except MonitorTimeoutException: if it passes the timeout
+        """
+        pass
 
 
 class Provider(metaclass=ABCMeta):
@@ -22,3 +64,13 @@ class Provider(metaclass=ABCMeta):
     @abstractmethod
     def make_request(self, method: str, params=None, full_response: bool = False):
         raise NotImplementedError("Providers must implement this method")
+
+    @abstractmethod
+    def make_monitor(self, spec: MonitorSpec, keep_alive: float = 30.0) -> Monitor:
+        """
+        Make monitor for the spec
+        :param spec: Monitoring spec
+        :param keep_alive: Keep-alive message interval in fraction of seconds
+        """
+        raise NotImplementedError()
+
