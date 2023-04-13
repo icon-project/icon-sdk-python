@@ -25,7 +25,7 @@
 #  limitations under the License.
 from __future__ import annotations
 
-from typing import List
+from typing import List, Dict, Any
 
 from iconsdk.providers.provider import MonitorSpec
 from iconsdk.utils.typing.conversion import object_to_str
@@ -38,7 +38,7 @@ class EventFilter:
         self.__indexed = list(args[0:indexed])
         self.__data = list(args[indexed:])
 
-    def apply_to(self, obj: dict):
+    def apply_to(self, obj: Dict[str, Any]):
         obj.update({
             "event": self.__event,
             "indexed": self.__indexed,
@@ -49,7 +49,7 @@ class EventFilter:
                 "addr": self.__addr
             })
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> Dict[str, Any]:
         obj = {}
         self.apply_to(obj)
         return obj
@@ -107,7 +107,7 @@ class BlockMonitorSpec(MonitorSpec):
     def get_path(self) -> str:
         return 'block'
 
-    def get_request(self) -> any:
+    def get_request(self) -> Dict[str, Any]:
         params = {}
         if self.__height is not None:
             params["height"] = self.__height
@@ -142,7 +142,7 @@ class BTPMonitorSpec(MonitorSpec):
     def get_path(self) -> str:
         return 'btp'
 
-    def get_request(self) -> any:
+    def get_request(self) -> Dict[str, Any]:
         params = {
             "networkID": self.__network_id,
         }

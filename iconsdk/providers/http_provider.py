@@ -155,7 +155,7 @@ class HTTPProvider(Provider):
             return content['result']
         raise JSONRPCException(content["error"])
 
-    def make_monitor(self, spec: MonitorSpec, keep_alive: float = 30.0) -> Monitor:
+    def make_monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> Monitor:
         if self._WS_MAP is None:
             raise Exception(f'Channel must be set for socket')
         path = spec.get_path()
@@ -166,10 +166,9 @@ class HTTPProvider(Provider):
 
 
 class WebSocketMonitor(Monitor):
-    def __init__(self, url: str, params: dict, keep_alive: float):
+    def __init__(self, url: str, params: dict, keep_alive: Optional[float] = None):
         self.__client = WebSocket()
-        self.__keep_alive = keep_alive
-        self.__client.timeout = keep_alive
+        self.__keep_alive = keep_alive or 30
         self.__client.connect(url)
         self.__client.send(json.dumps(params))
         result = self.__read_json(None)
@@ -181,7 +180,7 @@ class WebSocketMonitor(Monitor):
     def close(self):
         self.__client.close()
 
-    def __read_json(self, timeout: Optional[float]) -> any:
+    def __read_json(self, timeout: Optional[float] = None) -> any:
         now = monotonic()
         limit = None
         if timeout is not None:
@@ -202,5 +201,5 @@ class WebSocketMonitor(Monitor):
                 else:
                     raise MonitorTimeoutException()
 
-    def read(self, timeout: Optional[float]) -> any:
+    def read(self, timeout: Optional[float] = None) -> any:
         return self.__read_json(timeout=timeout)

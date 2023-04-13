@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from abc import ABCMeta, abstractmethod
-from typing import Optional
+from typing import Optional, Dict, Any
 
 
 class MonitorSpec(metaclass=ABCMeta):
@@ -48,7 +48,7 @@ class Monitor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def read(self, timeout: Optional[float]) -> any:
+    def read(self, timeout: Optional[float] = None) -> any:
         """
         Read the notification
 
@@ -62,11 +62,11 @@ class Provider(metaclass=ABCMeta):
     """The provider defines how the IconService connects to RPC server."""
 
     @abstractmethod
-    def make_request(self, method: str, params=None, full_response: bool = False):
+    def make_request(self, method: str, params: Optional[Dict[str, Any]] = None, full_response: bool = False):
         raise NotImplementedError("Providers must implement this method")
 
     @abstractmethod
-    def make_monitor(self, spec: MonitorSpec, keep_alive: float = 30.0) -> Monitor:
+    def make_monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> Monitor:
         """
         Make monitor for the spec
         :param spec: Monitoring spec
