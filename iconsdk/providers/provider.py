@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from abc import ABCMeta, abstractmethod
-from typing import Optional
+from typing import Optional, Dict, Any
 
 
 class MonitorSpec(metaclass=ABCMeta):
@@ -62,7 +62,7 @@ class Provider(metaclass=ABCMeta):
     """The provider defines how the IconService connects to RPC server."""
 
     @abstractmethod
-    def make_request(self, method: str, params=None, full_response: bool = False):
+    def make_request(self, method: str, params: Optional[Dict[str, Any]] = None, full_response: bool = False):
         raise NotImplementedError("Providers must implement this method")
 
     @abstractmethod
