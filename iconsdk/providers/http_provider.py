@@ -15,15 +15,16 @@
 import json
 import re
 from json.decoder import JSONDecodeError
-from time import time
-from typing import Union
-from urllib.parse import urlparse
+from time import time, monotonic
+from typing import Union, Optional
+from urllib.parse import urlparse, urlunparse
 
 import requests
 from multimethod import multimethod
+from websocket import WebSocket, WebSocketTimeoutException
 
 from iconsdk.exception import JSONRPCException, URLException
-from iconsdk.providers.provider import Provider
+from iconsdk.providers.provider import Provider, MonitorSpec, Monitor, MonitorTimeoutException
 from iconsdk.utils import to_dict
 
 
@@ -78,6 +79,25 @@ class HTTPProvider(Provider):
             'btp': _add_channel_path(f"{self._serverUri}/api/v{self._version}"),
             'debug': _add_channel_path(f"{self._serverUri}/api/v{self._version}d"),
         }
+
+        def _make_ws_url(url: str, name: str) -> str:
+            url = urlparse(url)
+            if url.scheme == 'http':
+                scheme = 'ws'
+            elif url.scheme == 'https':
+                scheme = 'wss'
+            else:
+                raise URLException('unknown scheme')
+            return urlunparse((scheme, url.netloc, f'{url.path}/{name}', '', '', ''))
+
+        if self._channel:
+            self._WS_MAP = {
+                'block': _make_ws_url(self._URL_MAP['icx'], 'block'),
+                'event': _make_ws_url(self._URL_MAP['icx'], 'event'),
+                'btp': _make_ws_url(self._URL_MAP['btp'], 'btp'),
+            }
+        else:
+            self._WS_MAP = None
 
     @staticmethod
     def _get_channel(path: str):
@@ -134,3 +154,53 @@ class HTTPProvider(Provider):
         if response.ok:
             return content['result']
         raise JSONRPCException(content["error"])
+
+    def make_monitor(self, spec: MonitorSpec, keep_alive: float = 30.0) -> Monitor:
+        if self._WS_MAP is None:
+            raise Exception(f'Channel must be set for socket')
+        path = spec.get_path()
+        params = spec.get_request()
+        if path not in self._WS_MAP:
+            raise Exception(f'No available socket for {path}')
+        return WebSocketMonitor(self._WS_MAP[path], params, keep_alive=keep_alive)
+
+
+class WebSocketMonitor(Monitor):
+    def __init__(self, url: str, params: dict, keep_alive: float):
+        self.__client = WebSocket()
+        self.__keep_alive = keep_alive
+        self.__client.timeout = keep_alive
+        self.__client.connect(url)
+        self.__client.send(json.dumps(params))
+        result = self.__read_json(None)
+        if 'code' not in result:
+            raise Exception(f'invalid response={json.dumps(result)}')
+        if result['code'] != 0:
+            raise Exception(f'fail to monitor err={result["message"]}')
+
+    def close(self):
+        self.__client.close()
+
+    def __read_json(self, timeout: Optional[float]) -> any:
+        now = monotonic()
+        limit = None
+        if timeout is not None:
+            limit = now + timeout
+
+        while True:
+            try:
+                if limit is not None:
+                    self.__client.timeout = min(limit - now, self.__keep_alive)
+                else:
+                    self.__client.timeout = self.__keep_alive
+                return json.loads(self.__client.recv())
+            except WebSocketTimeoutException as e:
+                now = monotonic()
+                if limit is None or now < limit:
+                    self.__client.send(json.dumps({"keepalive": "0x1"}))
+                    continue
+                else:
+                    raise MonitorTimeoutException()
+
+    def read(self, timeout: Optional[float]) -> any:
+        return self.__read_json(timeout=timeout)

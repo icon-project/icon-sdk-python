@@ -12,12 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Union, Tuple, Any, List
+from typing import Union, Tuple, Any, List, Optional
 
 from iconsdk.builder.call_builder import Call
 from iconsdk.builder.transaction_builder import Transaction
 from iconsdk.exception import AddressException, DataTypeException
-from iconsdk.providers.provider import Provider
+from iconsdk.providers.provider import Provider, MonitorSpec, Monitor
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.utils import get_timestamp
 from iconsdk.utils.convert_type import convert_int_to_hex_str
@@ -520,3 +520,14 @@ class IconService:
         :return: A BTP network information object
         """
         return self.__provider.make_request('btp_getSourceInformation')
+
+    def monitor(self, spec: MonitorSpec, keep_alive: Optional[float]) -> Monitor:
+        """
+        Monitor events specified the spec
+
+        :param spec: Monitor specification
+        :param keep_alive: interval to send keep-alive while it reads a message
+        in fraction of seconds
+        :return: Monitoring handle
+        """
+        return self.__provider.make_monitor(spec, keep_alive)
