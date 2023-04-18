@@ -32,9 +32,9 @@ from iconsdk.utils.typing.conversion import object_to_str
 
 
 class EventFilter:
-    def __init__(self, addr: str, event: str, indexed: int, *args):
-        self.__addr = addr
+    def __init__(self, event: str, addr: str, indexed: int, *args):
         self.__event = event
+        self.__addr = addr
         self.__indexed = list(args[0:indexed])
         self.__data = list(args[indexed:])
 
