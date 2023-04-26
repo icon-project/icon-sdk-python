@@ -18,9 +18,10 @@ import json
 import warnings
 from abc import ABCMeta, abstractmethod
 from hashlib import sha3_256
+from typing import Dict, Union, Any
 
-from coincurve import PrivateKey
-from eth_keyfile import create_keyfile_json, extract_key_from_keyfile
+from coincurve import PrivateKey, PublicKey
+from eth_keyfile import create_keyfile_json, extract_key_from_keyfile, decode_keyfile_json
 from multimethod import multimethod
 
 from iconsdk import logger
@@ -55,8 +56,15 @@ class KeyWallet(Wallet):
     """KeyWallet class implements Wallet."""
 
     def __init__(self, private_key_object: PrivateKey):
-        self.__private_key: bytes = private_key_object.secret
-        self.public_key: bytes = private_key_object.public_key.format(compressed=False)
+        self._private_key_object: PrivateKey = private_key_object
+
+    @property
+    def private_key(self) -> bytes:
+        return self._private_key_object.secret
+
+    @property
+    def public_key(self) -> bytes:
+        return self._private_key_object.public_key.format(compressed=False)
 
     @staticmethod
     def create() -> 'KeyWallet':
@@ -77,8 +85,7 @@ class KeyWallet(Wallet):
         :return: An instance of Wallet class.
         """
         try:
-            private_key_object = PrivateKey(private_key)
-            wallet = KeyWallet(private_key_object)
+            wallet = KeyWallet(PrivateKey(private_key))
             logger.info(f"Loaded Wallet by the private key. Address: {wallet.get_address()}")
             return wallet
         except TypeError:
@@ -119,15 +126,7 @@ class KeyWallet(Wallet):
             type(str)
         """
         try:
-            key_store_contents = create_keyfile_json(
-                self.__private_key,
-                bytes(password, 'utf-8'),
-                iterations=16384,
-                kdf="scrypt"
-            )
-            key_store_contents['address'] = self.get_address()
-            key_store_contents['coinType'] = 'icx'
-
+            key_store_contents = self.to_dict(password)
             # validate the  contents of a keystore file.
             if is_keystore_file(key_store_contents):
                 json_string_keystore_data = json.dumps(key_store_contents)
@@ -142,19 +141,38 @@ class KeyWallet(Wallet):
         except IsADirectoryError:
             raise KeyStoreException("Directory is invalid.")
 
-    def get_private_key(self) -> str:
-        """Returns the private key of the wallet.
+    def to_dict(self, password: str) -> Dict[str, Any]:
+        ret: Dict[str, Any] = create_keyfile_json(
+            self.private_key,
+            bytes(password, 'utf-8'),
+            iterations=16384,
+            kdf="scrypt"
+        )
+        ret['address'] = self.get_address()
+        ret['coinType'] = 'icx'
+        return ret
 
-        :return a private_key in hexadecimal.
+    @classmethod
+    def from_dict(cls, jso: Dict[str, Any], password: str) -> KeyWallet:
+        private_key: bytes = decode_keyfile_json(jso, password)
+        return KeyWallet.load(private_key)
+
+    def get_private_key(self, hexadecimal: bool = True) -> Union[str, bytes]:
+        """Returns the private key of the wallet.
         """
-        return self.__private_key.hex()
+        pri_key: bytes = self._private_key_object.secret
+        return pri_key.hex() if hexadecimal else pri_key
+
+    def get_public_key(self, compressed: bool = True, hexadecimal: bool = True) -> Union[str, bytes]:
+        pub_key: bytes = self._private_key_object.public_key.format(compressed)
+        return pub_key.hex() if hexadecimal else pub_key
 
     def get_address(self) -> str:
         """Returns an EOA address.
 
         :return address: An EOA address
         """
-        return f'hx{sha3_256(self.public_key[1:]).digest()[-20:].hex()}'
+        return public_key_to_address(self._private_key_object.public_key.format(compressed=False))
 
     def sign(self, data: bytes) -> bytes:
         """Generates signature from input data which is transaction data
@@ -162,7 +180,25 @@ class KeyWallet(Wallet):
         :param data: data to be signed
         :return signature: signature made from input
         """
-        return sign(data, self.__private_key)
+        return sign(data, self.private_key)
+
+    def __eq__(self, other: KeyWallet) -> bool:
+        return self.private_key == other.private_key
+
+    def __ne__(self, other: KeyWallet) -> bool:
+        return not self.__eq__(other)
+
+
+def public_key_to_address(public_key: bytes) -> str:
+    if not (len(public_key) == 65 and public_key[0] == 4):
+        pub_key = PublicKey(public_key)
+        public_key: bytes = pub_key.format(compressed=False)
+    return f'hx{sha3_256(public_key[1:]).digest()[-20:].hex()}'
+
+
+def convert_public_key_format(public_key: bytes, compressed: bool) -> bytes:
+    pub_key = PublicKey(public_key)
+    return pub_key.format(compressed)
 
 
 def get_public_key(private_key_object: PrivateKey):
