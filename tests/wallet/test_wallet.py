@@ -1,3 +1,4 @@
+import copy
 from typing import Union, Dict
 
 import pytest
@@ -60,6 +61,14 @@ class TestKeyWallet:
 
         wallet2 = KeyWallet.from_dict(jso, password)
         assert wallet2 == wallet
+
+    def test_copy(self):
+        wallet = KeyWallet.create()
+        wallet2 = copy.deepcopy(wallet)
+        assert wallet == wallet2
+
+        wallet3 = copy.copy(wallet)
+        assert wallet == wallet3
 
 
 def test_public_key_to_address():
