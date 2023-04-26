@@ -18,10 +18,10 @@ import json
 import warnings
 from abc import ABCMeta, abstractmethod
 from hashlib import sha3_256
-from typing import Dict, Union
+from typing import Dict, Union, Any
 
 from coincurve import PrivateKey, PublicKey
-from eth_keyfile import create_keyfile_json, extract_key_from_keyfile
+from eth_keyfile import create_keyfile_json, extract_key_from_keyfile, decode_keyfile_json
 from multimethod import multimethod
 
 from iconsdk import logger
@@ -126,7 +126,7 @@ class KeyWallet(Wallet):
             type(str)
         """
         try:
-            key_store_contents = self.to_json(password)
+            key_store_contents = self.to_dict(password)
             # validate the  contents of a keystore file.
             if is_keystore_file(key_store_contents):
                 json_string_keystore_data = json.dumps(key_store_contents)
@@ -141,7 +141,7 @@ class KeyWallet(Wallet):
         except IsADirectoryError:
             raise KeyStoreException("Directory is invalid.")
 
-    def to_json(self, password: str) -> Dict[str, str]:
+    def to_dict(self, password: str) -> Dict[str, Any]:
         ret: Dict[str, str] = create_keyfile_json(
             self.private_key,
             bytes(password, 'utf-8'),
@@ -151,6 +151,11 @@ class KeyWallet(Wallet):
         ret['address'] = self.get_address()
         ret['coinType'] = 'icx'
         return ret
+
+    @classmethod
+    def from_dict(cls, jso: Dict[str, Any], password: str) -> KeyWallet:
+        private_key: bytes = decode_keyfile_json(jso, password)
+        return KeyWallet.load(private_key)
 
     def get_private_key(self, hexadecimal: bool = True) -> Union[str, bytes]:
         """Returns the private key of the wallet.

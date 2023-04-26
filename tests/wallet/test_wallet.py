@@ -51,11 +51,15 @@ class TestKeyWallet:
         assert isinstance(public_key, bytes)
         assert len(public_key) == 65
 
-    def test_to_json(self):
+    def test_to_dict(self):
+        password = "1234"
         wallet: KeyWallet = KeyWallet.create()
-        key_store: Dict[str, str] = wallet.to_json(password="")
-        assert key_store["address"] == wallet.get_address()
-        assert key_store["coinType"] == "icx"
+        jso: Dict[str, str] = wallet.to_dict(password)
+        assert jso["address"] == wallet.get_address()
+        assert jso["coinType"] == "icx"
+
+        wallet2 = KeyWallet.from_dict(jso, password)
+        assert wallet2 == wallet
 
 
 def test_public_key_to_address():
