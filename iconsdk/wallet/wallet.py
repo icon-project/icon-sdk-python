@@ -142,7 +142,7 @@ class KeyWallet(Wallet):
             raise KeyStoreException("Directory is invalid.")
 
     def to_dict(self, password: str) -> Dict[str, Any]:
-        ret: Dict[str, str] = create_keyfile_json(
+        ret: Dict[str, Any] = create_keyfile_json(
             self.private_key,
             bytes(password, 'utf-8'),
             iterations=16384,
