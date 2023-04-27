@@ -1,5 +1,6 @@
 import copy
 from typing import Union, Dict
+from copy import deepcopy
 
 import pytest
 
@@ -69,6 +70,11 @@ class TestKeyWallet:
 
         wallet3 = copy.copy(wallet)
         assert wallet == wallet3
+
+    def test_hash(self):
+        wallet = KeyWallet.create()
+        wallet_dict = {wallet: wallet.public_key}
+        assert wallet.public_key == wallet_dict[wallet]
 
 
 def test_public_key_to_address():

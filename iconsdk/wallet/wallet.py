@@ -191,6 +191,9 @@ class KeyWallet(Wallet):
     def __deepcopy__(self, memodict={}) -> KeyWallet:
         return KeyWallet.load(self.private_key)
 
+    def __hash__(self):
+        return hash(self._private_key_object.secret)
+
 
 def public_key_to_address(public_key: bytes) -> str:
     if not (len(public_key) == 65 and public_key[0] == 4):
