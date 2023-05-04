@@ -809,7 +809,7 @@ transaction = DeployTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .content_type("application/zip")\
+    .content_type("application/java")\
     .content(b'D8\xe9...\xfc')\
     .params(params)\
     .build()
@@ -935,7 +935,7 @@ transaction = DeployTransactionBuilder()\
     .step_limit(1000000)\
     .nid(3)\
     .nonce(100)\
-    .content_type("application/zip")\
+    .content_type("application/java")\
     .content(b'D8\xe9...\xfc')\
     .params(params)\
     .build()
