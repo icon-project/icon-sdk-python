@@ -531,3 +531,13 @@ class IconService:
         :return: Monitoring handle
         """
         return self.__provider.make_monitor(spec, keep_alive)
+
+    def get_network_info(self) -> dict:
+        """
+        Returns basic network information
+        Delegates to icx_getNetworkInfo RPC method.
+        https://github.com/icon-project/goloop/blob/master/doc/jsonrpc_v3.md#icx_getNetworkInfo
+
+        :return: Basic network information
+        """
+        return self.__provider.make_request('icx_getNetworkInfo')
