@@ -82,7 +82,7 @@ class EventMonitorSpec(MonitorSpec):
         if len(self.__filters) == 1:
             self.__filters[0].apply_to(params)
         else:
-            params["filters"] = list(map(lambda a: a.as_dict(), self.__filters))
+            params["eventFilters"] = list(map(lambda a: a.as_dict(), self.__filters))
         return object_to_str(params)
 
 
