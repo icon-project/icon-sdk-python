@@ -27,7 +27,7 @@ Helping your readers to prepare increases the likelihood that they will continue
 ICON SDK for Python development and execution requires following environments.
 
 - Python
-  - Version: Python 3.7+
+  - Version: Python 3.8+
   - IDE: Pycharm is recommended.
 
 ## Installation
