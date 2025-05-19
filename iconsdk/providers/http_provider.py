@@ -13,17 +13,15 @@
 # limitations under the License.
 
 import json
-import re
 from json.decoder import JSONDecodeError
 from time import time, monotonic
 from typing import Union, Optional
-from urllib.parse import urlparse, urlunparse
 
 import requests
 from multimethod import multimethod
 from websocket import WebSocket, WebSocketTimeoutException
 
-from iconsdk.exception import JSONRPCException
+from iconsdk.exception import JSONRPCException, HTTPError
 from iconsdk.providers.provider import Provider, MonitorSpec, Monitor, MonitorTimeoutException
 from iconsdk.providers.url_map import URLMap
 from iconsdk.utils import to_dict
@@ -94,7 +92,7 @@ class HTTPProvider(Provider):
             return self._return_custom_response(response, full_response)
         except JSONDecodeError:
             raw_response = response.content.decode()
-            raise JSONRPCException(f'Unknown response: {raw_response}')
+            raise HTTPError(raw_response, response.status_code)
 
     @staticmethod
     def _return_custom_response(response: requests.Response, full_response: bool = False) -> Union[str, list, dict]:
@@ -103,7 +101,11 @@ class HTTPProvider(Provider):
             return content
         if response.ok:
             return content['result']
-        raise JSONRPCException(content["error"])
+        raise JSONRPCException(
+            content["error"]["message"],
+            content["error"]["code"],
+            content['error'].get("data", None),
+        )
 
     def make_monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> Monitor:
         ws_url = self._url.for_ws(spec.get_path())

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from enum import IntEnum, unique
-from typing import Optional
+from typing import Optional, Any
 
 
 @unique
@@ -35,7 +35,7 @@ class IconServiceExceptionCode(IntEnum):
 
 class IconServiceBaseException(BaseException):
 
-    def __init__(self, message: Optional[str], code: IconServiceExceptionCode = IconServiceExceptionCode.OK):
+    def __init__(self, message: Optional[str],code: IconServiceExceptionCode = IconServiceExceptionCode.OK):
         if message is None:
             message = str(code)
         self.__message = message
@@ -83,10 +83,48 @@ class DataTypeException(IconServiceBaseException):
 
 class JSONRPCException(IconServiceBaseException):
     """Error when get JSON-RPC Error Response."""
-
-    def __init__(self, message: Optional[str]):
+    def __init__(self,
+                 message: Optional[str],
+                 code: Optional[int] = None,
+                 data: Any = None,
+                 ):
         super().__init__(message, IconServiceExceptionCode.JSON_RPC_ERROR)
+        self.__code = code
+        self.__data = data
 
+    JSON_PARSE_ERROR            = -32700
+    RPC_INVALID_REQUEST         = -32600
+    RPC_METHOD_NOT_FOUND        = -32601
+    RPC_INVALID_PARAMS          = -32602
+    RPC_INTERNAL_ERROR          = -32603
+
+    SYSTEM_ERROR                = -31000
+    SYSTEM_POOL_OVERFLOW        = -31001
+    SYSTEM_TX_PENDING           = -31002
+    SYSTEM_TX_EXECUTING         = -31003
+    SYSTEM_TX_NOT_FOUND         = -31004
+    SYSTEM_LACK_OF_RESOURCE     = -31005
+    SYSTEM_REQUEST_TIMEOUT      = -31006
+    SYSTEM_HARD_TIMEOUT         = -31007
+
+    @property
+    def rpc_code(self) -> Optional[int]:
+        return self.__code
+
+    @property
+    def rpc_data(self) -> Any:
+        return self.__data
+
+    def __repr__(self):
+        return f"JSONRPCException(message={self.message!r},code={self.rpc_code},data={self.rpc_data})"
+
+    @staticmethod
+    def score_error(self, code):
+        if code is None:
+            return 0
+        if -30000 > code > -31000:
+            return -30000 - code
+        return 0
 
 class ZipException(IconServiceBaseException):
     """"Error while write zip in memory"""
@@ -100,3 +138,20 @@ class URLException(IconServiceBaseException):
 
     def __init__(self, message: Optional[str]):
         super().__init__(message, IconServiceExceptionCode.URL_ERROR)
+
+class HTTPError(IconServiceBaseException):
+    """"Error regarding HTTP Error"""
+    def __init__(self, message: str, status: int):
+        super().__init__(message, IconServiceExceptionCode.JSON_RPC_ERROR)
+        self.__status = status
+
+    @property
+    def status(self):
+        return self.__status
+
+    @property
+    def ok(self):
+        return 0 <= self.__status < 300
+
+    def __repr__(self):
+        return f'HTTPError(message={self.message!r}, status={self.status!r})'

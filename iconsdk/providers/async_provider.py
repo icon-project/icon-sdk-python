@@ -48,10 +48,3 @@ class AsyncProvider(metaclass=ABCMeta):
         :param keep_alive: Keep-alive message interval in fraction of seconds
         """
         raise NotImplementedError()
-
-    @abstractmethod
-    async def close(self):
-        """
-        Close the provider
-        """
-        raise NotImplementedError()

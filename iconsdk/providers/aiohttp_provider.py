@@ -20,8 +20,7 @@ from time import monotonic
 from typing import Any, Dict, Optional
 
 import aiohttp
-from ..exception import JSONRPCException
-from multimethod import multimethod
+from ..exception import JSONRPCException, HTTPError
 
 from .async_provider import AsyncMonitor, AsyncProvider
 
@@ -37,7 +36,6 @@ class AIOHTTPProvider(AsyncProvider):
     """
 
     def __init__(self, full_path_url: str,
-                 session: Optional[aiohttp.ClientSession] = None,
                  request_kwargs: Optional[Dict[str, Any]] = None,
                  ):
         """
@@ -54,23 +52,8 @@ class AIOHTTPProvider(AsyncProvider):
         self._request_kwargs = request_kwargs or {}
         if 'headers' not in self._request_kwargs:
             self._request_kwargs['headers'] = {'Content-Type': 'application/json'}
-
-        if session:
-            self._session = session
-            self._external_session = True
-        else:
-            # Create a default session if none provided
-            self._session = aiohttp.ClientSession()
-            self._external_session = False
         self._request_id = 0  # Simple counter for JSON-RPC request IDs
 
-    async def close(self):
-        """
-        Closes the internal aiohttp ClientSession if it was created by this provider.
-        Does nothing if an external session was provided during initialization.
-        """
-        if not self._external_session and self._session and not self._session.closed:
-            await self._session.close()
 
     async def make_request(self, method: str, params: Optional[Dict[str, Any]] = None, full_response: bool = False) -> Any:
         """
@@ -97,7 +80,8 @@ class AIOHTTPProvider(AsyncProvider):
 
         request_url = self._url.for_rpc(method.split('_')[0])
         try:
-            async with self._session.post(request_url, json=payload, **self._request_kwargs) as response:
+            async with aiohttp.ClientSession() as session:
+                response = await session.post(request_url, json=payload, **self._request_kwargs)
                 # Raise exception for non-2xx HTTP status codes
                 resp_json = await response.json()
                 if full_response:
@@ -105,9 +89,14 @@ class AIOHTTPProvider(AsyncProvider):
 
                 if response.ok:
                     return resp_json['result']
-                raise JSONRPCException(resp_json['error'])
-        except JSONDecodeError as e:
-            response.raise_for_status()
+                raise JSONRPCException(
+                    resp_json['error']['message'],
+                    resp_json['error']['code'],
+                    resp_json['error'].get("data", None),
+                )
+        except JSONDecodeError:
+            raw_response = await response.text()
+            raise HTTPError(raw_response, response.status)
 
     async def make_monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> AsyncMonitor:
         """
@@ -120,11 +109,11 @@ class AIOHTTPProvider(AsyncProvider):
         """
         ws_url = self._url.for_ws(spec.get_path())
         params = spec.get_request()
-        monitor = AIOWebSocketMonitor(self._session, ws_url, params, keep_alive=keep_alive)
+        monitor = AIOWebSocketMonitor(aiohttp.ClientSession(), ws_url, params, keep_alive=keep_alive)
         await monitor._connect()
         return monitor
 
-class AIOWebSocketMonitor:
+class AIOWebSocketMonitor(AsyncMonitor):
     def __init__(self, session: aiohttp.ClientSession, url: str, params: dict, keep_alive: Optional[float] = None):
         self.__session = session
         self.__url = url
