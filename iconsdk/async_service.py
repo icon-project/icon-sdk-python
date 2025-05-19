@@ -237,7 +237,7 @@ class AsyncIconService:
         if transaction.nonce is not None:
             params["nonce"] = convert_int_to_hex_str(transaction.nonce)
         if transaction.data_type is not None:
-            params["dataType"] = transaction.data
+            params["dataType"] = transaction.data_type
         if transaction.data is not None:
             params["data"] = transaction.data
 
