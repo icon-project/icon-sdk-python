@@ -376,6 +376,6 @@ class AsyncIconService:
 
 
     async def monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> AsyncMonitor:
-        return self.__provider.make_monitor(spec, keep_alive)
+        return await self.__provider.make_monitor(spec, keep_alive)
     
 __all__ = ['AsyncIconService']
