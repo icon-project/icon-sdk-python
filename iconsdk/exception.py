@@ -119,7 +119,7 @@ class JSONRPCException(IconServiceBaseException):
         return f"JSONRPCException(message={self.message!r},code={self.rpc_code},data={self.rpc_data})"
 
     @staticmethod
-    def score_error(self, code):
+    def score_error(code):
         if code is None:
             return 0
         if -30000 > code > -31000:
