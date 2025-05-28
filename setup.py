@@ -24,7 +24,7 @@ setup(
     packages=find_packages(exclude=['tests*']),
     install_requires=requires,
     extras_require=extras_requires,
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     license='Apache License 2.0',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -34,7 +34,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',

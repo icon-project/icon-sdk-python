@@ -4,4 +4,4 @@ multimethod~=1.9.1
 requests~=2.32.0
 requests-mock~=1.10.0
 websocket-client~=1.5.1
-aiohttp~=3.8.6
+aiohttp~=3.11.13
