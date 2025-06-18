@@ -10,7 +10,7 @@ This document describes how to interact with ICON Network using the ICON SDK for
 
 ## Requirements
 
-- Python 3.8 or later.
+- Python 3.9 or later.
 
 ## Installation
 
