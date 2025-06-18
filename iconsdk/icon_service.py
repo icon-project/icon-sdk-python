@@ -257,7 +257,7 @@ class IconService:
 
         return result
 
-    def call(self, call: object, full_response: bool = False) -> Union[dict, str]:
+    def call(self, call: Call, full_response: bool = False) -> Union[dict, str]:
         """
         Calls SCORE's external function which is read-only without creating a transaction.
         Delegates to icx_call RPC method.

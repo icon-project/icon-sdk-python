@@ -13,18 +13,17 @@
 # limitations under the License.
 
 import json
-import re
 from json.decoder import JSONDecodeError
 from time import time, monotonic
 from typing import Union, Optional
-from urllib.parse import urlparse, urlunparse
 
 import requests
 from multimethod import multimethod
 from websocket import WebSocket, WebSocketTimeoutException
 
-from iconsdk.exception import JSONRPCException, URLException
+from iconsdk.exception import JSONRPCException, HTTPError
 from iconsdk.providers.provider import Provider, MonitorSpec, Monitor, MonitorTimeoutException
+from iconsdk.providers.url_map import URLMap
 from iconsdk.utils import to_dict
 
 
@@ -43,14 +42,8 @@ class HTTPProvider(Provider):
         :param version: version for RPC server
         :param request_kwargs: kwargs for setting to head of request
         """
-        uri = urlparse(base_domain_url)
-        if uri.path != '':
-            raise URLException('Path is not allowed')
-        self._serverUri = f'{uri.scheme}://{uri.netloc}'
-        self._channel = ''
-        self._version = version
+        self._url = URLMap(base_domain_url, version, None)
         self._request_kwargs = request_kwargs or {}
-        self._generate_url_map()
 
     @multimethod
     def __init__(self, full_path_url: str, request_kwargs: dict = None):
@@ -61,55 +54,11 @@ class HTTPProvider(Provider):
         :param full_path_url: full path URL as like <scheme>://<host>:<port>/api/v3
         :param request_kwargs: kwargs for setting to head of request
         """
-        uri = urlparse(full_path_url)
-        self._serverUri = f'{uri.scheme}://{uri.netloc}'
-        self._channel = self._get_channel(uri.path)
-        self._version = 3
+        self._url = URLMap(full_path_url)
         self._request_kwargs = request_kwargs or {}
-        self._generate_url_map()
-
-    def _generate_url_map(self):
-        def _add_channel_path(url: str):
-            if self._channel:
-                return f"{url}/{self._channel}"
-            return url
-
-        self._URL_MAP = {
-            'icx': _add_channel_path(f"{self._serverUri}/api/v{self._version}"),
-            'btp': _add_channel_path(f"{self._serverUri}/api/v{self._version}"),
-            'debug': _add_channel_path(f"{self._serverUri}/api/v{self._version}d"),
-        }
-
-        def _make_ws_url(url: str, name: str) -> str:
-            url = urlparse(url)
-            if url.scheme == 'http':
-                scheme = 'ws'
-            elif url.scheme == 'https':
-                scheme = 'wss'
-            else:
-                raise URLException('unknown scheme')
-            return urlunparse((scheme, url.netloc, f'{url.path}/{name}', '', '', ''))
-
-        if self._channel:
-            self._WS_MAP = {
-                'block': _make_ws_url(self._URL_MAP['icx'], 'block'),
-                'event': _make_ws_url(self._URL_MAP['icx'], 'event'),
-                'btp': _make_ws_url(self._URL_MAP['btp'], 'btp'),
-            }
-        else:
-            self._WS_MAP = None
-
-    @staticmethod
-    def _get_channel(path: str):
-        tokens = re.split("/(?=[^/]+$)", path.rstrip('/'))
-        if tokens[0] == '/api/v3':
-            return tokens[1]
-        elif tokens == ['/api', 'v3']:
-            return ''
-        raise URLException('Invalid URI path')
 
     def __str__(self):
-        return "RPC connection to {0}".format(self._serverUri)
+        return "RPC connection to {0}".format(self._url.serverUri)
 
     @to_dict
     def _get_request_kwargs(self) -> dict:
@@ -137,14 +86,13 @@ class HTTPProvider(Provider):
         if params:
             rpc_dict['params'] = params
 
-        req_key = method.split('_')[0]
-        request_url = self._URL_MAP.get(req_key)
+        request_url = self._url.for_rpc(method.split('_')[0])
         response = self._make_post_request(request_url, rpc_dict, **self._get_request_kwargs())
         try:
             return self._return_custom_response(response, full_response)
         except JSONDecodeError:
             raw_response = response.content.decode()
-            raise JSONRPCException(f'Unknown response: {raw_response}')
+            raise HTTPError(raw_response, response.status_code)
 
     @staticmethod
     def _return_custom_response(response: requests.Response, full_response: bool = False) -> Union[str, list, dict]:
@@ -153,16 +101,16 @@ class HTTPProvider(Provider):
             return content
         if response.ok:
             return content['result']
-        raise JSONRPCException(content["error"])
+        raise JSONRPCException(
+            content["error"]["message"],
+            content["error"]["code"],
+            content['error'].get("data", None),
+        )
 
     def make_monitor(self, spec: MonitorSpec, keep_alive: Optional[float] = None) -> Monitor:
-        if self._WS_MAP is None:
-            raise Exception(f'Channel must be set for socket')
-        path = spec.get_path()
+        ws_url = self._url.for_ws(spec.get_path())
         params = spec.get_request()
-        if path not in self._WS_MAP:
-            raise Exception(f'No available socket for {path}')
-        return WebSocketMonitor(self._WS_MAP[path], params, keep_alive=keep_alive)
+        return WebSocketMonitor(ws_url, params, keep_alive=keep_alive)
 
 
 class WebSocketMonitor(Monitor):
