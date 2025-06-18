@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iconsdk"
-version = "2.6.0rc1"
+version = "2.6.0"
 description = """
 ICON SDK for Python is a collection of libraries that allow you to
 interact with local or remote ICON nodes using HTTP connections.
