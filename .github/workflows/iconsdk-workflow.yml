@@ -1,8 +1,9 @@
 name: unittest and publish to pypi
 on:
   push:
-    branches: [master]
+    branches: ["master"]
   pull_request:
+    branches: ["master"]
   release:
     types: [published]
 
@@ -11,47 +12,39 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Install uv and setup Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-      - name: Install dependency
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e .[tests]
       - name: Run Test
         run: |
-          python -m pytest -ra
+          uv run --frozen pytest
 
   deploy:
     needs: unittest
-    if: github.event_name == 'release'
+    if: ${{ github.event_name == 'release' }}
     runs-on: ubuntu-latest
     environment: release
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.9"
-          cache: pip
-      - name: Install dependency
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install wheel
-          echo "::notice:: pip list"
-          pip list
+          uv sync --all-groups
       - name: Build package
-        id: build_package
         run: |
-          python setup.py sdist bdist_wheel
-          echo "::notice:: ls -al dist"
-          ls -al dist
+          uv build
       - name: Publish package
-        uses: pypa/gh-action-pypi-publish@release/v1
+        run: |
+          uv publish
