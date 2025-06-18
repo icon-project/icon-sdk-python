@@ -103,7 +103,7 @@ class KeyWallet(Wallet):
         :return: An instance of Wallet class.
         """
         try:
-            with open(file_path, 'rb') as file:
+            with open(file_path, 'r') as file:
                 private_key: bytes = extract_key_from_keyfile(file, bytes(password, 'utf-8'))
                 private_key_object = PrivateKey(private_key)
                 wallet = KeyWallet(private_key_object)
@@ -154,7 +154,7 @@ class KeyWallet(Wallet):
 
     @classmethod
     def from_dict(cls, jso: Dict[str, Any], password: str) -> KeyWallet:
-        private_key: bytes = decode_keyfile_json(jso, password)
+        private_key: bytes = decode_keyfile_json(jso, bytes(password, 'utf-8'))
         return KeyWallet.load(private_key)
 
     def get_private_key(self, hexadecimal: bool = True) -> Union[str, bytes]:
