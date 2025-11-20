@@ -1327,11 +1327,11 @@ def get_btp_source_information(self) -> dict:
 ## References
 
 - [Quick Start]
-- [ICON JSON-RPC API v3]
+- [ICON JSON-RPC API]
 - [ICON Network]
 
 [Quick Start]: quickstart
-[ICON JSON-RPC API v3]: https://docs.icon.community/icon-stack/client-apis/json-rpc-api/v3
+[ICON JSON-RPC API]: https://docs.icon.community/develop-on-icon-chain/client-apis/json-rpc-api
 [ICON Network]: https://docs.icon.community/icon-stack/icon-networks
 
 ## License
